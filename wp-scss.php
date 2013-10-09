@@ -19,9 +19,8 @@
  *        d. ACF options page configuration for plugin settings
  *    3. Link to settings page
  *    4. Assign plugin settings
- *    5. Instantiate wp_scss object
- *    6. Run Compiler
- *    7. Handle Errors
+ *    5. Instantiate wp_scss object and run compiler
+ *    6. Handle Errors
  */
 
 
@@ -91,7 +90,7 @@ if ( function_exists('acf_add_options_sub_page') ) {
 // Alert Admin of Errors
 if ( count($install_errors) > 0 ) {
     
-  function wpscss_admin_error() {
+  function wpscss_install_error() {
     global $install_errors;
     foreach ( $install_errors as $error ) {
       echo '<div class="error">
@@ -99,7 +98,7 @@ if ( count($install_errors) > 0 ) {
       </div>';
     }
   }
-  add_action('admin_notices', 'wpscss_admin_error');
+  add_action('admin_notices', 'wpscss_install_error');
 }
 
 
@@ -129,32 +128,72 @@ function wpscss_plugin_action_links($links, $file) {
 
 
 /** 
- * PLUGIN SETTINGS
+ * 4. PLUGIN SETTINGS
+ * 
+ * Pull settings from options table
+ * Scrub empty fields or directories that don't exists
+ * Assign settings via settings array
  */
 
+$scss_dir_setting = get_option('options_wpscss_scss_directory');
+$css_dir_setting = get_option('options_wpscss_css_directory');
 
+// Checks if directories are empty 
+if( $scss_dir_setting == false || $css_dir_setting == false ) {
+  function wpscss_settings_error() {
+      echo '<div class="error">
+        <p><strong>Wp-Scss</strong> requires both directories be specified. <a href="' . get_bloginfo('wpurl') . '/wp-admin/admin.php?page=acf-options-wp-scss">Please update your settings.</a></p>
+      </div>';
+  }
+  add_action('admin_notices', 'wpscss_settings_error');
+
+// Checks if directory exists
+} elseif ( !file_exists(WPSCSS_THEME_DIR . $scss_dir_setting) || !file_exists(WPSCSS_THEME_DIR . $css_dir_setting) ) {
+  function wpscss_settings_error() {
+      echo '<div class="error">
+        <p><strong>Wp-Scss:</strong> One or more specified directories does not exist. <a href="' . get_bloginfo('wpurl') . '/wp-admin/admin.php?page=acf-options-wp-scss">Please update your settings.</a></p>
+      </div>';
+  }
+  add_action('admin_notices', 'wpscss_settings_error');
+}
+
+// Plugin Settings
 $wpscss_settings = array(
-  'scss_dir'  =>  WPSCSS_THEME_DIR . get_option('options_wpscss_scss_directory'),
-  'css_dir'   =>  WPSCSS_THEME_DIR . get_option('options_wpscss_css_directory'),
-  'compiling' =>  get_field('options_wpscss_compiling_mode'), 
-  'errors'    =>  get_field('options_wpscss_errors')
+  'scss_dir'  =>  WPSCSS_THEME_DIR . $scss_dir_setting,
+  'css_dir'   =>  WPSCSS_THEME_DIR . $css_dir_setting,
+  'compiling' =>  get_option('options_wpscss_compiling_mode'), 
+  'errors'    =>  get_option('options_wpscss_errors')
 );
 
 
 /**
- * INSTANTIATE & EXECUTE COMPILER
+ * 5. INSTANTIATE & EXECUTE COMPILER
  */
 
 $wpscss_compiler = new Wp_Scss(
   $wpscss_settings['scss_dir'],
   $wpscss_settings['css_dir'],
-  $wpscss_settings['compiling'],
-  $wpscss_settings['errors']
+  $wpscss_settings['compiling']
 );
-
 
 if ( $wpscss_compiler->needs_compiling() ) {
   $wpscss_compiler->compile();
 }
 
- 
+
+/**
+ * 6. HANDLE COMPILING ERRORS
+ */
+
+if ( $wpscss_settings['errors'] === 'show' && count($wpscss_compiler->compile_errors) > 0 ) {
+  echo '<div class="sass_errors"><pre>';
+  echo '<h6 style="margin: 15px 0;">Sass Compiling Error</h6>';
+  
+  foreach( $wpscss_compiler->compile_errors as $error) {
+    echo '<p class="sass_error">';
+    echo '<strong>'. $error['file'] .'</strong> <br/><em>"'. $error['message'] .'"</em>'; 
+    echo '<p class="sass_error">';
+  }
+
+  echo '</pre></div>';
+}
