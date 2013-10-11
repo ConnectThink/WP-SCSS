@@ -19,6 +19,7 @@
  *    4. Assign plugin settings
  *    5. Instantiate wp_scss object and run compiler
  *    6. Handle Errors
+ *    7. Enqueue Styles
  */
 
 
@@ -82,9 +83,6 @@ function wpscss_plugin_action_links($links, $file) {
   }
 
   if ($file == $this_plugin) {
-        // The "page" query string value must be equal to the slug
-        // of the Settings admin page we defined earlier, which in
-        // this case equals "myplugin-settings".
         $settings_link = '<a href="' . get_bloginfo('wpurl') . '/wp-admin/admin.php?page=wpscss_options">Settings</a>';
         array_unshift($links, $settings_link);
     }
@@ -129,12 +127,16 @@ $wpscss_settings = array(
   'scss_dir'  =>  WPSCSS_THEME_DIR . $scss_dir_setting,
   'css_dir'   =>  WPSCSS_THEME_DIR . $css_dir_setting,
   'compiling' =>  $wpscss_options['compiling_options'], 
-  'errors'    =>  $wpscss_options['errors']
+  'errors'    =>  $wpscss_options['errors'],
+  'enqueue'   =>  $wpscss_options['enqueue']
 );
 
 
 /**
  * 5. INSTANTIATE & EXECUTE COMPILER
+ *
+ * Passes settings to the object
+ * If needs_compiling passes, runs compile method
  */
 
 $wpscss_compiler = new Wp_Scss(
@@ -143,21 +145,26 @@ $wpscss_compiler = new Wp_Scss(
   $wpscss_settings['compiling']
 );
 
-
 if ( $wpscss_compiler->needs_compiling() ) {
   $wpscss_compiler->compile();
 }
 
 
-
-
-
 /**
  * 6. HANDLE COMPILING ERRORS
+ *
+ * First block handles print errors to front end. 
+ * This adds a small style block the header to help errors get noticed
+ *
+ * Second block handles print errors to log file. 
+ * After the file gets over 1MB it does a purge and deletes the first 
+ * half of entries in the file. 
  */
-//var_dump(count($wpscss_compiler->compile_errors));
+$log_file = $wpscss_compiler->scss_dir.'error_log.txt';
+
 if ( !is_admin() && $wpscss_settings['errors'] === 'show' && count($wpscss_compiler->compile_errors) > 0) {
-  echo '<div class="sass_errors"><pre>';
+  
+  echo '<div class="scss_errors"><pre>';
   echo '<h6 style="margin: 15px 0;">Sass Compiling Error</h6>';
   
   foreach( $wpscss_compiler->compile_errors as $error) {
@@ -167,4 +174,62 @@ if ( !is_admin() && $wpscss_settings['errors'] === 'show' && count($wpscss_compi
   }
 
   echo '</pre></div>';
+
+  function wpscss_error_styles() {
+    echo 
+    '<style>
+      .scss_errors {
+        position: fixed;
+        top: 0px;
+        z-index: 99999;
+        width: 100%;
+      }
+      .scss_errors pre {
+        background: #f5f5f5;
+        border-left: 5px solid #DD3D36;
+        box-shadow: 0 2px 3px rgba(51,51,51, .4);
+        color: #666;
+        font-family: monospace;
+        font-size: 14px;
+        margin: 20px 0;
+        overflow: auto;
+        padding: 20px;
+        white-space: pre;
+        white-space: pre-wrap;
+        word-wrap: break-word;
+      }
+    </style>';
+  }
+  add_action('wp_head', 'wpscss_error_styles');
+
+} else { // Hide errors and print them to a log file.
+  foreach ($wpscss_compiler->compile_errors as $error) {
+    $error_string = date('g:i:s', time()) .': ';
+    $error_string .= $error['file'] .' - '. $error['message'] . PHP_EOL;
+    file_put_contents($log_file, $error_string, FILE_APPEND);
+    $error_string = "";
+  }
+}
+
+// Clean out log file if it get's too large
+if ( file_exists($log_file) ) {
+  if ( filesize($log_file) > 1000000) {
+    $log_contents = file_get_contents($log_file);
+    $log_arr = explode("\n", $log_contents);
+    $new_contents_arr = array_slice($log_arr, count($log_arr)/2);
+    $new_contents = implode(PHP_EOL, $new_contents_arr) . 'LOG FILE CLEANED ' . date('n/j/y g:i:s', time());
+    file_put_contents($log_file, $new_contents);
+  }
+}
+
+
+/**
+ * 7. ENQUEUE STYLES
+ */
+if ( $wpscss_settings['enqueue'] == '1' ) {
+  function wpscss_enqueue_styles() {
+    global $wpscss_compiler, $wpscss_options;
+    $wpscss_compiler->enqueue_files($wpscss_options['css_dir']);  
+  }
+  add_action('init', 'wpscss_enqueue_styles');
 }
