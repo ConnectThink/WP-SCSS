@@ -44,9 +44,9 @@ class Wp_Scss_Settings
             <p>
               <span class="version">Version <em><?php echo get_option('wpscss_version'); ?></em>
               <br/>
-              <span class="author">By: <a href="http://connectthink.com">Connect Think</a></span>
+              <span class="author">By: <a href="http://connectthink.com" target="_blank">Connect Think</a></span>
               <br/>
-              <span class="repo">Help & Issues: <a href="#">Github</a></span>
+              <span class="repo">Help & Issues: <a href="https://github.com/ConnectThink/WP-SCSS" target="_blank">Github</a></span>
             </p>        
             <form method="post" action="options.php">
             <?php
@@ -136,6 +136,22 @@ class Wp_Scss_Settings
             'wpscss_options', // Page
             'wpscss_compile_section' // Section   
         );            
+
+        // Enqueuing Options
+        add_settings_section(
+            'wpscss_enqueue_section', // ID
+            'Enqueuing Options', // Title
+            array( $this, 'print_enqueue_info' ), // Callback
+            'wpscss_options' // Page
+        );  
+        add_settings_field(
+            'Enqueue Stylesheets', 
+            'Enqueue Stylesheets', 
+            array( $this, 'enqueue_callback' ), // Callback
+            'wpscss_options', // Page
+            'wpscss_enqueue_section' // Section           
+        );      
+                   
     }
 
     /**
@@ -163,9 +179,12 @@ class Wp_Scss_Settings
     public function print_compile_info() {
         print 'Choose how you would like SCSS to be compiled and how you would like the plugin to handle errors';
     }
+    public function print_enqueue_info() {
+        print 'WP-SCSS can enqueue your css stylesheets in the header automatically.';
+    }
 
     /** 
-     * Get the settings option array and print one of its values
+     * Text Fields' Callbacks
      */
     public function scss_dir_callback() {
         printf(
@@ -181,7 +200,7 @@ class Wp_Scss_Settings
     }
 
     /** 
-     * Get the settings option array and print one of its values
+     * Select Boxes' Callbacks
      */
     public function compiling_mode_callback() {
         $this->options = get_option( 'wpscss_options' );  
@@ -199,12 +218,23 @@ class Wp_Scss_Settings
         
         $html = '<select id="errors" name="wpscss_options[errors]">';  
             $html .= '<option value="show"' . selected( $this->options['errors'], 'show', false) . '>Show in Header</option>';  
-            $html .= '<option value="hide"' . selected( $this->options['errors'], 'hide', false) . '>Hide</option>';  
+            $html .= '<option value="log"' . selected( $this->options['errors'], 'hide', false) . '>Print to Log</option>';  
         $html .= '</select>';  
       
     echo $html;  
-
     }
+
+    /** 
+     * Checkboxes' Callbacks
+     */
+    function enqueue_callback() {  
+      $this->options = get_option( 'wpscss_options' );  
+        
+      $html = '<input type="checkbox" id="enqueue" name="wpscss_options[enqueue]" value="1"' . checked( 1, $this->options['enqueue'], false ) . '/>';   
+      $html .= '<label for="enqueue"></label>';  
+      
+    echo $html;  
+    } 
 
 }
 
