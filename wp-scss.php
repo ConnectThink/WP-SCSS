@@ -15,9 +15,7 @@
  *    2. Require dependancies
  *        a. scssphp - does scss compiling using php (vendor)
  *        b. wp-scss class - manages compiling
- *        c. ACF and ACF Options
- *        d. ACF options page configuration for plugin settings
- *    3. Link to settings page
+ *    3. Registering Settings Page and Options
  *    4. Assign plugin settings
  *    5. Instantiate wp_scss object and run compiler
  *    6. Handle Errors
@@ -56,58 +54,26 @@ add_option(WPSCSS_VERSION_KEY, WPSCSS_VERSION_NUM);
  *    
  *    scssphp - scss compiler 
  *    class-wp-scss
- *    ACF
- *    ACF options addon
- *    ACF options fields
+ *    options.php - settings for plugin page
  */
 
 include_once WPSCSS_PLUGIN_DIR . '/scssphp/scss.inc.php'; // Sass Compiler (vendor)
-require_once WPSCSS_PLUGIN_DIR . '/class/class-wp-scss.php'; // Compiling Manager
-
-$install_errors = array();
-
-// Requires ACF to Work
-if ( !function_exists( 'get_field' ) ) {
-  array_push($install_errors, '<strong>WP-SCSS</strong> requires <a href="http://www.advancedcustomfields.com/" target="_blank">Advanced Custom Fields</a> to work. Please install it.');
-}
-
-// Requires ACF Options page
-if ( function_exists('acf_add_options_sub_page') ) {
-  // Register Settings Page
-  acf_add_options_sub_page(array(
-    'title' => 'WP-Scss',
-    'parent' => 'options-general.php',
-    'capability' => 'manage_options'
-  ));
-  
-  // Import Settings Fields (ACF export);
-  //include_once( WP_PLUGIN_DIR . '/settings/wp-scss-settings.php');
-
-} else {
-  array_push($install_errors, '<strong>WP-SCSS</strong> requires ACF Options v1.2 to work. Please install it.');
-}
-
-// Alert Admin of Errors
-if ( count($install_errors) > 0 ) {
-    
-  function wpscss_install_error() {
-    global $install_errors;
-    foreach ( $install_errors as $error ) {
-      echo '<div class="error">
-        <p>'. $error .'</p>
-      </div>';
-    }
-  }
-  add_action('admin_notices', 'wpscss_install_error');
-}
+include_once WPSCSS_PLUGIN_DIR . '/class/class-wp-scss.php'; // Compiling Manager
+include_once WPSCSS_PLUGIN_DIR . '/options.php'; // Options page class
 
 
 /**
- * 3. LINK TO SETTINGS PAGE
+ * 3. REGISTER SETTINGS
+ * 
+ *  Instantiate Options Page
+ *  Create link on plugin page to settings page  
  */
 
-add_filter('plugin_action_links', 'wpscss_plugin_action_links', 10, 2);
+if( is_admin() ) {
+    $wpscss_settings = new Wp_Scss_Settings();
+}
 
+add_filter('plugin_action_links', 'wpscss_plugin_action_links', 10, 2);
 function wpscss_plugin_action_links($links, $file) {
   static $this_plugin;
 
@@ -119,7 +85,7 @@ function wpscss_plugin_action_links($links, $file) {
         // The "page" query string value must be equal to the slug
         // of the Settings admin page we defined earlier, which in
         // this case equals "myplugin-settings".
-        $settings_link = '<a href="' . get_bloginfo('wpurl') . '/wp-admin/admin.php?page=acf-options-wp-scss">Settings</a>';
+        $settings_link = '<a href="' . get_bloginfo('wpurl') . '/wp-admin/admin.php?page=wpscss_options">Settings</a>';
         array_unshift($links, $settings_link);
     }
 
@@ -132,17 +98,18 @@ function wpscss_plugin_action_links($links, $file) {
  * 
  * Pull settings from options table
  * Scrub empty fields or directories that don't exists
- * Assign settings via settings array
+ * Assign settings via settings array to pass to object
  */
 
-$scss_dir_setting = get_option('options_wpscss_scss_directory');
-$css_dir_setting = get_option('options_wpscss_css_directory');
+$wpscss_options = get_option( 'wpscss_options' );
+$scss_dir_setting = $wpscss_options['scss_dir'];
+$css_dir_setting = $wpscss_options['css_dir'];
 
 // Checks if directories are empty 
 if( $scss_dir_setting == false || $css_dir_setting == false ) {
   function wpscss_settings_error() {
       echo '<div class="error">
-        <p><strong>Wp-Scss</strong> requires both directories be specified. <a href="' . get_bloginfo('wpurl') . '/wp-admin/admin.php?page=acf-options-wp-scss">Please update your settings.</a></p>
+        <p><strong>Wp-Scss</strong> requires both directories be specified. <a href="' . get_bloginfo('wpurl') . '/wp-admin/admin.php?page=wpscss_options">Please update your settings.</a></p>
       </div>';
   }
   add_action('admin_notices', 'wpscss_settings_error');
@@ -151,7 +118,7 @@ if( $scss_dir_setting == false || $css_dir_setting == false ) {
 } elseif ( !file_exists(WPSCSS_THEME_DIR . $scss_dir_setting) || !file_exists(WPSCSS_THEME_DIR . $css_dir_setting) ) {
   function wpscss_settings_error() {
       echo '<div class="error">
-        <p><strong>Wp-Scss:</strong> One or more specified directories does not exist. <a href="' . get_bloginfo('wpurl') . '/wp-admin/admin.php?page=acf-options-wp-scss">Please update your settings.</a></p>
+        <p><strong>Wp-Scss:</strong> One or more specified directories does not exist. <a href="' . get_bloginfo('wpurl') . '/wp-admin/admin.php?page=wpscss_options">Please update your settings.</a></p>
       </div>';
   }
   add_action('admin_notices', 'wpscss_settings_error');
@@ -161,8 +128,8 @@ if( $scss_dir_setting == false || $css_dir_setting == false ) {
 $wpscss_settings = array(
   'scss_dir'  =>  WPSCSS_THEME_DIR . $scss_dir_setting,
   'css_dir'   =>  WPSCSS_THEME_DIR . $css_dir_setting,
-  'compiling' =>  get_option('options_wpscss_compiling_mode'), 
-  'errors'    =>  get_option('options_wpscss_errors')
+  'compiling' =>  $wpscss_options['compiling_options'], 
+  'errors'    =>  $wpscss_options['errors']
 );
 
 
@@ -176,16 +143,20 @@ $wpscss_compiler = new Wp_Scss(
   $wpscss_settings['compiling']
 );
 
+
 if ( $wpscss_compiler->needs_compiling() ) {
   $wpscss_compiler->compile();
 }
 
 
+
+
+
 /**
  * 6. HANDLE COMPILING ERRORS
  */
-
-if ( $wpscss_settings['errors'] === 'show' && count($wpscss_compiler->compile_errors) > 0 ) {
+//var_dump(count($wpscss_compiler->compile_errors));
+if ( !is_admin() && $wpscss_settings['errors'] === 'show' && count($wpscss_compiler->compile_errors) > 0) {
   echo '<div class="sass_errors"><pre>';
   echo '<h6 style="margin: 15px 0;">Sass Compiling Error</h6>';
   

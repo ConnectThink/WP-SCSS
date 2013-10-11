@@ -7,7 +7,7 @@ class Wp_Scss {
    * @var string
    * @access public
    */
-  public $scss_dir, $css_dir, $compile_method, $scssc, $compile_errors, $settings_errors;
+  public $scss_dir, $css_dir, $compile_method, $scssc, $compile_errors;
    
 
   /**
@@ -20,7 +20,6 @@ class Wp_Scss {
    * @var object scssc - instantiate the compiling object.
    *
    * @var array compile_errors - catches errors from compile
-   * @var array settings_errors - catches errors if settings aren not entered correct
    */
   public function __construct ($scss_dir, $css_dir, $compile_method) {
     $this->scss_dir = $scss_dir;
@@ -33,9 +32,7 @@ class Wp_Scss {
     $scssc->setImportPaths($scss_dir); 
 
     $this->compile_errors = array();
-    $this->settings_errors = array();
   }
-
 
  /** 
    * METHOD COMPILE
@@ -43,7 +40,7 @@ class Wp_Scss {
    * with .scss and do not have '_' in front.
    *
    * @function compiler - passes input content through scssphp, 
-   *                      puts compiled css into output file
+   *                      puts compiled css into cache file
    *
    * @var array input_files - array of .scss files with no '_' in front
    * @var array sdir_arr - an array of all the files in the scss directory
@@ -53,23 +50,24 @@ class Wp_Scss {
    * @access public
    */
   public function compile() {
-      global $scssc;
+      global $scssc, $cache;
+      $cache = WPSCSS_PLUGIN_DIR . '/cache/';
       
       //Compiler - Takes scss $in and writes compiled css to $out file
       // catches errors and puts them the object's compiled_errors property
       function compiler($in, $out, $instance) {  
-        global $scssc; 
-
+        global $scssc, $cache;  
+        
         try {
             $css = $scssc->compile(file_get_contents($in));
-            file_put_contents($out, $css);
-          } catch (Exception $e) {
+            file_put_contents($cache.basename($out), $css);
+        } catch (Exception $e) {
             $errors = array (
               'file' => basename($in),
               'message' => $e->getMessage(),
               );
             array_push($instance->compile_errors, $errors);
-          }
+        }
       }
 
       $input_files = array();
@@ -87,8 +85,15 @@ class Wp_Scss {
         $input = $this->scss_dir.$scss_file;
         $outputName = preg_replace("/\.[^$]*/",".css", $scss_file);
         $output = $this->css_dir.$outputName;
-
+        
         compiler($input, $output, $this);
+      }
+
+      if (count($this->compile_errors) < 1) {
+        foreach (new DirectoryIterator($cache) as $cache_file) {
+          if ( $cache_file->isDot() ) continue; 
+          file_put_contents($this->css_dir.$cache_file, file_get_contents($cache.$cache_file));
+        }
       }
   } 
 
@@ -111,7 +116,7 @@ class Wp_Scss {
    * 
    * @return bool - true if compiling is needed
    */
-  public function needs_compiling() {
+    public function needs_compiling() {
       $sdir_arr = scandir($this->scss_dir);
       $cdir_arr = scandir($this->css_dir);
       $latest_scss = 0;
@@ -136,15 +141,13 @@ class Wp_Scss {
           }
         }
       }
-     
+      
       if ($latest_scss > $latest_css) {
         return true;
       } else {
         return false; 
       }
-  }
-
-
+    }
 }
 
 
