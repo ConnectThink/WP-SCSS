@@ -1,4 +1,5 @@
-#A lightweight SCSS compiler for Wordpress. 
+#WP-SCSS
+####A lightweight SCSS compiler for Wordpress. 
 
 Compiles .scss files on your wordpress install using [lefo's scssphp](https://github.com/leafo/scssphp). Includes settings page for configuring directories, error reporting, compiling options, and auto enqueuing.
 
@@ -7,7 +8,7 @@ The plugin only compiles when changes have been made to the scss files. Compiles
 ##Settings
 
 ####Directories
-Directories are defined relative to your theme folder. They must be separate from one another, so you cannot defined the root folder to compile into itself. You can however, compile a scss file into a css file that's located in the theme root. 
+Directories are defined relative to your theme folder. They must be separate from one another, so you cannot define the root folder to compile into itself. 
 
 Ideally you should setup a scss folder and a css folder within your theme. This will ensure the most accurate compiling. 
 
@@ -27,7 +28,7 @@ Compiling comes in three modes:
 * Compressed - Fully compressed css. 
 
 ####Error Display
-'Show in Header' will post a message on the front end when errors have occured. This helps debug as you write you scss. 
+'Show in Header' will post a message on the front end when errors have occured. This helps debug as you write your scss. 
 
 If you're working on a live/production site, you can send errors to a log. This will create a log file in your scss directory and print errors there as they occur. Just keep an eye on it, because the css will not be updated until errors have been resolved.
 
@@ -46,6 +47,20 @@ You can import other scss files into parent files and compile them into a single
 
 When importing in your scss file, you can leave off the underscore.
   
-    @import '_subfile';
+    @import 'subfile';
 
+####Compass Support
+Currently there isn't a way to fully support [compass](https://github.com/chriseppstein/compass) with a php compiler. If you want limited support, you can manually import the compass framework. You'll need both the _compass.scss and compass directory.
+    
+     compass / frameworks / compass / stylesheets /
+     @import 'compass';
+
+Alternatively, you can include [Bourbon](https://github.com/thoughtbot/bourbon) in a similar fashion. 
+
+####.sass Support
+This plugin will only work with .scss format.
+
+
+##License
+[GPL V3](http://www.gnu.org/copyleft/gpl.html)
 

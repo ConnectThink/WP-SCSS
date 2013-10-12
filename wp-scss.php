@@ -1,12 +1,12 @@
 <?php 
 /**
  * Plugin Name: WP-SCSS
- * Plugin URI: http://connectthink.com
- * Description: Compiles sass files.
+ * Plugin URI: https://github.com/ConnectThink/WP-SCSS
+ * Description: Compiles scss files live on wordpress.
  * Version: 1.3
  * Author: Connect Think
  * Author URI: http://connectthink.com
- * License: MIT
+ * License: GPLv3
  */
 
 /**
@@ -15,6 +15,7 @@
  *    2. Require dependancies
  *        a. scssphp - does scss compiling using php (vendor)
  *        b. wp-scss class - manages compiling
+ *        c. options class - builds settings page
  *    3. Registering Settings Page and Options
  *    4. Assign plugin settings
  *    5. Instantiate wp_scss object and run compiler
@@ -47,6 +48,7 @@ if (!defined('WPSCSS_VERSION_KEY'))
 if (!defined('WPSCSS_VERSION_NUM'))
     define('WPSCSS_VERSION_NUM', '1.3.0');
 
+// Add version to options table
 add_option(WPSCSS_VERSION_KEY, WPSCSS_VERSION_NUM);
 
 
