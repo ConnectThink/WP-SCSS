@@ -30,7 +30,7 @@
 
 // Plugin Paths
 if (!defined('WPSCSS_THEME_DIR'))
-    define('WPSCSS_THEME_DIR', ABSPATH . 'wp-content/themes/' . get_template());
+    define('WPSCSS_THEME_DIR', ABSPATH . 'wp-content/themes/' . get_stylesheet());
 
 if (!defined('WPSCSS_PLUGIN_NAME'))
     define('WPSCSS_PLUGIN_NAME', trim(dirname(plugin_basename(__FILE__)), '/'));
@@ -115,7 +115,8 @@ if( $scss_dir_setting == false || $css_dir_setting == false ) {
   add_action('admin_notices', 'wpscss_settings_error');
 
 // Checks if directory exists
-} elseif ( !file_exists(WPSCSS_THEME_DIR . $scss_dir_setting) || !file_exists(WPSCSS_THEME_DIR . $css_dir_setting) ) {
+}
+if ( !file_exists(WPSCSS_THEME_DIR . $scss_dir_setting) || !file_exists(WPSCSS_THEME_DIR . $css_dir_setting) ) {
   function wpscss_settings_error() {
       echo '<div class="error">
         <p><strong>Wp-Scss:</strong> One or more specified directories does not exist. <a href="' . get_bloginfo('wpurl') . '/wp-admin/admin.php?page=wpscss_options">Please update your settings.</a></p>

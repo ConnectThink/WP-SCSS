@@ -115,8 +115,6 @@ class Wp_Scss {
    * @return bool - true if compiling is needed
    */
     public function needs_compiling() {
-      $sdir_arr = scandir($this->scss_dir);
-      $cdir_arr = scandir($this->css_dir);
       $latest_scss = 0;
       $latest_css = 0;
 
