@@ -89,8 +89,10 @@ class Wp_Scss {
 
       if (count($this->compile_errors) < 1) {
         foreach (new DirectoryIterator($cache) as $cache_file) {
-          if ( $cache_file->isDot() ) continue; 
-          file_put_contents($this->css_dir.$cache_file, file_get_contents($cache.$cache_file));
+          if ( pathinfo($cache_file->getFilename(), PATHINFO_EXTENSION) == 'css') { 
+            file_put_contents($this->css_dir.$cache_file, file_get_contents($cache.$cache_file));
+            unlink($cache.$cache_file->getFilename()); // Delete file on successful write
+          }
         }
       }
   } 
@@ -148,6 +150,11 @@ class Wp_Scss {
   /** 
    * METHOD ENQUEUE STYLES
    * Enqueues all styles in the css directory.
+   *
+   * @param $css_folder - directory from theme root. We need this passed in separately
+   *                      so it can be used in a url, not path
+   *
+   * @param $deps - stylesheet dependancy. Which stylesheet the enqueued files should be called after
    *
    */
   public function enqueue_files($css_folder) {
