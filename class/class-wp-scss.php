@@ -73,7 +73,7 @@ class Wp_Scss {
       $input_files = array();      
       // Loop through directory and get .scss file that do not start with '_'
       foreach(new DirectoryIterator($this->scss_dir) as $file) {
-        if (substr($file, 0, 1) != "_" && $file->getExtension() == 'scss') {
+        if (substr($file, 0, 1) != "_" && pathinfo($file->getFilename(), PATHINFO_EXTENSION) == 'scss') {
           array_push($input_files, $file->getFilename());
         }
       }
@@ -121,7 +121,7 @@ class Wp_Scss {
       $latest_css = 0;
 
       foreach ( new DirectoryIterator($this->scss_dir) as $sfile ) {
-        if ($sfile->getExtension() == 'scss') {
+        if (pathinfo($sfile->getFilename(), PATHINFO_EXTENSION) == 'scss') {
           $file_time = $sfile->getMTime();
 
           if ( (int) $file_time > $latest_scss) {
@@ -131,7 +131,7 @@ class Wp_Scss {
       }
 
       foreach ( new DirectoryIterator($this->css_dir) as $cfile ) {
-        if ($cfile->getExtension() == 'css') {
+        if (pathinfo($cfile->getFilename(), PATHINFO_EXTENSION) == 'css') {
           $file_time = $cfile->getMTime();
         
           if ( (int) $file_time > $latest_css) {
@@ -155,7 +155,7 @@ class Wp_Scss {
   public function enqueue_files($css_folder) {
       
       foreach( new DirectoryIterator($this->css_dir) as $stylesheet ) {
-        if ( $stylesheet->getExtension() == 'css' ) {
+        if ( pathinfo($stylesheet->getFilename(), PATHINFO_EXTENSION) == 'css' ) {
           $name = $stylesheet->getBasename('.css') . '-style';
           $uri = get_stylesheet_directory_uri().$css_folder.$stylesheet->getFilename();
           $ver = $stylesheet->getMTime();

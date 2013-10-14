@@ -3,7 +3,7 @@
 
 Compiles .scss files on your wordpress install using [lefo's scssphp](https://github.com/leafo/scssphp). Includes settings page for configuring directories, error reporting, compiling options, and auto enqueuing.
 
-The plugin only compiles when changes have been made to the scss files. Compiles are made to the matching css file, so disabling this plugin will not take down your stylesheets. In the instance, where a matching css file does not exist yet, the plugin will create the appropriate css file in the css directory. 
+The plugin only compiles when changes have been made to the scss files. Compiles are made to the matching css file, so disabling this plugin will not take down your stylesheets. In the instance where a matching css file does not exist yet, the plugin will create the appropriate css file in the css directory. 
 
 ##Settings
 
@@ -35,7 +35,7 @@ If you're working on a live/production site, you can send errors to a log. This 
 ####Enqueuing
 The plugin can automatically add your css files to the header for you. This option will [enqueue](http://codex.wordpress.org/Function_Reference/wp_enqueue_style) all files found in the css directory defined in the settings. Keep this in mind if you have other non-compiled css files in this folder. The plugin will add them to the header, just don't reenque them somewhere else. 
 
-Keep in mind, that if you disable this plugin it can no longer enqueue files for you.
+Also keep in mind, that if you disable this plugin it can no longer enqueue files for you.
 
 
 ##Directions
@@ -62,5 +62,6 @@ This plugin will only work with .scss format.
 
 
 ##License
+This plugin is developed and maintained by Connect Think.  
 [GPL V3](http://www.gnu.org/copyleft/gpl.html)
 
