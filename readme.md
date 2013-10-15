@@ -24,7 +24,7 @@ Ideally you should setup a scss folder and a css folder within your theme. This 
 Compiling comes in three modes:
 
 * Expanded - Full open css. One line per property. Brackets close on their own line.
-* Nested - Lightly compressed css. Brackets close with css block. 
+* Nested - Lightly compressed css. Brackets close with css block. Indents to match scss nesting.
 * Compressed - Fully compressed css. 
 
 ####Error Display
@@ -59,7 +59,6 @@ Alternatively, you can include [Bourbon](https://github.com/thoughtbot/bourbon) 
 
 ####.sass Support
 This plugin will only work with .scss format.
-
 
 ##License
 This plugin is developed and maintained by Connect Think.  

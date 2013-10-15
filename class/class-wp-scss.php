@@ -152,10 +152,7 @@ class Wp_Scss {
    * Enqueues all styles in the css directory.
    *
    * @param $css_folder - directory from theme root. We need this passed in separately
-   *                      so it can be used in a url, not path
-   *
-   * @param $deps - stylesheet dependancy. Which stylesheet the enqueued files should be called after
-   *
+   *                      so it can be used in a url, not path   
    */
   public function enqueue_files($css_folder) {
       
