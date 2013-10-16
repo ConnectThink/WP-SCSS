@@ -60,7 +60,7 @@ add_option(WPSCSS_VERSION_KEY, WPSCSS_VERSION_NUM);
  *    options.php - settings for plugin page
  */
 
-include_once WPSCSS_PLUGIN_DIR . '/scssphp-vendor/scss.inc.php'; // Sass Compiler (vendor)
+include_once WPSCSS_PLUGIN_DIR . '/scssphp/scss.inc.php'; // Sass Compiler (vendor)
 include_once WPSCSS_PLUGIN_DIR . '/class/class-wp-scss.php'; // Compiling Manager
 include_once WPSCSS_PLUGIN_DIR . '/options.php'; // Options page class
 
@@ -231,6 +231,7 @@ if ( file_exists($log_file) ) {
 /**
  * 7. ENQUEUE STYLES
  */
+
 if ( $wpscss_settings['enqueue'] == '1' ) {
   function wpscss_enqueue_styles() {
     global $wpscss_compiler, $wpscss_options;
