@@ -165,7 +165,7 @@ if ( $wpscss_compiler->needs_compiling() ) {
  * After the file gets over 1MB it does a purge and deletes the first 
  * half of entries in the file. 
  */
-$log_file = $wpscss_compiler->scss_dir.'error_log.txt';
+$log_file = $wpscss_compiler->scss_dir.'error_log.log';
 
 if ( !is_admin() && $wpscss_settings['errors'] === 'show' && count($wpscss_compiler->compile_errors) > 0) {
   
@@ -209,7 +209,7 @@ if ( !is_admin() && $wpscss_settings['errors'] === 'show' && count($wpscss_compi
 
 } else { // Hide errors and print them to a log file.
   foreach ($wpscss_compiler->compile_errors as $error) {
-    $error_string = date('g:i:s', time()) .': ';
+    $error_string = date('m/d/y g:i:s', time()) .': ';
     $error_string .= $error['file'] .' - '. $error['message'] . PHP_EOL;
     file_put_contents($log_file, $error_string, FILE_APPEND);
     $error_string = "";

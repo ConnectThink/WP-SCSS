@@ -58,15 +58,23 @@ class Wp_Scss {
       function compiler($in, $out, $instance) {  
         global $scssc, $cache;  
         
-        try {
-            $css = $scssc->compile(file_get_contents($in));
-            file_put_contents($cache.basename($out), $css);
-        } catch (Exception $e) {
-            $errors = array (
-              'file' => basename($in),
-              'message' => $e->getMessage(),
-              );
-            array_push($instance->compile_errors, $errors);
+        if (is_writable($cache)) {
+          try {
+              $css = $scssc->compile(file_get_contents($in));
+              file_put_contents($cache.basename($out), $css);
+          } catch (Exception $e) {
+              $errors = array (
+                'file' => basename($in),
+                'message' => $e->getMessage(),
+                );
+              array_push($instance->compile_errors, $errors);
+          }
+        } else {
+          $errors = array (
+            'file' => "/wp-plugins/wp-scss/cache/",
+            'message' => "File Permission Error, permission denied. Please make the cache directory writable."
+          );
+          array_push($instance->compile_errors, $errors);
         }
       }
 
@@ -88,11 +96,19 @@ class Wp_Scss {
       }
 
       if (count($this->compile_errors) < 1) {
-        foreach (new DirectoryIterator($cache) as $cache_file) {
-          if ( pathinfo($cache_file->getFilename(), PATHINFO_EXTENSION) == 'css') { 
-            file_put_contents($this->css_dir.$cache_file, file_get_contents($cache.$cache_file));
-            unlink($cache.$cache_file->getFilename()); // Delete file on successful write
+        if  ( is_writable($this->css_dir) ) {
+          foreach (new DirectoryIterator($cache) as $cache_file) {
+            if ( pathinfo($cache_file->getFilename(), PATHINFO_EXTENSION) == 'css') { 
+              file_put_contents($this->css_dir.$cache_file, file_get_contents($cache.$cache_file));
+              unlink($cache.$cache_file->getFilename()); // Delete file on successful write
+            }
           }
+        } else {
+          $errors = array(
+            'file' => 'CSS Directory',
+            'message' => "File Permissions Error, permission denied. Please make your CSS directory writable."
+          );
+          array_push($this->compile_errors, $errors);
         }
       }
   } 
