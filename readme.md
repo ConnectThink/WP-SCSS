@@ -60,6 +60,11 @@ Alternatively, you can include [Bourbon](https://github.com/thoughtbot/bourbon) 
 ####.sass Support
 This plugin will only work with .scss format.
 
+##Changelog
+1.1.2 - Add support for moved wp-content directory  
+1.1.1 - Catch permissions errors   
+1.0.0 - Initial Release
+
 ##License
 This plugin is developed and maintained by Connect Think.  
 [GPL V3](http://www.gnu.org/copyleft/gpl.html)
