@@ -61,6 +61,7 @@ Alternatively, you can include [Bourbon](https://github.com/thoughtbot/bourbon) 
 This plugin will only work with .scss format.
 
 ##Changelog
+1.1.3 - Fix print bug (2) in header
 1.1.2 - Add support for moved wp-content directory  
 1.1.1 - Catch permissions errors   
 1.0.0 - Initial Release
