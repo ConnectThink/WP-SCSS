@@ -132,7 +132,7 @@ $wpscss_settings = array(
   'css_dir'   =>  WPSCSS_THEME_DIR . $css_dir_setting,
   'compiling' =>  $wpscss_options['compiling_options'], 
   'errors'    =>  $wpscss_options['errors'],
-  'enqueue'   =>  $wpscss_options['enqueue']
+  'enqueue'   =>  isset($wpscss_options['enqueue']) ? $wpscss_options['enqueue'] : 0
 );
 
 
