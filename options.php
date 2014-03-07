@@ -230,7 +230,7 @@ class Wp_Scss_Settings
     function enqueue_callback() {  
       $this->options = get_option( 'wpscss_options' );  
         
-      $html = '<input type="checkbox" id="enqueue" name="wpscss_options[enqueue]" value="1"' . checked( 1, $this->options['enqueue'], false ) . '/>';   
+      $html = '<input type="checkbox" id="enqueue" name="wpscss_options[enqueue]" value="1"' . checked( 1, isset($this->options['enqueue']) ? $this->options['enqueue'] : 0, false ) . '/>';   
       $html .= '<label for="enqueue"></label>';  
       
     echo $html;  
