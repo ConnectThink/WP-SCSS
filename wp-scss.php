@@ -167,12 +167,37 @@ if ( $wpscss_compiler->needs_compiling() ) {
  */
 $log_file = $wpscss_compiler->scss_dir.'error_log.log';
 
-if ( !is_admin() && $wpscss_settings['errors'] === 'show' && count($wpscss_compiler->compile_errors) > 0) {
-  
+function wpscss_error_styles() {
+  echo 
+  '<style>
+    .scss_errors {
+      position: fixed;
+      top: 0px;
+      z-index: 99999;
+      width: 100%;
+    }
+    .scss_errors pre {
+      background: #f5f5f5;
+      border-left: 5px solid #DD3D36;
+      box-shadow: 0 2px 3px rgba(51,51,51, .4);
+      color: #666;
+      font-family: monospace;
+      font-size: 14px;
+      margin: 20px 0;
+      overflow: auto;
+      padding: 20px;
+      white-space: pre;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+  </style>';
+}
+
+function wpscss_settings_show_errors($errors) {
   echo '<div class="scss_errors"><pre>';
   echo '<h6 style="margin: 15px 0;">Sass Compiling Error</h6>';
   
-  foreach( $wpscss_compiler->compile_errors as $error) {
+  foreach( $errors as $error) {
     echo '<p class="sass_error">';
     echo '<strong>'. $error['file'] .'</strong> <br/><em>"'. $error['message'] .'"</em>'; 
     echo '<p class="sass_error">';
@@ -180,33 +205,15 @@ if ( !is_admin() && $wpscss_settings['errors'] === 'show' && count($wpscss_compi
 
   echo '</pre></div>';
 
-  function wpscss_error_styles() {
-    echo 
-    '<style>
-      .scss_errors {
-        position: fixed;
-        top: 0px;
-        z-index: 99999;
-        width: 100%;
-      }
-      .scss_errors pre {
-        background: #f5f5f5;
-        border-left: 5px solid #DD3D36;
-        box-shadow: 0 2px 3px rgba(51,51,51, .4);
-        color: #666;
-        font-family: monospace;
-        font-size: 14px;
-        margin: 20px 0;
-        overflow: auto;
-        padding: 20px;
-        white-space: pre;
-        white-space: pre-wrap;
-        word-wrap: break-word;
-      }
-    </style>';
-  }
   add_action('wp_print_styles', 'wpscss_error_styles');
+}
 
+// Show to logged in users: All the methods for checking user login are set up later in the WP flow, so this only checks that there is a cookie
+if ( !is_admin() && $wpscss_settings['errors'] === 'show-logged-in' && !empty($_COOKIE[LOGGED_IN_COOKIE]) && count($wpscss_compiler->compile_errors) > 0) {
+  wpscss_settings_show_errors($wpscss_compiler->compile_errors);
+// Show in the header to anyone
+} else if ( !is_admin() && $wpscss_settings['errors'] === 'show' && count($wpscss_compiler->compile_errors) > 0) {
+  wpscss_settings_show_errors($wpscss_compiler->compile_errors);
 } else { // Hide errors and print them to a log file.
   foreach ($wpscss_compiler->compile_errors as $error) {
     $error_string = date('m/d/y g:i:s', time()) .': ';
