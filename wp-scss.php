@@ -1,9 +1,9 @@
-<?php 
+<?php
 /**
  * Plugin Name: WP-SCSS
  * Plugin URI: https://github.com/ConnectThink/WP-SCSS
  * Description: Compiles scss files live on wordpress.
- * Version: 1.1.3
+ * Version: 1.1.5
  * Author: Connect Think
  * Author URI: http://connectthink.com
  * License: GPLv3
@@ -46,7 +46,7 @@ if (!defined('WPSCSS_VERSION_KEY'))
     define('WPSCSS_VERSION_KEY', 'wpscss_version');
 
 if (!defined('WPSCSS_VERSION_NUM'))
-    define('WPSCSS_VERSION_NUM', '1.1.3');
+    define('WPSCSS_VERSION_NUM', '1.1.5');
 
 // Add version to options table
 add_option(WPSCSS_VERSION_KEY, WPSCSS_VERSION_NUM);
@@ -54,8 +54,8 @@ add_option(WPSCSS_VERSION_KEY, WPSCSS_VERSION_NUM);
 
 /*
  * 2. REQUIRE DEPENDANCIES
- *    
- *    scssphp - scss compiler 
+ *
+ *    scssphp - scss compiler
  *    class-wp-scss
  *    options.php - settings for plugin page
  */
@@ -67,9 +67,9 @@ include_once WPSCSS_PLUGIN_DIR . '/options.php'; // Options page class
 
 /**
  * 3. REGISTER SETTINGS
- * 
+ *
  *  Instantiate Options Page
- *  Create link on plugin page to settings page  
+ *  Create link on plugin page to settings page
  */
 
 if( is_admin() ) {
@@ -93,9 +93,9 @@ function wpscss_plugin_action_links($links, $file) {
 }
 
 
-/** 
+/**
  * 4. PLUGIN SETTINGS
- * 
+ *
  * Pull settings from options table
  * Scrub empty fields or directories that don't exists
  * Assign settings via settings array to pass to object
@@ -105,7 +105,7 @@ $wpscss_options = get_option( 'wpscss_options' );
 $scss_dir_setting = $wpscss_options['scss_dir'];
 $css_dir_setting = $wpscss_options['css_dir'];
 
-// Checks if directories are empty 
+// Checks if directories are empty
 if( $scss_dir_setting == false || $css_dir_setting == false ) {
   function wpscss_settings_error() {
       echo '<div class="error">
@@ -130,7 +130,7 @@ if( $scss_dir_setting == false || $css_dir_setting == false ) {
 $wpscss_settings = array(
   'scss_dir'  =>  WPSCSS_THEME_DIR . $scss_dir_setting,
   'css_dir'   =>  WPSCSS_THEME_DIR . $css_dir_setting,
-  'compiling' =>  $wpscss_options['compiling_options'], 
+  'compiling' =>  $wpscss_options['compiling_options'],
   'errors'    =>  $wpscss_options['errors'],
   'enqueue'   =>  isset($wpscss_options['enqueue']) ? $wpscss_options['enqueue'] : 0
 );
@@ -158,17 +158,17 @@ if ( $wpscss_compiler->needs_compiling() ) {
 /**
  * 6. HANDLE COMPILING ERRORS
  *
- * First block handles print errors to front end. 
+ * First block handles print errors to front end.
  * This adds a small style block the header to help errors get noticed
  *
- * Second block handles print errors to log file. 
- * After the file gets over 1MB it does a purge and deletes the first 
- * half of entries in the file. 
+ * Second block handles print errors to log file.
+ * After the file gets over 1MB it does a purge and deletes the first
+ * half of entries in the file.
  */
 $log_file = $wpscss_compiler->scss_dir.'error_log.log';
 
 function wpscss_error_styles() {
-  echo 
+  echo
   '<style>
     .scss_errors {
       position: fixed;
@@ -196,10 +196,10 @@ function wpscss_error_styles() {
 function wpscss_settings_show_errors($errors) {
   echo '<div class="scss_errors"><pre>';
   echo '<h6 style="margin: 15px 0;">Sass Compiling Error</h6>';
-  
+
   foreach( $errors as $error) {
     echo '<p class="sass_error">';
-    echo '<strong>'. $error['file'] .'</strong> <br/><em>"'. $error['message'] .'"</em>'; 
+    echo '<strong>'. $error['file'] .'</strong> <br/><em>"'. $error['message'] .'"</em>';
     echo '<p class="sass_error">';
   }
 
@@ -242,7 +242,7 @@ if ( file_exists($log_file) ) {
 if ( $wpscss_settings['enqueue'] == '1' ) {
   function wpscss_enqueue_styles() {
     global $wpscss_compiler, $wpscss_options;
-    $wpscss_compiler->enqueue_files($wpscss_options['css_dir']);  
+    $wpscss_compiler->enqueue_files($wpscss_options['css_dir']);
   }
   add_action('wp_enqueue_scripts', 'wpscss_enqueue_styles', 50);
 }

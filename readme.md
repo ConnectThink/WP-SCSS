@@ -61,6 +61,7 @@ Alternatively, you can include [Bourbon](https://github.com/thoughtbot/bourbon) 
 This plugin will only work with .scss format.
 
 ##Changelog
+1.1.5 - Added option to only show errors to logged in users - merge from #10 [@tolnem](https://github.com/tolnem)
 1.1.4 - Add suport for subfolders in scss directory
 1.1.3 - Fix print bug (2) in header
 1.1.2 - Add support for moved wp-content directory
