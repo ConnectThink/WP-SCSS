@@ -71,7 +71,7 @@ class Wp_Scss {
           }
         } else {
           $errors = array (
-            'file' => "/wp-plugins/wp-scss/cache/",
+            'file' => $cache,
             'message' => "File Permission Error, permission denied. Please make the cache directory writable."
           );
           array_push($instance->compile_errors, $errors);
