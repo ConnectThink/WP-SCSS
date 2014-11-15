@@ -61,6 +61,7 @@ Alternatively, you can include [Bourbon](https://github.com/thoughtbot/bourbon) 
 This plugin will only work with .scss format.
 
 ##Changelog
+* 1.1.7 - Various improvements from pull requests by [@jbrains](https://github.com/jbrains) and [@brainfork](https://github.com/brainfork)
 * 1.1.6 - Upgraded scss.inc.php to version 0.0.10 - pull from #12 [@kirkhoff](https://github.com/kirkhoff)
 * 1.1.5 - Added option to only show errors to logged in users - merge from #10 [@tolnem](https://github.com/tolnem)
 * 1.1.4 - Add support for subfolders in scss directory
