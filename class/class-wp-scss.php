@@ -133,6 +133,10 @@ class Wp_Scss {
    * @return bool - true if compiling is needed
    */
     public function needs_compiling() {
+      if (defined('WP_SCSS_ALWAYS_RECOMPILE') && WP_SCSS_ALWAYS_RECOMPILE) {
+        return true;
+      }
+
       $latest_scss = 0;
       $latest_css = 0;
 
