@@ -150,10 +150,22 @@ $wpscss_compiler = new Wp_Scss(
 );
 
 
-if ( $wpscss_compiler->needs_compiling() ) {
-  $wpscss_compiler->compile();
+function wp_scss_needs_compiling() {
+  global $wpscss_compiler;
+  $needs_compiling = apply_filters('wp_scss_needs_compiling', $wpscss_compiler->needs_compiling());
+  if ( $needs_compiling ) {
+    wp_scss_compile();
+  }
 }
 
+add_action('wp_head', 'wp_scss_needs_compiling');
+
+function wp_scss_compile() {
+  global $wpscss_compiler;
+  $variables = apply_filters('wp_scss_variables', array());
+  $wpscss_compiler->set_variables($variables);
+  $wpscss_compiler->compile();
+}
 
 /**
  * 6. HANDLE COMPILING ERRORS

@@ -191,4 +191,9 @@ class Wp_Scss {
       }
   }
 
+  public function set_variables(array $variables) {
+      global $scssc;
+      $scssc->setVariables($variables);
+  }
+
 } // End Wp_Scss Class
