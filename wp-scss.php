@@ -163,6 +163,11 @@ add_action('wp_head', 'wp_scss_needs_compiling');
 function wp_scss_compile() {
   global $wpscss_compiler;
   $variables = apply_filters('wp_scss_variables', array());
+  foreach ($variables as $variableKey => $variableValue) {
+    if (strlen(trim($variableValue)) == 0) {
+      unset($variables[$variableKey]);
+    }
+  }
   $wpscss_compiler->set_variables($variables);
   $wpscss_compiler->compile();
 }
