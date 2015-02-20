@@ -149,7 +149,8 @@ $wpscss_compiler = new Wp_Scss(
   $wpscss_settings['compiling']
 );
 
-
+//wp_scss_needs_compiling() needs to be run as wp_head-action to make it possible
+//for themes to set variables and decide if the style needs compiling
 function wp_scss_needs_compiling() {
   global $wpscss_compiler;
   $needs_compiling = apply_filters('wp_scss_needs_compiling', $wpscss_compiler->needs_compiling());
@@ -163,9 +164,9 @@ add_action('wp_head', 'wp_scss_needs_compiling');
 function wp_scss_compile() {
   global $wpscss_compiler;
   $variables = apply_filters('wp_scss_variables', array());
-  foreach ($variables as $variableKey => $variableValue) {
-    if (strlen(trim($variableValue)) == 0) {
-      unset($variables[$variableKey]);
+  foreach ($variables as $variable_key => $variable_value) {
+    if (strlen(trim($variable_value)) == 0) {
+      unset($variables[$variable_key]);
     }
   }
   $wpscss_compiler->set_variables($variables);
