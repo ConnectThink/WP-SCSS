@@ -156,6 +156,7 @@ function wp_scss_needs_compiling() {
   $needs_compiling = apply_filters('wp_scss_needs_compiling', $wpscss_compiler->needs_compiling());
   if ( $needs_compiling ) {
     wp_scss_compile();
+    wpscss_handle_errors();
   }
 }
 
@@ -226,30 +227,34 @@ function wpscss_settings_show_errors($errors) {
   add_action('wp_print_styles', 'wpscss_error_styles');
 }
 
-// Show to logged in users: All the methods for checking user login are set up later in the WP flow, so this only checks that there is a cookie
-if ( !is_admin() && $wpscss_settings['errors'] === 'show-logged-in' && !empty($_COOKIE[LOGGED_IN_COOKIE]) && count($wpscss_compiler->compile_errors) > 0) {
-  wpscss_settings_show_errors($wpscss_compiler->compile_errors);
+function wpscss_handle_errors() {
+    global $wpscss_settings, $log_file, $wpscss_compiler;
+    // Show to logged in users: All the methods for checking user login are set up later in the WP flow, so this only checks that there is a cookie
+    if ( !is_admin() && $wpscss_settings['errors'] === 'show-logged-in' && !empty($_COOKIE[LOGGED_IN_COOKIE]) && count($wpscss_compiler->compile_errors) > 0) {
+        wpscss_settings_show_errors($wpscss_compiler->compile_errors);
 // Show in the header to anyone
-} else if ( !is_admin() && $wpscss_settings['errors'] === 'show' && count($wpscss_compiler->compile_errors) > 0) {
-  wpscss_settings_show_errors($wpscss_compiler->compile_errors);
-} else { // Hide errors and print them to a log file.
-  foreach ($wpscss_compiler->compile_errors as $error) {
-    $error_string = date('m/d/y g:i:s', time()) .': ';
-    $error_string .= $error['file'] .' - '. $error['message'] . PHP_EOL;
-    file_put_contents($log_file, $error_string, FILE_APPEND);
-    $error_string = "";
-  }
-}
+    } else if ( !is_admin() && $wpscss_settings['errors'] === 'show' && count($wpscss_compiler->compile_errors) > 0) {
+        wpscss_settings_show_errors($wpscss_compiler->compile_errors);
+    } else { // Hide errors and print them to a log file.
+        foreach ($wpscss_compiler->compile_errors as $error) {
+            $error_string = date('m/d/y g:i:s', time()) .': ';
+            $error_string .= $error['file'] .' - '. $error['message'] . PHP_EOL;
+            file_put_contents($log_file, $error_string, FILE_APPEND);
+            $error_string = "";
+        }
+    }
 
 // Clean out log file if it get's too large
-if ( file_exists($log_file) ) {
-  if ( filesize($log_file) > 1000000) {
-    $log_contents = file_get_contents($log_file);
-    $log_arr = explode("\n", $log_contents);
-    $new_contents_arr = array_slice($log_arr, count($log_arr)/2);
-    $new_contents = implode(PHP_EOL, $new_contents_arr) . 'LOG FILE CLEANED ' . date('n/j/y g:i:s', time());
-    file_put_contents($log_file, $new_contents);
-  }
+    if ( file_exists($log_file) ) {
+        if ( filesize($log_file) > 1000000) {
+            $log_contents = file_get_contents($log_file);
+            $log_arr = explode("\n", $log_contents);
+            $new_contents_arr = array_slice($log_arr, count($log_arr)/2);
+            $new_contents = implode(PHP_EOL, $new_contents_arr) . 'LOG FILE CLEANED ' . date('n/j/y g:i:s', time());
+            file_put_contents($log_file, $new_contents);
+        }
+    }
+
 }
 
 
