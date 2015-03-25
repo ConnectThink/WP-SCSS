@@ -116,6 +116,8 @@ class Wp_Scss {
 
   /**
    * METHOD NEEDS_COMPILING
+   * First, we check if the output files (target) exists. If they don't exists, compile.
+   * 
    * Gets the most recently modified file in the scss directory
    * and compares that do the most recently modified css file.
    * If scss is greater, we assume that changes have been made
@@ -133,6 +135,23 @@ class Wp_Scss {
    * @return bool - true if compiling is needed
    */
     public function needs_compiling() {
+	  $input_files = array();
+      // Loop through directory and get .scss file that do not start with '_'
+      foreach(new DirectoryIterator($this->scss_dir) as $file) {
+        if (substr($file, 0, 1) != "_" && pathinfo($file->getFilename(), PATHINFO_EXTENSION) == 'scss') {
+          array_push($input_files, $file->getFilename());
+        }
+      }
+
+      // For each input file, find matching css file and compile
+      foreach ($input_files as $scss_file) {
+        $outputName = preg_replace("/\.[^$]*/",".css", $scss_file);
+        $output = $this->css_dir.$outputName;
+		if(!file_exists($output)) {
+            return true;
+        }
+      }
+
       $latest_scss = 0;
       $latest_css = 0;
 

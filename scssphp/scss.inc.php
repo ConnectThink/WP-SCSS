@@ -604,11 +604,24 @@ class scssc {
 	protected function compileImport($rawPath, $out) {
 		if ($rawPath[0] == "string") {
 			$path = $this->compileStringContent($rawPath);
-			if ($path = $this->findImport($path)) {
-				$this->importFile($path, $out);
-				return true;
+			if(strpos($path,"*") !== false) {
+				$paths = glob($this->importPaths[0] . $path);
+				if(count($paths)) {
+					foreach($paths as &$p) {
+						$p = preg_replace("/\.scss$/i","",str_replace($this->importPaths[0],"",$p));
+					}
+				}
+			} else {
+				$paths = (array)$path;
 			}
-			return false;
+			$found = false;
+			foreach($paths as $path) {
+				if ($path = $this->findImport($path)) {
+					$this->importFile($path, $out);
+					$found = true;
+				}
+			}
+			return $found;
 		}
 		if ($rawPath[0] == "list") {
 			// handle a list of strings
