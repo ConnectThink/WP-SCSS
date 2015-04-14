@@ -30,8 +30,6 @@ class Wp_Scss {
     $scssc = new scssc();
     $scssc->setFormatter($compile_method);
     $scssc->setImportPaths($scss_dir);
-
-    echo '<pre>print_numbers: '.print_r($print_numbers, true).'</pre>';
     $scssc->setLineNumbers($print_numbers);
 
     $this->compile_errors = array();

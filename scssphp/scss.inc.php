@@ -94,6 +94,8 @@ class scssc {
 	protected $numberPrecision = 5;
 
 	protected $formatter = "scss_formatter_nested";
+	protected $lineNumbers = FALSE;
+	protected $fileName;
 
 	/**
 	 * Compile scss
@@ -115,6 +117,15 @@ class scssc {
 
 		$locale = setlocale(LC_NUMERIC, 0);
 		setlocale(LC_NUMERIC, "C");
+
+		if ($this->isLineNumbers()) {
+	    if (!$name) {
+        $code = explode("\n", $code);
+        $code = scss_linecommentator::insertLineComments($code, $this->getFileName());
+	    } else {
+        $code = scss_linecommentator::insertLineComments(file($name), $name);
+	    }
+    }
 
 		$this->parser = new scss_parser($name);
 
@@ -688,7 +699,16 @@ class scssc {
 				$compiledValue);
 			break;
 		case "comment":
-			$out->lines[] = $child[1];
+       //do not nest line comments into the parent block
+       //for further information on the issue see https://github.com/leafo/scssphp/issues/228
+      if (isset($out->type) && $out->type == 'root') {
+      	// Does this prevent _all_ comments from being printed?
+      	//$out->lines[] = $child[1];
+				break;
+     	}
+      if ($this->isLineNumbers() && (strpos($child[1], '/* line ') !== FALSE) ) {
+				$out->lines[] = $child[1];
+			}
 			break;
 		case "mixin":
 		case "function":
@@ -1650,6 +1670,9 @@ class scssc {
 			$tree = $this->importCache[$realPath];
 		} else {
 			$code = file_get_contents($path);
+			if ($this->isLineNumbers()) {
+        $code = scss_linecommentator::insertLineComments(file($path), $path);
+      }
 			$parser = new scss_parser($path, false);
 			$tree = $parser->parse($code);
 			$this->parsedFiles[] = $path;
@@ -4649,8 +4672,7 @@ class scss_linecommentator{
 	 */
 
 
-	static function insertLineComments($scss, $filepath = '')
-	{
+	static function insertLineComments($scss, $filepath = '') {
 
 		$lines = $scss;
 		$new_scss_content = array();
@@ -4706,8 +4728,7 @@ class scss_linecommentator{
 	 *
 	 * @return boolean
 	 */
-	static function isSelector($line, $nextline = NULL)
-	{
+	static function isSelector($line, $nextline = NULL) {
 
 		if (
 			(strpos($line, self::block_indicator_start) !== FALSE || strpos($nextline, self::block_indicator_start) === 0)
@@ -4726,8 +4747,7 @@ class scss_linecommentator{
 	 * @return: boolean
 	 */
 
-	static function isMixin($line)
-	{
+	static function isMixin($line) {
 		if (strpos($line, self::mixin_indicator) !== FALSE) {
 			return true;
 		}
@@ -4742,8 +4762,7 @@ class scss_linecommentator{
 	 * @return: boolean
 	 */
 
-	static function isFunction($line)
-	{
+	static function isFunction($line) {
 
 		if
 		(
@@ -4764,8 +4783,7 @@ class scss_linecommentator{
 	 * @return: boolean
 	 */
 
-	static function isInclude($line)
-	{
+	static function isInclude($line) {
 
 		if (strpos($line, self::include_indicator) !== FALSE) {
 			return true;
