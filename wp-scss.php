@@ -128,11 +128,12 @@ if( $scss_dir_setting == false || $css_dir_setting == false ) {
 
 // Plugin Settings
 $wpscss_settings = array(
-  'scss_dir'  =>  WPSCSS_THEME_DIR . $scss_dir_setting,
-  'css_dir'   =>  WPSCSS_THEME_DIR . $css_dir_setting,
-  'compiling' =>  $wpscss_options['compiling_options'],
-  'errors'    =>  $wpscss_options['errors'],
-  'enqueue'   =>  isset($wpscss_options['enqueue']) ? $wpscss_options['enqueue'] : 0
+  'scss_dir'     =>  WPSCSS_THEME_DIR . $scss_dir_setting,
+  'css_dir'      =>  WPSCSS_THEME_DIR . $css_dir_setting,
+  'compiling'    =>  $wpscss_options['compiling_options'],
+  'errors'       =>  $wpscss_options['errors'],
+  'printnumbers' =>  $wpscss_options['printnumbers'],
+  'enqueue'      =>  isset($wpscss_options['enqueue']) ? $wpscss_options['enqueue'] : 0
 );
 
 
@@ -146,7 +147,8 @@ $wpscss_settings = array(
 $wpscss_compiler = new Wp_Scss(
   $wpscss_settings['scss_dir'],
   $wpscss_settings['css_dir'],
-  $wpscss_settings['compiling']
+  $wpscss_settings['compiling'],
+  $wpscss_settings['printnumbers']
 );
 
 
