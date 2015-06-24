@@ -81,7 +81,7 @@ class Wp_Scss {
       $input_files = array();
       // Loop through directory and get .scss file that do not start with '_'
       foreach(new DirectoryIterator($this->scss_dir) as $file) {
-        if (substr($file, 0, 1) != "_" && pathinfo($file->getFilename(), PATHINFO_EXTENSION) == 'scss') {
+        if (substr($file, 0, 1) != "_" && (pathinfo($file->getFilename(), PATHINFO_EXTENSION) == 'scss' || pathinfo($file->getFilename(), PATHINFO_EXTENSION) == 'scss.php')) {
           array_push($input_files, $file->getFilename());
         }
       }
