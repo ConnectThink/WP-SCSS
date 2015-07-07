@@ -210,7 +210,7 @@ class Wp_Scss {
     global $scssc;
 
     if(isset($this->vars_file)) include $this->vars_file;
-    if(is_array($php_vars)) $scssc->setVariables($php_vars);
+    if(is_array($wp_scss_php_vars)) $scssc->setVariables($wp_scss_php_vars);
   }
 
 } // End Wp_Scss Class

@@ -21,12 +21,12 @@ Ideally you should setup a scss folder and a css folder within your theme. This 
     |  --ie.scss
 
 ####SCSS Variables From PHP
-SCSS variable support from PHP in scssphp is implemented in the same way as [leafo's lessphp](http://leafo.net/lessphp/docs/#setting_variables_from_php). In order to set SCSS variables from PHP you must create a php file with `$php_vars` set to an array similar to what's shown in leafo's documentation.
+SCSS variable support from PHP in scssphp is implemented in the same way as [leafo's lessphp](http://leafo.net/lessphp/docs/#setting_variables_from_php). In order to set SCSS variables from PHP you must create a php file with `$wp_scss_php_vars` set to an array similar to what's shown in leafo's documentation.
 
 Example - /library/php/vars.php (*Files are defined relative to your theme folder)
 
     <?php
-      $php_vars = array(
+      $wp_scss_php_vars = array(
         "color" => "red",
         "base"  => "960px",
         "font"  => "Arial, sans-serif"
