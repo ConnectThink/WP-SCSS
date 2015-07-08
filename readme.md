@@ -1,7 +1,7 @@
 #WP-SCSS
 ####A lightweight SCSS compiler for Wordpress.
 
-Compiles .scss files on your wordpress install using [lefo's scssphp](https://github.com/leafo/scssphp). Includes settings page for configuring directories, error reporting, compiling options, and auto enqueuing.
+Compiles .scss files on your wordpress install using [leafo's scssphp](https://github.com/leafo/scssphp). Includes settings page for configuring directories, error reporting, compiling options, and auto enqueuing.
 
 The plugin only compiles when changes have been made to the scss files. Compiles are made to the matching css file, so disabling this plugin will not take down your stylesheets. In the instance where a matching css file does not exist yet, the plugin will create the appropriate css file in the css directory.
 
@@ -19,6 +19,18 @@ Ideally you should setup a scss folder and a css folder within your theme. This 
     |-scss
     |  --style.scss
     |  --ie.scss
+
+####SCSS Variables From PHP
+SCSS variable support from PHP in scssphp is implemented in the same way as [leafo's lessphp](http://leafo.net/lessphp/docs/#setting_variables_from_php). In order to set SCSS variables from PHP you must create a php file with `$wp_scss_php_vars` set to an array similar to what's shown in leafo's documentation.
+
+Example - /library/php/vars.php (*Files are defined relative to your theme folder)
+
+    <?php
+      $wp_scss_php_vars = array(
+        "color" => "red",
+        "base"  => "960px",
+        "font"  => "Arial, sans-serif"
+      );
 
 ####Compiling Mode
 Compiling comes in three modes:

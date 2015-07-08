@@ -104,6 +104,7 @@ function wpscss_plugin_action_links($links, $file) {
 $wpscss_options = get_option( 'wpscss_options' );
 $scss_dir_setting = $wpscss_options['scss_dir'];
 $css_dir_setting = $wpscss_options['css_dir'];
+$vars_file_setting = $wpscss_options['vars_file'];
 
 // Checks if directories are empty
 if( $scss_dir_setting == false || $css_dir_setting == false ) {
@@ -126,10 +127,22 @@ if( $scss_dir_setting == false || $css_dir_setting == false ) {
   return 0; //exits
 }
 
+// Checks if variables file are exists
+if ( !file_exists(WPSCSS_THEME_DIR . $vars_file_setting) ) {
+  function wpscss_settings_error() {
+      echo '<div class="error">
+        <p><strong>Wp-Scss:</strong> The specified variables file does not exist. Please create the file, leave the option blank, or <a href="' . get_bloginfo('wpurl') . '/wp-admin/admin.php?page=wpscss_options">update your settings.</a></p>
+      </div>';
+  }
+  add_action('admin_notices', 'wpscss_settings_error');
+  return 0; //exits
+}
+
 // Plugin Settings
 $wpscss_settings = array(
   'scss_dir'  =>  WPSCSS_THEME_DIR . $scss_dir_setting,
   'css_dir'   =>  WPSCSS_THEME_DIR . $css_dir_setting,
+  'vars_file' =>  (!empty($vars_file_setting) ? WPSCSS_THEME_DIR . $vars_file_setting : NULL),
   'compiling' =>  $wpscss_options['compiling_options'],
   'errors'    =>  $wpscss_options['errors'],
   'enqueue'   =>  isset($wpscss_options['enqueue']) ? $wpscss_options['enqueue'] : 0
@@ -146,11 +159,13 @@ $wpscss_settings = array(
 $wpscss_compiler = new Wp_Scss(
   $wpscss_settings['scss_dir'],
   $wpscss_settings['css_dir'],
+  $wpscss_settings['vars_file'],
   $wpscss_settings['compiling']
 );
 
 
 if ( $wpscss_compiler->needs_compiling() ) {
+  $wpscss_compiler->set_variables();
   $wpscss_compiler->compile();
 }
 

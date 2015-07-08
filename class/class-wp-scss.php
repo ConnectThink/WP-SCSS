@@ -7,7 +7,7 @@ class Wp_Scss {
    * @var string
    * @access public
    */
-  public $scss_dir, $css_dir, $compile_method, $scssc, $compile_errors;
+  public $scss_dir, $css_dir, $vars_file, $compile_method, $scssc, $compile_errors;
 
 
   /**
@@ -21,9 +21,10 @@ class Wp_Scss {
    *
    * @var array compile_errors - catches errors from compile
    */
-  public function __construct ($scss_dir, $css_dir, $compile_method) {
+  public function __construct ($scss_dir, $css_dir, $vars_file, $compile_method) {
     $this->scss_dir = $scss_dir;
     $this->css_dir = $css_dir;
+    $this->vars_file = $vars_file;
     $this->compile_method = $compile_method;
 
     global $scssc;
@@ -135,6 +136,7 @@ class Wp_Scss {
     public function needs_compiling() {
       $latest_scss = 0;
       $latest_css = 0;
+      $latest_vars = 0;
 
       foreach ( new RecursiveIteratorIterator(new RecursiveDirectoryIterator($this->scss_dir)) as $sfile ) {
         if (pathinfo($sfile->getFilename(), PATHINFO_EXTENSION) == 'scss') {
@@ -156,7 +158,15 @@ class Wp_Scss {
         }
       }
 
-      if ($latest_scss > $latest_css) {
+      if (isset($this->vars_file)) {
+        $file_time = filemtime($this->vars_file);
+
+        if ( (int) $file_time > $latest_vars) {
+          $latest_vars = $file_time;
+        }
+      }
+
+      if ($latest_scss > $latest_css || $latest_vars > $latest_css) {
         return true;
       } else {
         return false;
@@ -189,6 +199,18 @@ class Wp_Scss {
           wp_enqueue_style( $name );
         }
       }
+  }
+
+  /**
+   * METHOD SET VARIABLES FROM PHP
+   * Sets SCSS variables from PHP.
+   *
+   */
+  public function set_variables() {
+    global $scssc;
+
+    if(isset($this->vars_file)) include $this->vars_file;
+    if(is_array($wp_scss_php_vars)) $scssc->setVariables($wp_scss_php_vars);
   }
 
 } // End Wp_Scss Class
