@@ -21,7 +21,7 @@ class Wp_Scss {
    *
    * @var array compile_errors - catches errors from compile
    */
-  public function __construct ($scss_dir, $css_dir, $compile_method) {
+  public function __construct ($scss_dir, $css_dir, $compile_method, $print_numbers) {
     $this->scss_dir = $scss_dir;
     $this->css_dir = $css_dir;
     $this->compile_method = $compile_method;
@@ -30,6 +30,7 @@ class Wp_Scss {
     $scssc = new scssc();
     $scssc->setFormatter($compile_method);
     $scssc->setImportPaths($scss_dir);
+    $scssc->setLineNumbers($print_numbers);
 
     $this->compile_errors = array();
   }
