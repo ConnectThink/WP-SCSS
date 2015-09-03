@@ -51,7 +51,7 @@ When importing in your scss file, you can leave off the underscore.
     @import 'subfile';
 
 ####Setting Variables via PHP
-You can set SCSS variables in your theme or plug-in by using the wp_scss_variables filter.
+You can set SCSS variables in your theme or plugin by using the wp_scss_variables filter.
 
     function wp_scss_set_variables(){
         $variables = array(
