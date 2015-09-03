@@ -1,4 +1,4 @@
-/wp-scss.sublime-project
-/wp-scss.sublime-workspace
-/cache/*
 .DS_Store
+*/.DS_Store
+/cache/*
+readme.txt
