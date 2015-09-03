@@ -209,7 +209,7 @@ class Wp_Scss_Settings
             $html .= '<option value="scss_formatter"' . selected( $this->options['compiling_options'], 'scss_formatter', false) . '>Expanded</option>';  
             $html .= '<option value="scss_formatter_nested"' . selected( $this->options['compiling_options'], 'scss_formatter_nested', false) . '>Nested</option>';  
             $html .= '<option value="scss_formatter_compressed"' . selected( $this->options['compiling_options'], 'scss_formatter_compressed', false) . '>Compressed</option>'; 
-            $html .= '<option value="scss_formatter_minified"' . selected( $this->options['compiling_options'], 'scss_formatter_minified', false) . '>Minified (No Comments)</option>';   
+            $html .= '<option value="scss_formatter_minified"' . selected( $this->options['compiling_options'], 'scss_formatter_minified', false) . '>Minified</option>';   
         $html .= '</select>';  
       
     echo $html;  

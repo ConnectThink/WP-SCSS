@@ -25,7 +25,8 @@ Compiling comes in three modes:
 
 * Expanded - Full open css. One line per property. Brackets close on their own line.
 * Nested - Lightly compressed css. Brackets close with css block. Indents to match scss nesting.
-* Compressed - Fully compressed css.
+* Compressed - Removes line breaks and single-line comments.
+* Minified - Same as Compressed, but also removes multi-line comments.
 
 ####Error Display
 'Show in Header' will post a message on the front end when errors have occured. This helps debug as you write your scss.
@@ -42,12 +43,31 @@ Also keep in mind, that if you disable this plugin it can no longer enqueue file
 
 *This plugin requires at least php 5.1.2 to work.*
 
-####@importing subfiles
+####Importing Subfiles
 You can import other scss files into parent files and compile them into a single css file. To do this, use @import as normal in your scss file. All imported file names *must* start with an underscore. Otherwise they will be compiled into their own css file.
 
 When importing in your scss file, you can leave off the underscore.
 
     @import 'subfile';
+
+####Setting Variables via PHP
+You can set SCSS variables in your theme or plug-in by using the wp_scss_variables filter.
+
+    function wp_scss_set_variables(){
+        $variables = array(
+            'black' => '#000',
+            'white' => '#fff'
+        );
+        return $variables;
+    }
+    add_filter('wp_scss_variables','wp_scss_set_variables');
+
+####Always Recompile
+During development it's sometimes useful to force stylesheet compilation on every page load. Especially on hosts where filemtime() is not updating consistently.
+
+You can tell the plugin to always recompile by adding the following constant to your wp-config.php or functions.php file.
+
+    define('WP_SCSS_ALWAYS_RECOMPILE', true);
 
 ####Compass Support
 Currently there isn't a way to fully support [compass](https://github.com/chriseppstein/compass) with a php compiler. If you want limited support, you can manually import the compass framework. You'll need both the _compass.scss and compass directory.
@@ -61,6 +81,7 @@ Alternatively, you can include [Bourbon](https://github.com/thoughtbot/bourbon) 
 This plugin will only work with .scss format.
 
 ##Changelog
+* 1.1.9 - Added filter to set variables via PHP [@ohlle](https://github.com/ohlle) and option to minify CSS output [@mndewitt](https://github.com/mndewitt)
 * 1.1.8 - Various improvements from pull requests by [@jbrains](https://github.com/jbrains) and [@brainfork](https://github.com/brainfork)
 * 1.1.7 - Update scssphp to 0.0.12 - pull from #16 [@GabrielGil](https://github.com/GabrielGil)
 * 1.1.6 - Upgraded scss.inc.php to version 0.0.10 - pull from #12 [@kirkhoff](https://github.com/kirkhoff)
