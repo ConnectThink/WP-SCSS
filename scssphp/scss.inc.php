@@ -4339,6 +4339,32 @@ class scss_formatter_compressed extends scss_formatter {
 }
 
 /**
+ * SCSS minified formatter
+ *
+ * @author Mike DeWitt
+ */
+class scss_formatter_minified extends scss_formatter {
+	public $open = "{";
+	public $tagSeparator = ",";
+	public $assignSeparator = ":";
+	public $break = "";
+
+	public function indentStr($n = 0) {
+		return "";
+	}
+
+	public function format($block) {
+		ob_start();
+		$this->block($block);
+		$out = ob_get_clean();
+
+		$out = preg_replace('!/\*[^*]*\*+([^/][^*]*\*+)*/!', '', $out);
+
+		return $out;
+	}
+}
+
+/**
  * SCSS server
  *
  * @author Leaf Corcoran <leafot@gmail.com>
