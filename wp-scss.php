@@ -46,7 +46,7 @@ if (!defined('WPSCSS_VERSION_KEY'))
     define('WPSCSS_VERSION_KEY', 'wpscss_version');
 
 if (!defined('WPSCSS_VERSION_NUM'))
-    define('WPSCSS_VERSION_NUM', '1.1.8');
+    define('WPSCSS_VERSION_NUM', '1.1.9');
 
 // Add version to options table
 add_option(WPSCSS_VERSION_KEY, WPSCSS_VERSION_NUM);
