@@ -220,7 +220,7 @@ class Wp_Scss_Settings
         $html = '<select id="errors" name="wpscss_options[errors]">';  
             $html .= '<option value="show"' . selected( $this->options['errors'], 'show', false) . '>Show in Header</option>';  
             $html .= '<option value="show-logged-in"' . selected( $this->options['errors'], 'show-logged-in', false) . '>Show to Logged In Users</option>';
-            $html .= '<option value="log"' . selected( $this->options['errors'], 'hide', false) . '>Print to Log</option>';  
+            $html .= '<option value="log"' . selected( $this->options['errors'], 'log', false) . '>Print to Log</option>';  
         $html .= '</select>';  
       
     echo $html;  
