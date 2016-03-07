@@ -66,105 +66,90 @@ class Wp_Scss_Settings
     public function page_init()
     {        
         register_setting(
-            'wpscss_options_group',    // Option group
-            'wpscss_options',          // Option name
+            'wpscss_options_group', // Option group
+            'wpscss_options', // Option name
             array( $this, 'sanitize' ) // Sanitize
         );
 
         // Paths to Directories
         add_settings_section(
-            'wpscss_paths_section',             // ID
-            'Configure Paths',                  // Title
+            'wpscss_paths_section', // ID
+            'Configure Paths', // Title
             array( $this, 'print_paths_info' ), // Callback
-            'wpscss_options'                    // Page
+            'wpscss_options' // Page
         );  
-
         add_settings_field(
-            'wpscss_scss_dir',                     // ID
-            'Scss Location',                       // Title 
-            array( $this, 'input_text_callback' ), // Callback
-            'wpscss_options',                      // Page
-            'wpscss_paths_section',                // Section
-            array(                                 // args
-                'name' => 'scss_dir',
-            )
+            'wpscss_scss_dir', // ID
+            'Scss Location', // Title 
+            array( $this, 'scss_dir_callback' ), // Callback
+            'wpscss_options', // Page
+            'wpscss_paths_section' // Section           
         );      
-
         add_settings_field(
-            'wpscss_css_dir',                       // ID
-            'CSS Location',                         // Title 
-            array( $this, 'input_text_callback' ),  // Callback
-            'wpscss_options',                       // Page
-            'wpscss_paths_section',                 // Section
-            array(                                  // args
-                'name' => 'css_dir',
-            )
+            'wpscss_css_dir', 
+            'CSS Location', 
+            array( $this, 'css_dir_callback' ), 
+            'wpscss_options', 
+            'wpscss_paths_section'
         );
 
         // Compiling Options
         add_settings_section(
-            'wpscss_compile_section',             // ID
-            'Compiling Options',                  // Title
+            'wpscss_compile_section', // ID
+            'Compiling Options', // Title
             array( $this, 'print_compile_info' ), // Callback
-            'wpscss_options'                      // Page
+            'wpscss_options' // Page
         );  
-
         add_settings_field(
-            'Compiling Mode',                        // ID
-            'Compiling Mode',                        // Title
-            array( $this, 'input_select_callback' ), // Callback
-            'wpscss_options',                        // Page
-            'wpscss_compile_section',                // Section
-            array(                                   // args
-                'name' => 'compiling_options',
-                'type' => apply_filters( 'wp_scss_compiling_modes',
-                    array(
-                        'Leafo\ScssPhp\Formatter\Expanded'   => 'Expanded',
-                        'Leafo\ScssPhp\Formatter\Nested'     => 'Nested',
-                        'Leafo\ScssPhp\Formatter\Compressed' => 'Compressed',
-                        'Leafo\ScssPhp\Formatter\Compact'    => 'Compact',
-                        'Leafo\ScssPhp\Formatter\Crunched'   => 'Crunched',
-                        'Leafo\ScssPhp\Formatter\Debug'      => 'Debug'
-                    )
-                )
-            )
+            'Compiling Mode', 
+            'Compiling Mode', 
+            array( $this, 'compiling_mode_callback' ), // Callback
+            'wpscss_options', // Page
+            'wpscss_compile_section' // Section           
+        );      
+        add_settings_field(
+            'Error Display', 
+            'Error Display', 
+            array( $this, 'errors_callback' ), // Callback
+            'wpscss_options', // Page
+            'wpscss_compile_section' // Section   
         );            
 
+        // Compiling Options
+        add_settings_section(
+            'wpscss_compile_section', // ID
+            'Compiling Options', // Title
+            array( $this, 'print_compile_info' ), // Callback
+            'wpscss_options' // Page
+        );  
         add_settings_field(
-            'Error Display',                         // ID
-            'Error Display',                         // Title
-            array( $this, 'input_select_callback' ), // Callback
-            'wpscss_options',                        // Page
-            'wpscss_compile_section',                // Section   
-            array(                                   // args
-                'name' => 'errors',
-                'type' => apply_filters( 'wp_scss_error_diplay',
-                    array(
-                        'show'           => 'Show in Header',
-                        'show-logged-in' => 'Show to Logged In Users',
-                        'hide'           => 'Print to Log',
-                    )								
-                )
-            )
+            'Compiling Mode', 
+            'Compiling Mode', 
+            array( $this, 'compiling_mode_callback' ), // Callback
+            'wpscss_options', // Page
+            'wpscss_compile_section' // Section           
+        );      
+        add_settings_field(
+            'Error Display', 
+            'Error Display', 
+            array( $this, 'errors_callback' ), // Callback
+            'wpscss_options', // Page
+            'wpscss_compile_section' // Section   
         );            
 
         // Enqueuing Options
         add_settings_section(
-            'wpscss_enqueue_section',             // ID
-            'Enqueuing Options',                  // Title
+            'wpscss_enqueue_section', // ID
+            'Enqueuing Options', // Title
             array( $this, 'print_enqueue_info' ), // Callback
-            'wpscss_options'                      // Page
+            'wpscss_options' // Page
         );  
-
         add_settings_field(
-            'Enqueue Stylesheets',                     // ID
-            'Enqueue Stylesheets',                     // Title
-            array( $this, 'input_checkbox_callback' ), // Callback
-            'wpscss_options',                          // Page
-            'wpscss_enqueue_section',                  // Section      
-            array(                                     // args
-                'name' => 'enqueue'
-            )
+            'Enqueue Stylesheets', 
+            'Enqueue Stylesheets', 
+            array( $this, 'enqueue_callback' ), // Callback
+            'wpscss_options', // Page
+            'wpscss_enqueue_section' // Section           
         );      
                    
     }
@@ -175,14 +160,13 @@ class Wp_Scss_Settings
      * @param array $input Contains all settings fields as array keys
      */
     public function sanitize( $input ) {
-        if( !empty( $input['wpscss_scss_dir'] ) ) {
+
+        if( !empty( $input['wpscss_scss_dir'] ) )
             $input['wpscss_scss_dir'] = sanitize_text_field( $input['wpscss_scss_dir'] );
-        }
-			
-        if( !empty( $input['wpscss_css_dir'] ) ) {
+
+        if( !empty( $input['wpscss_css_dir'] ) )
             $input['wpscss_css_dir'] = sanitize_text_field( $input['wpscss_css_dir'] );
-        }
-			
+
         return $input;
     }
 
@@ -200,40 +184,58 @@ class Wp_Scss_Settings
     }
 
     /** 
-	 * Text Fields' Callback
+     * Text Fields' Callbacks
      */
-    public function input_text_callback( $args ) {
+    public function scss_dir_callback() {
         printf(
-            '<input type="text" id="%s" name="wpscss_options[%s]" value="%s" />',
-            esc_attr( $args['name'] ), esc_attr( $args['name'] ), esc_attr( $this->options[$args['name']])
+            '<input type="text" id="scss_dir" name="wpscss_options[scss_dir]" value="%s" />',
+            esc_attr( $this->options['scss_dir'])
+        );
+    }
+    public function css_dir_callback() {
+        printf(
+            '<input type="text" id="css_dir" name="wpscss_options[css_dir]" value="%s" />',
+            esc_attr( $this->options['css_dir'])
         );
     }
 
     /** 
      * Select Boxes' Callbacks
      */
-    public function input_select_callback( $args ) {
+    public function compiling_mode_callback() {
         $this->options = get_option( 'wpscss_options' );  
         
-        $html = sprintf( '<select id="%s" name="wpscss_options[%s]">', esc_attr( $args['name'] ), esc_attr( $args['name'] ) );  
-            foreach( $args['type'] as $value => $title ) {
-                $html .= '<option value="' . esc_attr( $value ) . '"' . selected( $this->options[esc_attr( $args['name'] )], esc_attr( $value ), false) . '>' . esc_attr( $title ) . '</option>';
-            }
+        $html = '<select id="compiling_options" name="wpscss_options[compiling_options]">';  
+            $html .= '<option value="scss_formatter"' . selected( $this->options['compiling_options'], 'scss_formatter', false) . '>Expanded</option>';  
+            $html .= '<option value="scss_formatter_nested"' . selected( $this->options['compiling_options'], 'scss_formatter_nested', false) . '>Nested</option>';  
+            $html .= '<option value="scss_formatter_compressed"' . selected( $this->options['compiling_options'], 'scss_formatter_compressed', false) . '>Compressed</option>'; 
+            $html .= '<option value="scss_formatter_minified"' . selected( $this->options['compiling_options'], 'scss_formatter_minified', false) . '>Minified</option>';   
         $html .= '</select>';  
       
-        echo $html;  
+    echo $html;  
+    }
+    public function errors_callback() {
+        $this->options = get_option( 'wpscss_options' );  
+        
+        $html = '<select id="errors" name="wpscss_options[errors]">';  
+            $html .= '<option value="show"' . selected( $this->options['errors'], 'show', false) . '>Show in Header</option>';  
+            $html .= '<option value="show-logged-in"' . selected( $this->options['errors'], 'show-logged-in', false) . '>Show to Logged In Users</option>';
+            $html .= '<option value="log"' . selected( $this->options['errors'], 'hide', false) . '>Print to Log</option>';  
+        $html .= '</select>';  
+      
+    echo $html;  
     }
 
     /** 
      * Checkboxes' Callbacks
      */
-    public function input_checkbox_callback( $args ) {  
-        $this->options = get_option( 'wpscss_options' );  
+    function enqueue_callback() {  
+      $this->options = get_option( 'wpscss_options' );  
         
-        $html = '<input type="checkbox" id="' . esc_attr( $args['name'] ) . '" name="wpscss_options[' . esc_attr( $args['name'] ) . ']" value="1"' . checked( 1, isset( $this->options[esc_attr( $args['name'] )] ) ? $this->options[esc_attr( $args['name'] )] : 0, false ) . '/>';   
-        $html .= '<label for="' . esc_attr( $args['name'] ) . '"></label>';
+      $html = '<input type="checkbox" id="enqueue" name="wpscss_options[enqueue]" value="1"' . checked( 1, isset($this->options['enqueue']) ? $this->options['enqueue'] : 0, false ) . '/>';   
+      $html .= '<label for="enqueue"></label>';  
       
-        echo $html;  
+    echo $html;  
     } 
 
 }

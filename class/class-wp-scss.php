@@ -1,7 +1,5 @@
 <?php
 
-use Leafo\ScssPhp\Compiler;
-
 class Wp_Scss {
   /**
    * Compiling preferences properites
@@ -10,6 +8,7 @@ class Wp_Scss {
    * @access public
    */
   public $scss_dir, $css_dir, $compile_method, $scssc, $compile_errors;
+
 
   /**
    * Set values for Wp_Scss::properties
@@ -23,15 +22,16 @@ class Wp_Scss {
    * @var array compile_errors - catches errors from compile
    */
   public function __construct ($scss_dir, $css_dir, $compile_method) {
-    global $scssc;
-    $this->scss_dir       = $scss_dir;
-    $this->css_dir        = $css_dir;
+    $this->scss_dir = $scss_dir;
+    $this->css_dir = $css_dir;
     $this->compile_method = $compile_method;
-    $this->compile_errors = array();
-    $scssc                = new Compiler();
 
-    $scssc->setFormatter( $compile_method );
-    $scssc->setImportPaths( $scss_dir );
+    global $scssc;
+    $scssc = new scssc();
+    $scssc->setFormatter($compile_method);
+    $scssc->setImportPaths($scss_dir);
+
+    $this->compile_errors = array();
   }
 
  /**
@@ -196,8 +196,8 @@ class Wp_Scss {
   }
 
   public function set_variables(array $variables) {
-		global $scssc;
-		$scssc->setVariables($variables);
+      global $scssc;
+      $scssc->setVariables($variables);
   }
 
 } // End Wp_Scss Class
