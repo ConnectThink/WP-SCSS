@@ -116,7 +116,7 @@ if( $scss_dir_setting == false || $css_dir_setting == false ) {
   return 0; //exits
 
 // Checks if directory exists
-} elseif ( !file_exists(WPSCSS_THEME_DIR . $scss_dir_setting) || !file_exists(WPSCSS_THEME_DIR . $css_dir_setting) ) {
+} elseif ( !is_dir(WPSCSS_THEME_DIR . $scss_dir_setting) || !is_dir(WPSCSS_THEME_DIR . $css_dir_setting) ) {
   function wpscss_settings_error() {
       echo '<div class="error">
         <p><strong>Wp-Scss:</strong> One or more specified directories does not exist. Please create the directories or <a href="' . get_bloginfo('wpurl') . '/wp-admin/admin.php?page=wpscss_options">update your settings.</a></p>
