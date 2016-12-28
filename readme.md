@@ -25,8 +25,11 @@ Compiling comes in three modes:
 
 * Expanded - Full open css. One line per property. Brackets close on their own line.
 * Nested - Lightly compressed css. Brackets close with css block. Indents to match scss nesting.
-* Compressed - Removes line breaks and single-line comments.
-* Minified - Same as Compressed, but also removes multi-line comments.
+* Compressed - More compressed css. Entire rule block on one line. No indentation.
+* Compact - Removes all line breaks, unnecessary whitespace, and single-line comments.
+* Crunched - Same as Compressed, but also removes multi-line comments.
+
+See examples of each in [leafo's documentation](http://leafo.github.io/scssphp/docs/#output-formatting)
 
 ####Error Display
 'Show in Header' will post a message on the front end when errors have occured. This helps debug as you write your scss.
@@ -41,7 +44,7 @@ Also keep in mind, that if you disable this plugin it can no longer enqueue file
 
 ##Directions
 
-*This plugin requires at least php 5.1.2 to work.*
+*This plugin requires at least php 5.4 to work.*
 
 ####Importing Subfiles
 You can import other scss files into parent files and compile them into a single css file. To do this, use @import as normal in your scss file. All imported file names *must* start with an underscore. Otherwise they will be compiled into their own css file.
@@ -81,8 +84,10 @@ Alternatively, you can include [Bourbon](https://github.com/thoughtbot/bourbon) 
 This plugin will only work with .scss format.
 
 ##Changelog
+* 1.2.2
+  * Updated scssphp to version 0.6.6
 * 1.2.1
-  * Change set version option to update if already exists
+  * Changed set version option to update if already exists
 * 1.2.0
   * Fixed a bug where directory inputs were not getting sanitized [@mmcev106](https://github.com/ConnectThink/WP-SCSS/pull/66)
   * Made the missing directory warning also display if a specified path is a file [@mmcev106](https://github.com/ConnectThink/WP-SCSS/pull/65)
