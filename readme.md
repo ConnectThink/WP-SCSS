@@ -82,12 +82,12 @@ This plugin will only work with .scss format.
 
 ##Changelog
 * 1.2.1
-  Change set version option to update if already exists
+  * Change set version option to update if already exists
 * 1.2.0
-  Fixed a bug where directory inputs were not getting sanitized [@mmcev106](https://github.com/ConnectThink/WP-SCSS/pull/66)
-  Made the missing directory warning also display if a specified path is a file [@mmcev106](https://github.com/ConnectThink/WP-SCSS/pull/65)
-  Added /vendor to .gitignore [@mmcev106](https://github.com/ConnectThink/WP-SCSS/pull/64)
-  Dont enqueue already enqueued stylesheets [@bobbysmith007](https://github.com/ConnectThink/WP-SCSS/pull/61)
+  * Fixed a bug where directory inputs were not getting sanitized [@mmcev106](https://github.com/ConnectThink/WP-SCSS/pull/66)
+  * Made the missing directory warning also display if a specified path is a file [@mmcev106](https://github.com/ConnectThink/WP-SCSS/pull/65)
+  * Added /vendor to .gitignore [@mmcev106](https://github.com/ConnectThink/WP-SCSS/pull/64)
+  * Dont enqueue already enqueued stylesheets [@bobbysmith007](https://github.com/ConnectThink/WP-SCSS/pull/61)
 * 1.1.9 - Added filter to set variables via PHP [@ohlle](https://github.com/ohlle) and option to minify CSS output [@mndewitt](https://github.com/mndewitt)
 * 1.1.8 - Various improvements from pull requests by [@jbrains](https://github.com/jbrains) and [@brainfork](https://github.com/brainfork)
 * 1.1.7 - Update scssphp to 0.0.12 - pull from #16 [@GabrielGil](https://github.com/GabrielGil)

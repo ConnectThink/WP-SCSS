@@ -2,7 +2,7 @@
 /**
  * Plugin Name: WP-SCSS
  * Plugin URI: https://github.com/ConnectThink/WP-SCSS
- * Description: Compiles scss files live on wordpress.
+ * Description: Compiles scss files live on WordPress.
  * Version: 1.2.1
  * Author: Connect Think
  * Author URI: http://connectthink.com
