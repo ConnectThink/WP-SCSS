@@ -167,6 +167,16 @@ class Wp_Scss {
       }
     }
 
+  public function style_url_enqueued($url){
+    global $wp_styles;
+    foreach($wp_styles->queue as $wps_name){
+      $wps = $wp_styles->registered[$wps_name];
+      if($wps->src == $url){
+        return $wps;
+      }
+    }
+    return false;
+  }
   /**
    * METHOD ENQUEUE STYLES
    * Enqueues all styles in the css directory.
@@ -190,7 +200,9 @@ class Wp_Scss {
             $ver,
             $media = 'all' );
 
-          wp_enqueue_style( $name );
+          if(!$this->style_url_enqueued($uri)){
+            wp_enqueue_style($name);
+          }
         }
       }
   }
