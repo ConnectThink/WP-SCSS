@@ -175,12 +175,15 @@ class Wp_Scss_Settings
      * @param array $input Contains all settings fields as array keys
      */
     public function sanitize( $input ) {
-        if( !empty( $input['wpscss_scss_dir'] ) ) {
-            $input['wpscss_scss_dir'] = sanitize_text_field( $input['wpscss_scss_dir'] );
-        }
-			
-        if( !empty( $input['wpscss_css_dir'] ) ) {
-            $input['wpscss_css_dir'] = sanitize_text_field( $input['wpscss_css_dir'] );
+        foreach( ['scss_dir', 'css_dir'] as $dir ){
+            if( !empty( $input[$dir] ) ) {
+                $input[$dir] = sanitize_text_field( $input[$dir] );
+
+                // Add a trailing slash if not already present
+                if(substr($input[$dir], -1) != '/'){
+                    $input[$dir] .= '/';
+                }
+            }
         }
 			
         return $input;
