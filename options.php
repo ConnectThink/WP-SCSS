@@ -39,7 +39,6 @@ class Wp_Scss_Settings
         $this->options = get_option( 'wpscss_options' );
         ?>
         <div class="wrap">
-            <?php screen_icon(); ?>
             <h2>WP-SCSS Settings</h2>   
             <p>
               <span class="version">Version <em><?php echo get_option('wpscss_version'); ?></em>
