@@ -75,8 +75,8 @@ You can tell the plugin to always recompile by adding the following constant to 
 #### Compass Support
 Currently there isn't a way to fully support [compass](https://github.com/chriseppstein/compass) with a php compiler. If you want limited support, you can manually import the compass framework. You'll need both the _compass.scss and compass directory.
 
-     compass / frameworks / compass / stylesheets /
-     @import 'compass';
+    compass / frameworks / compass / stylesheets /
+    @import 'compass';
 
 Alternatively, you can include [Bourbon](https://github.com/thoughtbot/bourbon) in a similar fashion.
 
@@ -84,6 +84,9 @@ Alternatively, you can include [Bourbon](https://github.com/thoughtbot/bourbon) 
 This plugin will only work with .scss format.
 
 ## Changelog
+* 1.2.3
+  * Updated scssphp to version 0.7.2 [@hellerbenjamin](https://github.com/ConnectThink/WP-SCSS/pull/86)
+  * Removed depricated screen_icon()
 * 1.2.2
   * Updated scssphp to version 0.6.6
 * 1.2.1
