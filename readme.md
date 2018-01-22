@@ -46,7 +46,7 @@ Also keep in mind, that if you disable this plugin it can no longer enqueue file
 
 *This plugin requires at least php 5.4 to work.*
 
-####Importing Subfiles
+#### Importing Subfiles
 You can import other scss files into parent files and compile them into a single css file. To do this, use @import as normal in your scss file. All imported file names *must* start with an underscore. Otherwise they will be compiled into their own css file.
 
 When importing in your scss file, you can leave off the underscore.
