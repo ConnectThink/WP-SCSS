@@ -154,6 +154,7 @@ $wpscss_settings = array(
  * If needs_compiling passes, runs compile method
  */
 
+global $wpscss_compiler;
 $wpscss_compiler = new Wp_Scss(
   $wpscss_settings['scss_dir'],
   $wpscss_settings['css_dir'],
