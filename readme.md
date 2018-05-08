@@ -31,6 +31,13 @@ Compiling comes in three modes:
 
 See examples of each in [leafo's documentation](http://leafo.github.io/scssphp/docs/#output-formatting)
 
+#### Source Map Mode
+Source maps come in three modes:
+
+* None - No source map will be generated.
+* Inline - A source map will be generated in the compiled CSS file.
+* File - A source map will be generated as a standalone file in the compiled CSS directory.
+
 #### Error Display
 'Show in Header' will post a message on the front end when errors have occured. This helps debug as you write your scss.
 
