@@ -127,7 +127,25 @@ class Wp_Scss_Settings
                     )
                 )
             )
-        );            
+        );   
+        
+        add_settings_field(
+	        'Source Map Mode',					   // ID
+	        'Source Map Mode',					   // Title
+	        array( $this, 'input_select_callback' ), // Callback
+	        'wpscss_options',						   // Page
+	        'wpscss_compile_section',				   // Section
+	        array(									   // args
+		        'name' => 'sourcemap_options',
+		        'type' => apply_filters( 'wp_scss_sourcemap_modes' ,
+		        	array(
+			        	'SOURCE_MAP_NONE' 	=> 'None',
+			        	'SOURCE_MAP_INLINE'	=> 'Inline',
+			        	'SOURCE_MAP_FILE'	=> 'File'
+		        	)
+		        )
+	        )
+        );              
 
         add_settings_field(
             'Error Display',                         // ID
@@ -145,7 +163,7 @@ class Wp_Scss_Settings
                     )								
                 )
             )
-        );            
+        );      
 
         // Enqueuing Options
         add_settings_section(
@@ -195,7 +213,7 @@ class Wp_Scss_Settings
         print 'Add the paths to your directories below. Paths should start with the root of your theme. example: "/library/scss/"';
     }
     public function print_compile_info() {
-        print 'Choose how you would like SCSS to be compiled and how you would like the plugin to handle errors';
+        print 'Choose how you would like SCSS and source maps to be compiled and how you would like the plugin to handle errors';
     }
     public function print_enqueue_info() {
         print 'WP-SCSS can enqueue your css stylesheets in the header automatically.';

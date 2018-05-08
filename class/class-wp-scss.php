@@ -1,5 +1,6 @@
 <?php
 
+include_once( WPSCSS_PLUGIN_DIR . '/scssphp/scss.inc.php' );
 use Leafo\ScssPhp\Compiler;
 
 class Wp_Scss {
@@ -9,7 +10,7 @@ class Wp_Scss {
    * @var string
    * @access public
    */
-  public $scss_dir, $css_dir, $compile_method, $scssc, $compile_errors;
+  public $scss_dir, $css_dir, $compile_method, $scssc, $compile_errors, $sourcemaps;
 
   /**
    * Set values for Wp_Scss::properties
@@ -22,7 +23,7 @@ class Wp_Scss {
    *
    * @var array compile_errors - catches errors from compile
    */
-  public function __construct ($scss_dir, $css_dir, $compile_method) {
+  public function __construct ($scss_dir, $css_dir, $compile_method, $sourcemaps) {
     global $scssc;
     $this->scss_dir       = $scss_dir;
     $this->css_dir        = $css_dir;
@@ -31,7 +32,9 @@ class Wp_Scss {
     $scssc                = new Compiler();
 
     $scssc->setFormatter( $compile_method );
-    $scssc->setImportPaths( $scss_dir );
+    $scssc->setImportPaths( $this->scss_dir );
+    
+    $this->sourcemaps = $sourcemaps;
   }
 
  /**
@@ -60,7 +63,17 @@ class Wp_Scss {
 
         if (is_writable($cache)) {
           try {
-              $css = $scssc->compile(file_get_contents($in));
+	          $map = basename($out) . '.map';
+			  $scssc->setSourceMap(constant('Leafo\ScssPhp\Compiler::' . $instance->sourcemaps));
+			  $scssc->setSourceMapOptions(array(
+			  	'sourceMapWriteTo' => $instance->css_dir . $map, // absolute path to a file to write the map to
+				'sourceMapURL' => $map, // url of the map
+				'sourceMapBasepath' => rtrim(ABSPATH, '/'), // base path for filename normalization
+				'sourceRoot' => '/', // This value is prepended to the individual entries in the 'source' field.
+			  ));
+			  
+			  $css = $scssc->compile(file_get_contents($in), $in);
+
               file_put_contents($cache.basename($out), $css);
           } catch (Exception $e) {
               $errors = array (
@@ -85,7 +98,7 @@ class Wp_Scss {
           array_push($input_files, $file->getFilename());
         }
       }
-
+      
       // For each input file, find matching css file and compile
       foreach ($input_files as $scss_file) {
         $input = $this->scss_dir.$scss_file;

@@ -2,7 +2,7 @@
 /**
  * SCSSPHP
  *
- * @copyright 2012-2017 Leaf Corcoran
+ * @copyright 2012-2018 Leaf Corcoran
  *
  * @license http://opensource.org/licenses/MIT MIT
  *
@@ -65,9 +65,9 @@ class Compiler
     const WITH_SUPPORTS = 4;
     const WITH_ALL      = 7;
 
-    const SOURCE_MAP_NONE = 0;
+    const SOURCE_MAP_NONE   = 0;
     const SOURCE_MAP_INLINE = 1;
-    const SOURCE_MAP_FILE = 2;
+    const SOURCE_MAP_FILE   = 2;
 
     /**
      * @var array
@@ -128,13 +128,17 @@ class Compiler
     protected $sourceMap = self::SOURCE_MAP_NONE;
     protected $sourceMapOptions = [];
 
-    /** @var string|Formatter */
+    /**
+     * @var string|\Leafo\ScssPhp\Formatter
+     */
     protected $formatter = 'Leafo\ScssPhp\Formatter\Nested';
 
     protected $rootEnv;
     protected $rootBlock;
 
-    /** @var  Environment */
+    /**
+     * @var \Leafo\ScssPhp\Compiler\Environment
+     */
     protected $env;
     protected $scope;
     protected $storeEnv;
@@ -202,22 +206,35 @@ class Compiler
         $this->popEnv();
 
         $sourceMapGenerator = null;
-        if($this->sourceMap &&  $this->sourceMap !== self::SOURCE_MAP_NONE) {
-            $sourceMapGenerator = new SourceMapGenerator($this->sourceMapOptions);
-        }
-        $out = $this->formatter->format($this->scope, $sourceMapGenerator);
-        if(!empty($out) && $this->sourceMap &&  $this->sourceMap !== self::SOURCE_MAP_NONE) {
-            $sourceMap = $sourceMapGenerator->generateJson();
 
+        if ($this->sourceMap) {
+            if (is_object($this->sourceMap) && $this->sourceMap instanceof SourceMapGenerator) {
+                $sourceMapGenerator = $this->sourceMap;
+                $this->sourceMap = self::SOURCE_MAP_FILE;
+            } elseif ($this->sourceMap !== self::SOURCE_MAP_NONE) {
+                $sourceMapGenerator = new SourceMapGenerator($this->sourceMapOptions);
+            }
+        }
+
+        $out = $this->formatter->format($this->scope, $sourceMapGenerator);
+
+        if (! empty($out) && $this->sourceMap && $this->sourceMap !== self::SOURCE_MAP_NONE) {
+            $sourceMap    = $sourceMapGenerator->generateJson();
             $sourceMapUrl = null;
-            if($this->sourceMap == self::SOURCE_MAP_INLINE) {
-                $sourceMapUrl = sprintf('data:application/json,%s', self::encodeURIComponent($sourceMap));
-            } elseif ($this->sourceMap == self::SOURCE_MAP_FILE) {
-                $sourceMapUrl = $sourceMapGenerator->saveMap($sourceMap);
+
+            switch ($this->sourceMap) {
+                case self::SOURCE_MAP_INLINE:
+                    $sourceMapUrl = sprintf('data:application/json,%s', Util::encodeURIComponent($sourceMap));
+                    break;
+
+                case self::SOURCE_MAP_FILE:
+                    $sourceMapUrl = $sourceMapGenerator->saveMap($sourceMap);
+                    break;
             }
 
             $out .= sprintf('/*# sourceMappingURL=%s */', $sourceMapUrl);
         }
+
         return $out;
     }
 
@@ -293,14 +310,14 @@ class Compiler
     protected function makeOutputBlock($type, $selectors = null)
     {
         $out = new OutputBlock;
-        $out->type      = $type;
-        $out->lines     = [];
-        $out->children  = [];
-        $out->parent    = $this->scope;
-        $out->selectors = $selectors;
-        $out->depth     = $this->env->depth;
-        $out->sourceName = $this->env->block->sourceName;
-        $out->sourceLine = $this->env->block->sourceLine;
+        $out->type         = $type;
+        $out->lines        = [];
+        $out->children     = [];
+        $out->parent       = $this->scope;
+        $out->selectors    = $selectors;
+        $out->depth        = $this->env->depth;
+        $out->sourceName   = $this->env->block->sourceName;
+        $out->sourceLine   = $this->env->block->sourceLine;
         $out->sourceColumn = $this->env->block->sourceColumn;
 
         return $out;
@@ -684,7 +701,7 @@ class Compiler
 
             if ($needsWrap) {
                 $wrapped = new Block;
-                $wrapped->sourceName = $media->sourceName;
+                $wrapped->sourceName   = $media->sourceName;
                 $wrapped->sourceIndex  = $media->sourceIndex;
                 $wrapped->sourceLine   = $media->sourceLine;
                 $wrapped->sourceColumn = $media->sourceColumn;
@@ -1105,13 +1122,6 @@ class Compiler
         }
 
         return $selectors;
-    }
-
-    /**
-     * @param array $sourceMapOptions
-     */
-    public function setSourceMapOptions($sourceMapOptions) {
-        $this->sourceMapOptions = $sourceMapOptions;
     }
 
     /**
@@ -1762,9 +1772,18 @@ class Compiler
                 list(, $for) = $child;
 
                 $start = $this->reduce($for->start, true);
+                $end   = $this->reduce($for->end, true);
+
+                if (! ($start[2] == $end[2] || $end->unitless())) {
+                    $this->throwError('Incompatible units: "%s" and "%s".', $start->unitStr(), $end->unitStr());
+
+                    break;
+                }
+
+                $unit  = $start[2];
                 $start = $start[1];
-                $end = $this->reduce($for->end, true);
-                $end = $end[1];
+                $end   = $end[1];
+
                 $d = $start < $end ? 1 : -1;
 
                 for (;;) {
@@ -1774,7 +1793,7 @@ class Compiler
                         break;
                     }
 
-                    $this->set($for->var, new Node\Number($start, ''));
+                    $this->set($for->var, new Node\Number($start, $unit));
                     $start += $d;
 
                     $ret = $this->compileChildren($for->children, $out);
@@ -1959,7 +1978,7 @@ class Compiler
      *
      * @param string $value
      *
-     * @return bool
+     * @return boolean
      */
     protected function isImmediateRelationshipCombinator($value)
     {
@@ -3338,10 +3357,27 @@ class Compiler
     }
 
     /**
-     * @param int $sourceMap
+     * Enable/disable source maps
+     *
+     * @api
+     *
+     * @param integer $sourceMap
      */
-    public function setSourceMap($sourceMap) {
+    public function setSourceMap($sourceMap)
+    {
         $this->sourceMap = $sourceMap;
+    }
+
+    /**
+     * Set source map options
+     *
+     * @api
+     *
+     * @param array $sourceMapOptions
+     */
+    public function setSourceMapOptions($sourceMapOptions)
+    {
+        $this->sourceMapOptions = $sourceMapOptions;
     }
 
     /**
@@ -4490,7 +4526,7 @@ class Compiler
         ];
 
         if ($firstAlpha != 1.0 || $secondAlpha != 1.0) {
-            $new[] = $firstAlpha * $weight + $secondAlpha * ($weight - 1);
+            $new[] = $firstAlpha * $weight + $secondAlpha * (1 - $weight);
         }
 
         return $this->fixColor($new);
@@ -4713,36 +4749,32 @@ class Compiler
     protected function libRound($args)
     {
         $num = $args[0];
-        $num[1] = round($num[1]);
 
-        return $num;
+        return new Node\Number(round($num[1]), $num[2]);
     }
 
     protected static $libFloor = ['value'];
     protected function libFloor($args)
     {
         $num = $args[0];
-        $num[1] = floor($num[1]);
 
-        return $num;
+        return new Node\Number(floor($num[1]), $num[2]);
     }
 
     protected static $libCeil = ['value'];
     protected function libCeil($args)
     {
         $num = $args[0];
-        $num[1] = ceil($num[1]);
 
-        return $num;
+        return new Node\Number(ceil($num[1]), $num[2]);
     }
 
     protected static $libAbs = ['value'];
     protected function libAbs($args)
     {
         $num = $args[0];
-        $num[1] = abs($num[1]);
 
-        return $num;
+        return new Node\Number(abs($num[1]), $num[2]);
     }
 
     protected function libMin($args)
@@ -5170,7 +5202,7 @@ class Compiler
         $string = $this->coerceString($args[0]);
         $stringContent = $this->compileStringContent($string);
 
-        $string[2] = [mb_strtolower($stringContent)];
+        $string[2] = [function_exists('mb_strtolower') ? mb_strtolower($stringContent) : strtolower($stringContent)];
 
         return $string;
     }
@@ -5181,7 +5213,7 @@ class Compiler
         $string = $this->coerceString($args[0]);
         $stringContent = $this->compileStringContent($string);
 
-        $string[2] = [mb_strtoupper($stringContent)];
+        $string[2] = [function_exists('mb_strtoupper') ? mb_strtoupper($stringContent) : strtoupper($stringContent)];
 
         return $string;
     }
@@ -5300,10 +5332,5 @@ class Compiler
         }
 
         return $args[0];
-    }
-
-    public static function encodeURIComponent($string){
-        $revert = array('%21' => '!', '%2A' => '*', '%27' => "'", '%28' => '(', '%29' => ')');
-        return strtr(rawurlencode($string), $revert);
     }
 }
