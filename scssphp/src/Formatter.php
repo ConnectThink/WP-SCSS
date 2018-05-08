@@ -2,7 +2,7 @@
 /**
  * SCSSPHP
  *
- * @copyright 2012-2017 Leaf Corcoran
+ * @copyright 2012-2018 Leaf Corcoran
  *
  * @license http://opensource.org/licenses/MIT MIT
  *
@@ -62,23 +62,22 @@ abstract class Formatter
     public $keepSemicolons;
 
     /**
-     * @var OutputBlock;
+     * @var \Leafo\ScssPhp\Formatter\OutputBlock
      */
     protected $currentBlock;
 
-
     /**
-     * @var int
+     * @var integer
      */
     protected $currentLine;
 
     /**
-     * @var int;
+     * @var integer
      */
     protected $currentColumn;
 
     /**
-     * @var SourceMapGenerator
+     * @var \Leafo\ScssPhp\SourceMap\SourceMapGenerator
      */
     protected $sourceMapGenerator;
 
@@ -223,21 +222,21 @@ abstract class Formatter
      *
      * @api
      *
-     * @param \Leafo\ScssPhp\Formatter\OutputBlock $block An abstract syntax tree
+     * @param \Leafo\ScssPhp\Formatter\OutputBlock             $block              An abstract syntax tree
+     * @param \Leafo\ScssPhp\SourceMap\SourceMapGenerator|null $sourceMapGenerator Optional source map generator
      *
-     * @param SourceMapGenerator|null $sourceMapGenerator
      * @return string
-     * @internal param bool $collectSourceMap
      */
     public function format(OutputBlock $block, SourceMapGenerator $sourceMapGenerator = null)
     {
-        if($sourceMapGenerator) {
+        $this->sourceMapGenerator = null;
+
+        if ($sourceMapGenerator) {
             $this->currentLine = 1;
             $this->currentColumn = 0;
             $this->sourceMapGenerator = $sourceMapGenerator;
-        } else {
-            $this->sourceMapGenerator = null;
         }
+
         ob_start();
 
         $this->block($block);
@@ -248,10 +247,11 @@ abstract class Formatter
     }
 
     /**
-     * @param $str
+     * @param string $str
      */
-    protected function write($str) {
-        if($this->sourceMapGenerator) {
+    protected function write($str)
+    {
+        if ($this->sourceMapGenerator) {
             $this->sourceMapGenerator->addMapping(
                 $this->currentLine,
                 $this->currentColumn,
@@ -265,11 +265,8 @@ abstract class Formatter
             $this->currentLine += $lineCount-1;
 
             $lastLine = array_pop($lines);
-            if($lineCount == 1) {
-                $this->currentColumn += mb_strlen($lastLine);
-            } else {
-                $this->currentColumn = mb_strlen($lastLine);
-            }
+
+            $this->currentColumn = ($lineCount === 1 ? $this->currentColumn : 0) + strlen($lastLine);
         }
 
         echo $str;
