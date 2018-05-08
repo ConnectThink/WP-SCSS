@@ -84,6 +84,8 @@ Alternatively, you can include [Bourbon](https://github.com/thoughtbot/bourbon) 
 This plugin will only work with .scss format.
 
 ## Changelog
+* 1.2.4
+  * Updated scssphp to version 0.7.5 [@JPKCom](https://github.com/JPKCom/WP-SCSS)
 * 1.2.3
   * Updated scssphp to version 0.7.2 [@hellerbenjamin](https://github.com/ConnectThink/WP-SCSS/pull/86)
   * Removed depricated screen_icon()
