@@ -87,6 +87,7 @@ This plugin will only work with .scss format.
 * 1.2.4
   * Updated scssphp to version 0.7.5
   * Added source map [@iannacone](https://github.com/ConnectThink/WP-SCSS/issues/49)
+  * Always define $wpscss_compiler in the global scope [@jazbek](https://github.com/ConnectThink/WP-SCSS/pull/98)
 * 1.2.3
   * Updated scssphp to version 0.7.2 [@hellerbenjamin](https://github.com/ConnectThink/WP-SCSS/pull/86)
   * Removed depricated screen_icon()
