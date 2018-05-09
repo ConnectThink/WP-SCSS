@@ -225,7 +225,7 @@ class Wp_Scss_Settings
     public function input_text_callback( $args ) {
         printf(
             '<input type="text" id="%s" name="wpscss_options[%s]" value="%s" />',
-            esc_attr( $args['name'] ), esc_attr( $args['name'] ), esc_attr( $this->options[$args['name']])
+            esc_attr( $args['name'] ), esc_attr( $args['name'] ), esc_attr( isset($this->options[$args['name']]) ? $this->options[$args['name']] : '' )
         );
     }
 
@@ -237,7 +237,7 @@ class Wp_Scss_Settings
         
         $html = sprintf( '<select id="%s" name="wpscss_options[%s]">', esc_attr( $args['name'] ), esc_attr( $args['name'] ) );  
             foreach( $args['type'] as $value => $title ) {
-                $html .= '<option value="' . esc_attr( $value ) . '"' . selected( $this->options[esc_attr( $args['name'] )], esc_attr( $value ), false) . '>' . esc_attr( $title ) . '</option>';
+                $html .= '<option value="' . esc_attr( $value ) . '"' . selected( isset($this->options[esc_attr( $args['name'] )]) ? $this->options[esc_attr( $args['name'] )] : '', esc_attr( $value ), false) . '>' . esc_attr( $title ) . '</option>';
             }
         $html .= '</select>';  
       

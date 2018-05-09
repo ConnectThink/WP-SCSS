@@ -113,8 +113,8 @@ function wpscss_plugin_action_links($links, $file) {
  */
 
 $wpscss_options = get_option( 'wpscss_options' );
-$scss_dir_setting = $wpscss_options['scss_dir'];
-$css_dir_setting = $wpscss_options['css_dir'];
+$scss_dir_setting = isset($wpscss_options['scss_dir']) ? $wpscss_options['scss_dir'] : '';
+$css_dir_setting = isset($wpscss_options['css_dir']) ? $wpscss_options['css_dir'] : '';
 
 // Checks if directories are empty
 if( $scss_dir_setting == false || $css_dir_setting == false ) {
@@ -141,9 +141,9 @@ if( $scss_dir_setting == false || $css_dir_setting == false ) {
 $wpscss_settings = array(
   'scss_dir'   =>  WPSCSS_THEME_DIR . $scss_dir_setting,
   'css_dir'    =>  WPSCSS_THEME_DIR . $css_dir_setting,
-  'compiling'  =>  $wpscss_options['compiling_options'],
-  'errors'     =>  $wpscss_options['errors'],
-  'sourcemaps' =>  $wpscss_options['sourcemap_options'],
+  'compiling'  =>  isset($wpscss_options['compiling_options']) ? $wpscss_options['compiling_options'] : '',
+  'errors'     =>  isset($wpscss_options['errors']) ? $wpscss_options['errors'] : '',
+  'sourcemaps' =>  isset($wpscss_options['sourcemap_options']) ? $wpscss_options['sourcemap_options'] : '',
   'enqueue'    =>  isset($wpscss_options['enqueue']) ? $wpscss_options['enqueue'] : 0
 );
 
