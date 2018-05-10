@@ -21,7 +21,7 @@ Ideally you should setup a scss folder and a css folder within your theme. This 
     |  --ie.scss
 
 #### Compiling Mode
-Compiling comes in three modes:
+Compiling comes in five modes:
 
 * Expanded - Full open css. One line per property. Brackets close on their own line.
 * Nested - Lightly compressed css. Brackets close with css block. Indents to match scss nesting.
