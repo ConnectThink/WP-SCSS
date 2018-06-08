@@ -1350,6 +1350,10 @@ class Parser
         ) {
             return true;
         }
+        
+        if ($this->selfCache($out)) {
+            return true;
+        }
 
         if ($this->keyword($keyword)) {
             if ($keyword === 'null') {
@@ -2202,6 +2206,26 @@ class Parser
 
         return false;
     }
+    
+    /**
+     * Parse current value of self (&) literal
+     *
+     * @param array $out
+     *
+     * @return boolean
+     */
+     protected function selfCache(&$out) {
+
+        $s = $this->seek();
+
+        if ($this->literal('&')) {
+            $out = [Type::T_SELF, '', [Type::T_SELF]];
+            
+            return true;
+        }
+
+        return false;
+     }
 
     /**
      * Parse a keyword

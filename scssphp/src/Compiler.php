@@ -1618,6 +1618,15 @@ class Compiler
                     $flags = isset($child[3]) ? $child[3] : [];
                     $isDefault = in_array('!default', $flags);
                     $isGlobal = in_array('!global', $flags);
+                    
+                    if($value[0] === Type::T_SELF):
+                    
+                        if (!empty($out->selectors) && !empty($out->selectors[0][0])) {
+                            $value[2][0] = implode($out->selectors[0][0]);
+                            $value[0] = Type::T_STRING;
+                        } 
+                    
+                    endif;
 
                     if ($isGlobal) {
                         $this->set($name[1], $this->reduce($value), false, $this->rootEnv);
@@ -2817,6 +2826,9 @@ class Compiler
 
                     case Type::T_NULL:
                         $reduced = [Type::T_KEYWORD, ''];
+                        
+                    case Type::T_SELF:
+                        return Type::T_SELF;
                 }
 
                 return $this->compileValue($reduced);
