@@ -170,11 +170,12 @@ function wp_scss_needs_compiling() {
   $needs_compiling = apply_filters('wp_scss_needs_compiling', $wpscss_compiler->needs_compiling());
   if ( $needs_compiling ) {
     wp_scss_compile();
-    wpscss_handle_errors();
+    // wpscss_handle_errors();
   }
 }
 
-add_action('wp_head', 'wp_scss_needs_compiling');
+add_action('wp_enqueue_scripts', 'wp_scss_needs_compiling', 40);
+add_action('wp_head', 'wpscss_handle_errors');
 
 function wp_scss_compile() {
   global $wpscss_compiler;
