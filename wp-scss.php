@@ -174,7 +174,7 @@ function wp_scss_needs_compiling() {
   }
 }
 
-add_action('wp_head', 'wp_scss_needs_compiling');
+add_action('wp_loaded', 'wp_scss_needs_compiling');
 
 function wp_scss_compile() {
   global $wpscss_compiler;
