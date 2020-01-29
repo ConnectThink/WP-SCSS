@@ -61,6 +61,9 @@ class Wp_Scss {
       function compiler($in, $out, $instance) {
         global $scssc, $cache;
 
+        if (!file_exists($cache)) {
+          mkdir($cache, 0644);
+        }
         if (is_writable($cache)) {
           try {
 	          $map = basename($out) . '.map';
