@@ -58,6 +58,7 @@ class Wp_Scss {
 
       //Compiler - Takes scss $in and writes compiled css to $out file
       // catches errors and puts them the object's compiled_errors property
+      if (function_exists( 'compiler' ) {
       function compiler($in, $out, $instance) {
         global $scssc, $cache;
 
@@ -89,6 +90,7 @@ class Wp_Scss {
           );
           array_push($instance->compile_errors, $errors);
         }
+      }
       }
 
       $input_files = array();
