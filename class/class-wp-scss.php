@@ -58,7 +58,7 @@ class Wp_Scss {
 
     //Compiler - Takes scss $in and writes compiled css to $out file
     // catches errors and puts them the object's compiled_errors property
-    if (function_exists( 'compiler' )) {
+    if (!function_exists( 'compiler' )) {
       function compiler($in, $out, $instance) {
         global $scssc, $cache;
 
@@ -94,46 +94,46 @@ class Wp_Scss {
           array_push($instance->compile_errors, $errors);
         }
       }
+
+      $input_files = array();
+      // Loop through directory and get .scss file that do not start with '_'
+      foreach(new DirectoryIterator($this->scss_dir) as $file) {
+        if (substr($file, 0, 1) != "_" && pathinfo($file->getFilename(), PATHINFO_EXTENSION) == 'scss') {
+          array_push($input_files, $file->getFilename());
+        }
+      }
+
+      // For each input file, find matching css file and compile
+      foreach ($input_files as $scss_file) {
+        $input = $this->scss_dir.$scss_file;
+        $outputName = preg_replace("/\.[^$]*/",".css", $scss_file);
+        $output = $this->css_dir.$outputName;
+
+        compiler($input, $output, $this);
+      }
+
+      if (count($this->compile_errors) < 1) {
+        if  ( is_writable($this->css_dir) ) {
+          foreach (new DirectoryIterator($cache) as $cache_file) {
+            if ( pathinfo($cache_file->getFilename(), PATHINFO_EXTENSION) == 'css') {
+              file_put_contents($this->css_dir.$cache_file, file_get_contents($cache.$cache_file));
+              unlink($cache.$cache_file->getFilename()); // Delete file on successful write
+            }
+          }
+        } else {
+          $errors = array(
+            'file' => 'CSS Directory',
+            'message' => "File Permissions Error, permission denied. Please make your CSS directory writable."
+          );
+          array_push($this->compile_errors, $errors);
+        }
+      }
     }else{
       $errors = array (
         'file' => 'SCSS compiler',
-        'message' => "Compile Error, function does not exist."
+        'message' => "Compiling Error, function 'compiler' already exists."
       );
-      array_push($instance->compile_errors, $errors);
-    }
-
-    $input_files = array();
-    // Loop through directory and get .scss file that do not start with '_'
-    foreach(new DirectoryIterator($this->scss_dir) as $file) {
-      if (substr($file, 0, 1) != "_" && pathinfo($file->getFilename(), PATHINFO_EXTENSION) == 'scss') {
-        array_push($input_files, $file->getFilename());
-      }
-    }
-
-    // For each input file, find matching css file and compile
-    foreach ($input_files as $scss_file) {
-      $input = $this->scss_dir.$scss_file;
-      $outputName = preg_replace("/\.[^$]*/",".css", $scss_file);
-      $output = $this->css_dir.$outputName;
-
-      compiler($input, $output, $this);
-    }
-
-    if (count($this->compile_errors) < 1) {
-      if  ( is_writable($this->css_dir) ) {
-        foreach (new DirectoryIterator($cache) as $cache_file) {
-          if ( pathinfo($cache_file->getFilename(), PATHINFO_EXTENSION) == 'css') {
-            file_put_contents($this->css_dir.$cache_file, file_get_contents($cache.$cache_file));
-            unlink($cache.$cache_file->getFilename()); // Delete file on successful write
-          }
-        }
-      } else {
-        $errors = array(
-          'file' => 'CSS Directory',
-          'message' => "File Permissions Error, permission denied. Please make your CSS directory writable."
-        );
-        array_push($this->compile_errors, $errors);
-      }
+      array_push($this->compile_errors, $errors);
     }
   }
 
