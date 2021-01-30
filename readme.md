@@ -91,6 +91,9 @@ Alternatively, you can include [Bourbon](https://github.com/thoughtbot/bourbon) 
 This plugin will only work with .scss format.
 
 ## Changelog
+* 2.0.0
+  * Update src to use [ScssPHP github repo at 1.0.2](https://github.com/scssphp/scssphp/tree/1.0.2)
+  * Now requires php 5.6
 * 1.2.6
   * Create cache dir if it doesn't exist [@XNBlank](https://github.com/ConnectThink/WP-SCSS/pull/135)
   * Add cache dir as default [@mhbapcc](https://github.com/ConnectThink/WP-SCSS/pull/144)
