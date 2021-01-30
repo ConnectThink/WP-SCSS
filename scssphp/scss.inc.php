@@ -25,7 +25,7 @@ if (! class_exists('ScssPhp\ScssPhp\Version', false)) {
   include_once __DIR__ . '/src/Node.php';
   include_once __DIR__ . '/src/Node/Number.php';
   include_once __DIR__ . '/src/Parser.php';
-  include_once __DIR__ . '/src/SourceMap/Base65.php';
+  include_once __DIR__ . '/src/SourceMap/Base64.php';
   include_once __DIR__ . '/src/SourceMap/Base64VLQ.php';
   include_once __DIR__ . '/src/SourceMap/SourceMapGenerator.php';
   include_once __DIR__ . '/src/Type.php';
