@@ -128,7 +128,3 @@ This plugin will only work with .scss format.
 ## License
 This plugin is developed and maintained by Connect Think.
 [GPL V3](http://www.gnu.org/copyleft/gpl.html)
-
-## Gifts
-https://connectthink.com/wp-scss-gift/
-
