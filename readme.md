@@ -92,8 +92,9 @@ This plugin will only work with .scss format.
 
 ## Changelog
 * 2.0.0
+  * Requires PHP 5.6
   * Update src to use [ScssPHP github repo at 1.0.2](https://github.com/scssphp/scssphp/tree/1.0.2)
-  * Now requires php 5.6
+  * Added check to make sure 'compiler' function was not already defined. [Shadoath](https://github.com/ConnectThink/WP-SCSS/pull/155)
 * 1.2.6
   * Create cache dir if it doesn't exist [@XNBlank](https://github.com/ConnectThink/WP-SCSS/pull/135)
   * Add cache dir as default [@mhbapcc](https://github.com/ConnectThink/WP-SCSS/pull/144)
