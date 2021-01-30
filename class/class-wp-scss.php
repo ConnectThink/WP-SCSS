@@ -58,40 +58,48 @@ class Wp_Scss {
 
     //Compiler - Takes scss $in and writes compiled css to $out file
     // catches errors and puts them the object's compiled_errors property
-    function compiler($in, $out, $instance) {
-      global $scssc, $cache;
+    if (function_exists( 'compiler' )) {
+      function compiler($in, $out, $instance) {
+        global $scssc, $cache;
 
-      if (!file_exists($cache)) {
-        mkdir($cache, 0644);
-      }
-      if (is_writable($cache)) {
-        try {
-          $map = basename($out) . '.map';
-          $scssc->setSourceMap(constant('Leafo\ScssPhp\Compiler::' . $instance->sourcemaps));
-          $scssc->setSourceMapOptions(array(
-            'sourceMapWriteTo' => $instance->css_dir . $map, // absolute path to a file to write the map to
-            'sourceMapURL' => $map, // url of the map
-            'sourceMapBasepath' => rtrim(ABSPATH, '/'), // base path for filename normalization
-            'sourceRoot' => '/', // This value is prepended to the individual entries in the 'source' field.
-          ));
+        if (!file_exists($cache)) {
+          mkdir($cache, 0644);
+        }
+        if (is_writable($cache)) {
+          try {
+            $map = basename($out) . '.map';
+            $scssc->setSourceMap(constant('Leafo\ScssPhp\Compiler::' . $instance->sourcemaps));
+            $scssc->setSourceMapOptions(array(
+              'sourceMapWriteTo' => $instance->css_dir . $map, // absolute path to a file to write the map to
+              'sourceMapURL' => $map, // url of the map
+              'sourceMapBasepath' => rtrim(ABSPATH, '/'), // base path for filename normalization
+              'sourceRoot' => '/', // This value is prepended to the individual entries in the 'source' field.
+            ));
 
-          $css = $scssc->compile(file_get_contents($in), $in);
+            $css = $scssc->compile(file_get_contents($in), $in);
 
-          file_put_contents($cache.basename($out), $css);
-        } catch (Exception $e) {
+            file_put_contents($cache.basename($out), $css);
+          } catch (Exception $e) {
+            $errors = array (
+              'file' => basename($in),
+              'message' => $e->getMessage(),
+            );
+            array_push($instance->compile_errors, $errors);
+          }
+        } else {
           $errors = array (
-            'file' => basename($in),
-            'message' => $e->getMessage(),
+            'file' => $cache,
+            'message' => "File Permission Error, permission denied. Please make the cache directory writable."
           );
           array_push($instance->compile_errors, $errors);
         }
-      } else {
-        $errors = array (
-          'file' => $cache,
-          'message' => "File Permission Error, permission denied. Please make the cache directory writable."
-        );
-        array_push($instance->compile_errors, $errors);
       }
+    }else{
+      $errors = array (
+        'file' => 'SCSS compiler',
+        'message' => "Compile Error, function does not exist."
+      );
+      array_push($instance->compile_errors, $errors);
     }
 
     $input_files = array();
