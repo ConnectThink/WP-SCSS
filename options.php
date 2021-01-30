@@ -118,12 +118,12 @@ class Wp_Scss_Settings
         'name' => 'compiling_options',
         'type' => apply_filters( 'wp_scss_compiling_modes',
         array(
-          'Leafo\ScssPhp\Formatter\Expanded'   => 'Expanded',
-          'Leafo\ScssPhp\Formatter\Nested'     => 'Nested',
-          'Leafo\ScssPhp\Formatter\Compressed' => 'Compressed',
-          'Leafo\ScssPhp\Formatter\Compact'    => 'Compact',
-          'Leafo\ScssPhp\Formatter\Crunched'   => 'Crunched',
-          'Leafo\ScssPhp\Formatter\Debug'      => 'Debug'
+          'ScssPhp\ScssPhp\Formatter\Expanded'   => 'Expanded',
+          'ScssPhp\ScssPhp\Formatter\Nested'     => 'Nested',
+          'ScssPhp\ScssPhp\Formatter\Compressed' => 'Compressed',
+          'ScssPhp\ScssPhp\Formatter\Compact'    => 'Compact',
+          'ScssPhp\ScssPhp\Formatter\Crunched'   => 'Crunched',
+          'ScssPhp\ScssPhp\Formatter\Debug'      => 'Debug'
         )
         )
       )

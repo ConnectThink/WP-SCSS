@@ -1,7 +1,7 @@
 <?php
 
 include_once( WPSCSS_PLUGIN_DIR . '/scssphp/scss.inc.php' );
-use Leafo\ScssPhp\Compiler;
+use ScssPhp\ScssPhp\Compiler;
 
 class Wp_Scss {
   /**
@@ -68,7 +68,7 @@ class Wp_Scss {
         if (is_writable($cache)) {
           try {
             $map = basename($out) . '.map';
-            $scssc->setSourceMap(constant('Leafo\ScssPhp\Compiler::' . $instance->sourcemaps));
+            $scssc->setSourceMap(constant('ScssPhp\ScssPhp\Compiler::' . $instance->sourcemaps));
             $scssc->setSourceMapOptions(array(
               'sourceMapWriteTo' => $instance->css_dir . $map, // absolute path to a file to write the map to
               'sourceMapURL' => $map, // url of the map
