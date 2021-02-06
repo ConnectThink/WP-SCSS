@@ -1,7 +1,7 @@
 # WP-SCSS
 #### A lightweight SCSS compiler for Wordpress.
 
-Compiles .scss files on your wordpress install using [lefo's scssphp](https://github.com/leafo/scssphp). Includes settings page for configuring directories, error reporting, compiling options, and auto enqueuing.
+Compiles .scss files on your wordpress install using [scssphp](https://github.com/scssphp/scssphp). Includes settings page for configuring directories, error reporting, compiling options, and auto enqueuing.
 
 The plugin only compiles when changes have been made to the scss files. Compiles are made to the matching css file, so disabling this plugin will not take down your stylesheets. In the instance where a matching css file does not exist yet, the plugin will create the appropriate css file in the css directory.
 
@@ -29,7 +29,7 @@ Compiling comes in five modes:
 * Compact - Removes all line breaks, unnecessary whitespace, and single-line comments.
 * Crunched - Same as Compressed, but also removes multi-line comments.
 
-See examples of each in [leafo's documentation](http://leafo.github.io/scssphp/docs/#output-formatting)
+See examples of each in [scssphp's documentation](http://scssphp.github.io/scssphp)
 
 #### Source Map Mode
 Source maps come in three modes:
@@ -51,7 +51,7 @@ Also keep in mind, that if you disable this plugin it can no longer enqueue file
 
 ## Directions
 
-*This plugin requires at least php 5.4 to work.*
+*This plugin requires at least php 5.6 to work.*
 
 #### Importing Subfiles
 You can import other scss files into parent files and compile them into a single css file. To do this, use @import as normal in your scss file. All imported file names *must* start with an underscore. Otherwise they will be compiled into their own css file.
@@ -91,6 +91,10 @@ Alternatively, you can include [Bourbon](https://github.com/thoughtbot/bourbon) 
 This plugin will only work with .scss format.
 
 ## Changelog
+* 2.0.0
+  * Requires PHP 5.6
+  * Update src to use [ScssPHP github repo at 1.0.2](https://github.com/scssphp/scssphp/tree/1.0.2)
+  * Added check to make sure 'compiler' function was not already defined. [Shadoath](https://github.com/ConnectThink/WP-SCSS/pull/155)
 * 1.2.6
   * Create cache dir if it doesn't exist [@XNBlank](https://github.com/ConnectThink/WP-SCSS/pull/135)
   * Add cache dir as default [@mhbapcc](https://github.com/ConnectThink/WP-SCSS/pull/144)
