@@ -103,6 +103,19 @@ function wpscss_plugin_action_links($links, $file) {
   return $links;
 }
 
+/**
+ * 3.5 UPDATE DATABASE VALUES
+ *
+ * Correction for when Leafo is stored in DB
+ * as a value in compiling_options
+ *
+ */
+
+add_filter('option_wpscss_options', 'wpscss_plugin_db_cleanup');
+function wpscss_plugin_db_cleanup($option_values){
+  $option_values['compiling_options'] = str_replace("Leafo", "ScssPhp", $option_values['compiling_options']);
+  return $option_values;
+}
 
 /**
  * 4. PLUGIN SETTINGS
