@@ -3,7 +3,7 @@
  * Plugin Name: WP-SCSS
  * Plugin URI: https://github.com/ConnectThink/WP-SCSS
  * Description: Compiles scss files live on WordPress.
- * Version: 2.0.0
+ * Version: 2.0.1
  * Author: Connect Think
  * Author URI: http://connectthink.com
  * License: GPLv3
@@ -46,7 +46,7 @@ if (!defined('WPSCSS_VERSION_KEY'))
   define('WPSCSS_VERSION_KEY', 'wpscss_version');
 
 if (!defined('WPSCSS_VERSION_NUM'))
-  define('WPSCSS_VERSION_NUM', '2.0.0');
+  define('WPSCSS_VERSION_NUM', '2.0.1');
 
 // Add version to options table
 if ( get_option( WPSCSS_VERSION_KEY ) !== false ) {
@@ -103,6 +103,19 @@ function wpscss_plugin_action_links($links, $file) {
   return $links;
 }
 
+/**
+ * 3.5 UPDATE DATABASE VALUES
+ *
+ * Correction for when Leafo is stored in DB
+ * as a value in compiling_options
+ *
+ */
+
+add_filter('option_wpscss_options', 'wpscss_plugin_db_cleanup');
+function wpscss_plugin_db_cleanup($option_values){
+  $option_values['compiling_options'] = str_replace("Leafo", "ScssPhp", $option_values['compiling_options']);
+  return $option_values;
+}
 
 /**
  * 4. PLUGIN SETTINGS
