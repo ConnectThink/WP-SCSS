@@ -29,9 +29,6 @@
  */
 
 // Plugin Paths
-if (!defined('WPSCSS_THEME_DIR'))
-  define('WPSCSS_THEME_DIR', get_stylesheet_directory());
-
 if (!defined('WPSCSS_PLUGIN_NAME'))
   define('WPSCSS_PLUGIN_NAME', trim(dirname(plugin_basename(__FILE__)), '/'));
 
@@ -113,6 +110,7 @@ function wpscss_plugin_action_links($links, $file) {
  */
 
 $wpscss_options = get_option( 'wpscss_options' );
+$base_compiling_folder = isset($wpscss_options['base_compiling_folder']) ? $wpscss_options['base_compiling_folder'] : get_stylesheet_directory();
 $scss_dir_setting = isset($wpscss_options['scss_dir']) ? $wpscss_options['scss_dir'] : '';
 $css_dir_setting = isset($wpscss_options['css_dir']) ? $wpscss_options['css_dir'] : '';
 
@@ -127,28 +125,27 @@ if( $scss_dir_setting == false || $css_dir_setting == false ) {
   return 0; //exits
 
   // Checks if directory exists
-} elseif ( !is_dir(WPSCSS_THEME_DIR . $scss_dir_setting) ) {
-  function wpscss_settings_error() {
+} elseif ( !is_dir($base_compiling_folder . $scss_dir_setting) ) {
+  add_action('admin_notices', function() use ($base_compiling_folder, $scss_dir_setting){
     echo '<div class="error">
-      <p><strong>Wp-Scss:</strong> SCSS directory does not exist (' . WPSCSS_THEME_DIR . $scss_dir_setting . '). Please create the directory or <a href="' . get_bloginfo('wpurl') . '/wp-admin/admin.php?page=wpscss_options">update your settings.</a></p>
+      <p><strong>Wp-Scss:</strong> SCSS directory does not exist (' . $base_compiling_folder . $scss_dir_setting . '). Please create the directory or <a href="' . get_bloginfo('wpurl') . '/wp-admin/admin.php?page=wpscss_options">update your settings.</a></p>
       </div>';
-  }
-  add_action('admin_notices', 'wpscss_settings_error');
+  });
+  /* add_action('admin_notices', array($this, 'wpscss_settings_error')); */
   return 0; //exits
-} elseif ( !is_dir(WPSCSS_THEME_DIR . $css_dir_setting) ) {
-  function wpscss_settings_error() {
+} elseif ( !is_dir($base_compiling_folder . $css_dir_setting) ) {
+  add_action('admin_notices', function() use ($base_compiling_folder, $css_dir_setting){
     echo '<div class="error">
-      <p><strong>Wp-Scss:</strong> CSS directory does not exist (' . WPSCSS_THEME_DIR . $css_dir_setting . '). Please create the directory or <a href="' . get_bloginfo('wpurl') . '/wp-admin/admin.php?page=wpscss_options">update your settings.</a></p>
+      <p><strong>Wp-Scss:</strong> CSS directory does not exist (' . $base_compiling_folder . $css_dir_setting . '). Please create the directory or <a href="' . get_bloginfo('wpurl') . '/wp-admin/admin.php?page=wpscss_options">update your settings.</a></p>
       </div>';
-  }
-  add_action('admin_notices', 'wpscss_settings_error');
+  });
   return 0; //exits
 }
 
 // Plugin Settings
 $wpscss_settings = array(
-  'scss_dir'   =>  WPSCSS_THEME_DIR . $scss_dir_setting,
-  'css_dir'    =>  WPSCSS_THEME_DIR . $css_dir_setting,
+  'scss_dir'   =>  $base_compiling_folder . $scss_dir_setting,
+  'css_dir'    =>  $base_compiling_folder . $css_dir_setting,
   'compiling'  =>  isset($wpscss_options['compiling_options']) ? $wpscss_options['compiling_options'] : 'ScssPhp\ScssPhp\Formatter\Expanded',
   'errors'     =>  isset($wpscss_options['errors']) ? $wpscss_options['errors'] : 'show',
   'sourcemaps' =>  isset($wpscss_options['sourcemap_options']) ? $wpscss_options['sourcemap_options'] : 'SOURCE_MAP_NONE',

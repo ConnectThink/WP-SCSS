@@ -79,8 +79,26 @@ class Wp_Scss_Settings
     );
 
     add_settings_field(
+      'wpscss_base_folder',                    // ID
+      'Base Location',                         // Title
+      array( $this, 'input_select_callback' ), // Callback
+      'wpscss_options',                        // Page
+      'wpscss_paths_section',                // Section
+      array(                                   // args
+        'name' => 'base_compiling_folder',
+        'type' => apply_filters( 'wp_scss_base_compiling_modes',
+          array(
+            get_stylesheet_directory()  => 'Current theme',
+            wp_get_upload_dir()['basedir'] => 'Uploads directory',
+            WPSCSS_PLUGIN_DIR => 'WP-SCSS Plugin',
+          )
+        )
+      )
+    );
+
+    add_settings_field(
       'wpscss_scss_dir',                     // ID
-      'Scss Location',                       // Title
+      'SCSS Location',                       // Title
       array( $this, 'input_text_callback' ), // Callback
       'wpscss_options',                      // Page
       'wpscss_paths_section',                // Section
@@ -117,14 +135,14 @@ class Wp_Scss_Settings
       array(                                   // args
         'name' => 'compiling_options',
         'type' => apply_filters( 'wp_scss_compiling_modes',
-        array(
-          'ScssPhp\ScssPhp\Formatter\Expanded'   => 'Expanded',
-          'ScssPhp\ScssPhp\Formatter\Nested'     => 'Nested',
-          'ScssPhp\ScssPhp\Formatter\Compressed' => 'Compressed',
-          'ScssPhp\ScssPhp\Formatter\Compact'    => 'Compact',
-          'ScssPhp\ScssPhp\Formatter\Crunched'   => 'Crunched',
-          'ScssPhp\ScssPhp\Formatter\Debug'      => 'Debug'
-        )
+          array(
+            'ScssPhp\ScssPhp\Formatter\Expanded'   => 'Expanded',
+            'ScssPhp\ScssPhp\Formatter\Nested'     => 'Nested',
+            'ScssPhp\ScssPhp\Formatter\Compressed' => 'Compressed',
+            'ScssPhp\ScssPhp\Formatter\Compact'    => 'Compact',
+            'ScssPhp\ScssPhp\Formatter\Crunched'   => 'Crunched',
+            'ScssPhp\ScssPhp\Formatter\Debug'      => 'Debug'
+          )
         )
       )
     );
@@ -183,7 +201,6 @@ class Wp_Scss_Settings
         'name' => 'enqueue'
       )
     );
-
   }
 
   /**
@@ -210,7 +227,7 @@ class Wp_Scss_Settings
    * Print the Section text
    */
   public function print_paths_info() {
-    print 'Add the paths to your directories below. Paths should start with the root of your theme. example: "/library/scss/"';
+    print 'Location of your SCSS/CSS folders. Folders must be nested under your <b>Base Location</b> and start with <code>/</code>.</br>Examples: <code>/custom-scss/</code> and <code>/custom-css/</code>';
   }
   public function print_compile_info() {
     print 'Choose how you would like SCSS and source maps to be compiled and how you would like the plugin to handle errors';
