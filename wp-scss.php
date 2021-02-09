@@ -163,10 +163,10 @@ $wpscss_settings = array(
   'scss_dir'         => WPSCSS_THEME_DIR . $scss_dir_setting,
   'css_dir'          => WPSCSS_THEME_DIR . $css_dir_setting,
   'compiling'        => isset($wpscss_options['compiling_options']) ? $wpscss_options['compiling_options'] : 'ScssPhp\ScssPhp\Formatter\Expanded',
-  'always_recompile' => isset($wpscss_options['always_recompile']) ? $wpscss_options['always_recompile'] : false
-  'errors'           => isset($wpscss_options['errors']) ? $wpscss_options['errors'] : 'show',
+  'always_recompile' => isset($wpscss_options['always_recompile'])  ? $wpscss_options['always_recompile']  : false,
+  'errors'           => isset($wpscss_options['errors'])            ? $wpscss_options['errors']            : 'show',
   'sourcemaps'       => isset($wpscss_options['sourcemap_options']) ? $wpscss_options['sourcemap_options'] : 'SOURCE_MAP_NONE',
-  'enqueue'          => isset($wpscss_options['enqueue']) ? $wpscss_options['enqueue'] : 0
+  'enqueue'          => isset($wpscss_options['enqueue'])           ? $wpscss_options['enqueue']           : 0
 );
 
 
@@ -182,6 +182,7 @@ $wpscss_compiler = new Wp_Scss(
   $wpscss_settings['scss_dir'],
   $wpscss_settings['css_dir'],
   $wpscss_settings['compiling'],
+  $wpscss_settings['always_recompile'],
   $wpscss_settings['sourcemaps']
 );
 

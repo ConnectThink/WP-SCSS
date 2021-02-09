@@ -10,7 +10,7 @@ class Wp_Scss {
    * @var string
    * @access public
    */
-  public $scss_dir, $css_dir, $compile_method, $scssc, $compile_errors, $sourcemaps;
+  public $scss_dir, $css_dir, $compile_method, $always_recompile, $scssc, $compile_errors, $sourcemaps;
 
   /**
    * Set values for Wp_Scss::properties
@@ -158,7 +158,8 @@ class Wp_Scss {
    * @return bool - true if compiling is needed
    */
   public function needs_compiling() {
-    if (defined('WP_SCSS_ALWAYS_RECOMPILE') && WP_SCSS_ALWAYS_RECOMPILE || $instance->always_recompile) {
+    global $always_recompile;
+    if (defined('WP_SCSS_ALWAYS_RECOMPILE') && WP_SCSS_ALWAYS_RECOMPILE || $always_recompile) {
       return true;
     }
 
