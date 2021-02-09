@@ -23,13 +23,14 @@ class Wp_Scss {
    *
    * @var array compile_errors - catches errors from compile
    */
-  public function __construct ($scss_dir, $css_dir, $compile_method, $sourcemaps) {
+  public function __construct ($scss_dir, $css_dir, $compile_method, $always_recompile, $sourcemaps) {
     global $scssc;
-    $this->scss_dir       = $scss_dir;
-    $this->css_dir        = $css_dir;
-    $this->compile_method = $compile_method;
-    $this->compile_errors = array();
-    $scssc                = new Compiler();
+    $this->scss_dir         = $scss_dir;
+    $this->css_dir          = $css_dir;
+    $this->compile_method   = $compile_method;
+    $this->always_recompile = $always_recompile;
+    $this->compile_errors   = array();
+    $scssc                  = new Compiler();
 
     $scssc->setFormatter( $compile_method );
     $scssc->setImportPaths( $this->scss_dir );
@@ -157,7 +158,7 @@ class Wp_Scss {
    * @return bool - true if compiling is needed
    */
   public function needs_compiling() {
-    if (defined('WP_SCSS_ALWAYS_RECOMPILE') && WP_SCSS_ALWAYS_RECOMPILE) {
+    if (defined('WP_SCSS_ALWAYS_RECOMPILE') && WP_SCSS_ALWAYS_RECOMPILE || $instance->always_recompile) {
       return true;
     }
 

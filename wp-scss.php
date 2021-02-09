@@ -160,12 +160,13 @@ if( $scss_dir_setting == false || $css_dir_setting == false ) {
 
 // Plugin Settings
 $wpscss_settings = array(
-  'scss_dir'   =>  WPSCSS_THEME_DIR . $scss_dir_setting,
-  'css_dir'    =>  WPSCSS_THEME_DIR . $css_dir_setting,
-  'compiling'  =>  isset($wpscss_options['compiling_options']) ? $wpscss_options['compiling_options'] : 'ScssPhp\ScssPhp\Formatter\Expanded',
-  'errors'     =>  isset($wpscss_options['errors']) ? $wpscss_options['errors'] : 'show',
-  'sourcemaps' =>  isset($wpscss_options['sourcemap_options']) ? $wpscss_options['sourcemap_options'] : 'SOURCE_MAP_NONE',
-  'enqueue'    =>  isset($wpscss_options['enqueue']) ? $wpscss_options['enqueue'] : 0
+  'scss_dir'         => WPSCSS_THEME_DIR . $scss_dir_setting,
+  'css_dir'          => WPSCSS_THEME_DIR . $css_dir_setting,
+  'compiling'        => isset($wpscss_options['compiling_options']) ? $wpscss_options['compiling_options'] : 'ScssPhp\ScssPhp\Formatter\Expanded',
+  'always_recompile' => isset($wpscss_options['always_recompile']) ? $wpscss_options['always_recompile'] : false
+  'errors'           => isset($wpscss_options['errors']) ? $wpscss_options['errors'] : 'show',
+  'sourcemaps'       => isset($wpscss_options['sourcemap_options']) ? $wpscss_options['sourcemap_options'] : 'SOURCE_MAP_NONE',
+  'enqueue'          => isset($wpscss_options['enqueue']) ? $wpscss_options['enqueue'] : 0
 );
 
 

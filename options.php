@@ -184,6 +184,26 @@ class Wp_Scss_Settings
       )
     );
 
+    //  Developer options
+    add_settings_section(
+      'wpscss_developer_section',             // ID
+      'Developer Settings',                   // Title
+      array( $this, 'print_developer_info' ), // Callback
+      'wpscss_options'                        // Page
+    );
+
+    add_settings_field(
+      'wpscss_scss_always_recompile',            // ID
+      'Always Recompile',                        // Title
+      array( $this, 'input_checkbox_callback' ), // Callback
+      'wpscss_options',                          // Page
+      'wpscss_developer_section',                // Section
+      array(                                     // args
+        'name' => 'always_recompile',
+      )
+    );
+
+
   }
 
   /**
@@ -217,6 +237,9 @@ class Wp_Scss_Settings
   }
   public function print_enqueue_info() {
     print 'WP-SCSS can enqueue your css stylesheets in the header automatically.';
+  }
+  public function print_developer_info() {
+    print 'Quickly change developer settings. Best not to use on production websites.';
   }
 
   /**
