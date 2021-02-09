@@ -92,7 +92,7 @@ This plugin will only work with .scss format.
 
 ## Changelog
 * 2.0.1
-  * Bugfix to add filter for option_wpscss_options to remove Leafo if stored in DB. Thanks to [kinky-org](https://github.com/ConnectThink/WP-SCSS/issues/157) for pointing this out
+  * Bugfix to add filter for option_wpscss_options to remove Leafo if stored in DB. Thanks to [kinsky-org](https://github.com/ConnectThink/WP-SCSS/issues/157) for pointing this out
   * Saving plugin settings will update DB with correct value.
 * 2.0.0
   * Requires PHP 5.6
