@@ -184,39 +184,24 @@ class Wp_Scss_Settings
       )
     );
 
-    //  Developer options
+    //  Development options
     add_settings_section(
-      'wpscss_developer_section',             // ID
-      'Developer Settings',                   // Title
-      array( $this, 'print_developer_info' ), // Callback
-      'wpscss_options'                        // Page
+      'wpscss_development_section', // ID
+      'Development Settings',       // Title
+      '',                         // Callback
+      'wpscss_options'            // Page
     );
 
-    if(WP_SCSS_ALWAYS_RECOMPILE){
-      add_settings_field(
-        'wpscss_scss_always_recompile',                     // ID
-        'Always Recompile (disabled by WP_SCSS_ALWAYS_RECOMPILE)',                                 // Title
-        array( $this, 'input_checkbox_disabled_callback' ), // Callback
-        'wpscss_options',                                   // Page
-        'wpscss_developer_section',                         // Section
-        array(                                              // args
-          'name' => 'always_recompile',
-        )
-      );
-    }else{
-      add_settings_field(
-        'wpscss_scss_always_recompile',            // ID
-        'Always Recompile',                        // Title
-        array( $this, 'input_checkbox_callback' ), // Callback
-        'wpscss_options',                          // Page
-        'wpscss_developer_section',                // Section
-        array(                                     // args
-          'name' => 'always_recompile',
-        )
-      );
-    }
-
-
+    add_settings_field(
+      'wpscss_scss_always_recompile',            // ID
+      'Always Recompile',                        // Title
+      array( $this, 'input_checkbox_callback' ), // Callback
+      'wpscss_options',                          // Page
+      'wpscss_development_section',                // Section
+      array(                                     // args
+        'name' => 'always_recompile',
+      )
+    );
   }
 
   /**
@@ -251,9 +236,6 @@ class Wp_Scss_Settings
   public function print_enqueue_info() {
     print 'WP-SCSS can enqueue your css stylesheets in the header automatically.';
   }
-  public function print_developer_info() {
-    print 'Quickly change developer settings. Best not to use on production websites.';
-  }
 
   /**
    * Text Fields' Callback
@@ -285,19 +267,15 @@ class Wp_Scss_Settings
    */
   public function input_checkbox_callback( $args ) {
     $this->options = get_option( 'wpscss_options' );
+    $html = "";
+    if($args['name'] == 'always_recompile' && defined('WP_SCSS_ALWAYS_RECOMPILE') && WP_SCSS_ALWAYS_RECOMPILE){
+      $html .= '<input type="checkbox" id="' . esc_attr( $args['name'] ) . '" name="wpscss_options[' . esc_attr( $args['name'] ) . ']" value="1"' . checked( 1, isset( $this->options[esc_attr( $args['name'] )] ) ? $this->options[esc_attr( $args['name'] )] : 1, false ) . ' disabled=disabled/>';
+      $html .= '<label for="' . esc_attr( $args['name'] ) . '">Currently overwritten by constant <code>WP_SCSS_ALWAYS_RECOMPILE</code></label>';
+    }else{
+      $html .= '<input type="checkbox" id="' . esc_attr( $args['name'] ) . '" name="wpscss_options[' . esc_attr( $args['name'] ) . ']" value="1"' . checked( 1, isset( $this->options[esc_attr( $args['name'] )] ) ? $this->options[esc_attr( $args['name'] )] : 0, false ) . '/>';
+      $html .= '<label for="' . esc_attr( $args['name'] ) . '"></label>';
+    }
 
-    $html = '<input type="checkbox" id="' . esc_attr( $args['name'] ) . '" name="wpscss_options[' . esc_attr( $args['name'] ) . ']" value="1"' . checked( 1, isset( $this->options[esc_attr( $args['name'] )] ) ? $this->options[esc_attr( $args['name'] )] : 0, false ) . '/>';
-    $html .= '<label for="' . esc_attr( $args['name'] ) . '"></label>';
-
-    echo $html;
-  }
-
-  public function input_checkbox_disabled_callback( $args ) {
-    $this->options = get_option( 'wpscss_options' );
-
-    $html = '<input type="checkbox" id="' . esc_attr( $args['name'] ) . '" name="wpscss_options[' . esc_attr( $args['name'] ) . ']" value="1"' .
-      checked( 1, true ) . 'disabled="disabled"/>';
-    $html .= '<label for="' . esc_attr( $args['name'] ) . '"></label>';
 
     echo $html;
   }
