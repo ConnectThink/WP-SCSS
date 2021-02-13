@@ -91,6 +91,8 @@ Alternatively, you can include [Bourbon](https://github.com/thoughtbot/bourbon) 
 This plugin will only work with .scss format.
 
 ## Changelog
+* 2.0.2
+  * Added option in settings to enable an 'always recompile' flag. Suggestion by [bick](https://github.com/ConnectThink/WP-SCSS/issues/151)
 * 2.0.1
   * Bugfix to add filter for option_wpscss_options to remove Leafo if stored in DB. Thanks to [kinsky-org](https://github.com/ConnectThink/WP-SCSS/issues/157) for pointing this out
   * Saving plugin settings will update DB with correct value.

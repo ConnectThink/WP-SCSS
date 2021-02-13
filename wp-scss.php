@@ -3,7 +3,7 @@
  * Plugin Name: WP-SCSS
  * Plugin URI: https://github.com/ConnectThink/WP-SCSS
  * Description: Compiles scss files live on WordPress.
- * Version: 2.0.1
+ * Version: 2.0.2
  * Author: Connect Think
  * Author URI: http://connectthink.com
  * License: GPLv3
@@ -46,7 +46,7 @@ if (!defined('WPSCSS_VERSION_KEY'))
   define('WPSCSS_VERSION_KEY', 'wpscss_version');
 
 if (!defined('WPSCSS_VERSION_NUM'))
-  define('WPSCSS_VERSION_NUM', '2.0.1');
+  define('WPSCSS_VERSION_NUM', '2.0.2');
 
 // Add version to options table
 if ( get_option( WPSCSS_VERSION_KEY ) !== false ) {
@@ -160,12 +160,13 @@ if( $scss_dir_setting == false || $css_dir_setting == false ) {
 
 // Plugin Settings
 $wpscss_settings = array(
-  'scss_dir'   =>  WPSCSS_THEME_DIR . $scss_dir_setting,
-  'css_dir'    =>  WPSCSS_THEME_DIR . $css_dir_setting,
-  'compiling'  =>  isset($wpscss_options['compiling_options']) ? $wpscss_options['compiling_options'] : 'ScssPhp\ScssPhp\Formatter\Expanded',
-  'errors'     =>  isset($wpscss_options['errors']) ? $wpscss_options['errors'] : 'show',
-  'sourcemaps' =>  isset($wpscss_options['sourcemap_options']) ? $wpscss_options['sourcemap_options'] : 'SOURCE_MAP_NONE',
-  'enqueue'    =>  isset($wpscss_options['enqueue']) ? $wpscss_options['enqueue'] : 0
+  'scss_dir'         => WPSCSS_THEME_DIR . $scss_dir_setting,
+  'css_dir'          => WPSCSS_THEME_DIR . $css_dir_setting,
+  'compiling'        => isset($wpscss_options['compiling_options']) ? $wpscss_options['compiling_options'] : 'ScssPhp\ScssPhp\Formatter\Expanded',
+  'always_recompile' => isset($wpscss_options['always_recompile'])  ? $wpscss_options['always_recompile']  : false,
+  'errors'           => isset($wpscss_options['errors'])            ? $wpscss_options['errors']            : 'show',
+  'sourcemaps'       => isset($wpscss_options['sourcemap_options']) ? $wpscss_options['sourcemap_options'] : 'SOURCE_MAP_NONE',
+  'enqueue'          => isset($wpscss_options['enqueue'])           ? $wpscss_options['enqueue']           : 0
 );
 
 
@@ -181,6 +182,7 @@ $wpscss_compiler = new Wp_Scss(
   $wpscss_settings['scss_dir'],
   $wpscss_settings['css_dir'],
   $wpscss_settings['compiling'],
+  $wpscss_settings['always_recompile'],
   $wpscss_settings['sourcemaps']
 );
 
