@@ -201,6 +201,25 @@ class Wp_Scss_Settings
         'name' => 'enqueue'
       )
     );
+
+    //  Development options
+    add_settings_section(
+      'wpscss_development_section', // ID
+      'Development Settings',       // Title
+      '',                         // Callback
+      'wpscss_options'            // Page
+    );
+
+    add_settings_field(
+      'wpscss_scss_always_recompile',            // ID
+      'Always Recompile',                        // Title
+      array( $this, 'input_checkbox_callback' ), // Callback
+      'wpscss_options',                          // Page
+      'wpscss_development_section',                // Section
+      array(                                     // args
+        'name' => 'always_recompile',
+      )
+    );
   }
 
   /**
@@ -266,9 +285,15 @@ class Wp_Scss_Settings
    */
   public function input_checkbox_callback( $args ) {
     $this->options = get_option( 'wpscss_options' );
+    $html = "";
+    if($args['name'] == 'always_recompile' && defined('WP_SCSS_ALWAYS_RECOMPILE') && WP_SCSS_ALWAYS_RECOMPILE){
+      $html .= '<input type="checkbox" id="' . esc_attr( $args['name'] ) . '" name="wpscss_options[' . esc_attr( $args['name'] ) . ']" value="1"' . checked( 1, isset( $this->options[esc_attr( $args['name'] )] ) ? $this->options[esc_attr( $args['name'] )] : 1, false ) . ' disabled=disabled/>';
+      $html .= '<label for="' . esc_attr( $args['name'] ) . '">Currently overwritten by constant <code>WP_SCSS_ALWAYS_RECOMPILE</code></label>';
+    }else{
+      $html .= '<input type="checkbox" id="' . esc_attr( $args['name'] ) . '" name="wpscss_options[' . esc_attr( $args['name'] ) . ']" value="1"' . checked( 1, isset( $this->options[esc_attr( $args['name'] )] ) ? $this->options[esc_attr( $args['name'] )] : 0, false ) . '/>';
+      $html .= '<label for="' . esc_attr( $args['name'] ) . '"></label>';
+    }
 
-    $html = '<input type="checkbox" id="' . esc_attr( $args['name'] ) . '" name="wpscss_options[' . esc_attr( $args['name'] ) . ']" value="1"' . checked( 1, isset( $this->options[esc_attr( $args['name'] )] ) ? $this->options[esc_attr( $args['name'] )] : 0, false ) . '/>';
-    $html .= '<label for="' . esc_attr( $args['name'] ) . '"></label>';
 
     echo $html;
   }
