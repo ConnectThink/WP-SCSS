@@ -17,10 +17,11 @@
  *        b. wp-scss class - manages compiling
  *        c. options class - builds settings page
  *    3. Registering Settings Page and Options
- *    4. Assign plugin settings
- *    5. Instantiate wp_scss object and run compiler
- *    6. Handle Errors
- *    7. Enqueue Styles
+ *    4. Read correct DB values for version 2.0.1 (Leafo => ScssPhp)
+ *    5. Assign plugin settings
+ *    6. Instantiate wp_scss object and run compiler
+ *    7. Handle Errors
+ *    8. Enqueue Styles
  */
 
 
@@ -101,7 +102,7 @@ function wpscss_plugin_action_links($links, $file) {
 }
 
 /**
- * 3.5 UPDATE DATABASE VALUES
+ * 4. UPDATE DATABASE VALUES
  *
  * Correction for when Leafo is stored in DB
  * as a value in compiling_options
@@ -115,7 +116,7 @@ function wpscss_plugin_db_cleanup($option_values){
 }
 
 /**
- * 4. PLUGIN SETTINGS
+ * 5. PLUGIN SETTINGS
  *
  * Pull settings from options table
  * Scrub empty fields or directories that don't exists
@@ -169,7 +170,7 @@ $wpscss_settings = array(
 
 
 /**
- * 5. INSTANTIATE & EXECUTE COMPILER
+ * 6. INSTANTIATE & EXECUTE COMPILER
  *
  * Passes settings to the object
  * If needs_compiling passes, runs compile method
@@ -209,7 +210,7 @@ function wp_scss_compile() {
 }
 
 /**
- * 6. HANDLE COMPILING ERRORS
+ * 7. HANDLE COMPILING ERRORS
  *
  * First block handles print errors to front end.
  * This adds a small style block the header to help errors get noticed
@@ -293,7 +294,7 @@ function wpscss_handle_errors() {
 
 
 /**
- * 7. ENQUEUE STYLES
+ * 8. ENQUEUE STYLES
  */
 
 if ( $wpscss_settings['enqueue'] == '1' ) {
