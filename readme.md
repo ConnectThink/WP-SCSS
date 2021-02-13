@@ -8,7 +8,7 @@ The plugin only compiles when changes have been made to the scss files. Compiles
 ## Settings
 
 #### Directories
-Directories are defined relative to your theme folder. They must be separate from one another, so you cannot define the root folder to compile into itself.
+Directories are defined relative to your `base compile folder` which defaults to the theme folder. Alternatly you can choose the uploads directory or plugin directory.  They must be separate from one another, so you cannot define the root folder to compile into itself.
 
 Ideally you should setup a scss folder and a css folder within your theme. This will ensure the most accurate compiling.
 
@@ -48,9 +48,7 @@ The plugin can automatically add your css files to the header for you. This opti
 
 Also keep in mind, that if you disable this plugin it can no longer enqueue files for you.
 
-
 ## Directions
-
 *This plugin requires at least php 5.6 to work.*
 
 #### Importing Subfiles
@@ -75,7 +73,7 @@ You can set SCSS variables in your theme or plugin by using the wp_scss_variable
 #### Always Recompile
 During development it's sometimes useful to force stylesheet compilation on every page load. Especially on hosts where filemtime() is not updating consistently.
 
-You can tell the plugin to always recompile by adding the following constant to your wp-config.php or functions.php file.
+You can tell the plugin to always recompile in the plugin options page or by adding the following constant to your wp-config.php or functions.php file.
 
     define('WP_SCSS_ALWAYS_RECOMPILE', true);
 
@@ -91,6 +89,8 @@ Alternatively, you can include [Bourbon](https://github.com/thoughtbot/bourbon) 
 This plugin will only work with .scss format.
 
 ## Changelog
+* 2.1.0
+  * Settings dropdown added for choosing additional base compile locations outside of current theme. Suggestion by [pixeldesignstudio ](https://github.com/ConnectThink/WP-SCSS/issues/127)
 * 2.0.2
   * Added option in settings to enable an 'always recompile' flag. Suggestion by [bick](https://github.com/ConnectThink/WP-SCSS/issues/151)
 * 2.0.1
@@ -135,5 +135,5 @@ This plugin will only work with .scss format.
 * 1.0.0 - Initial Release
 
 ## License
-This plugin is developed and maintained by Connect Think.
+This plugin is developed and maintained by Connect Think and contributers.
 [GPL V3](http://www.gnu.org/copyleft/gpl.html)

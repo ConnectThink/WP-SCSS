@@ -17,10 +17,11 @@
  *        b. wp-scss class - manages compiling
  *        c. options class - builds settings page
  *    3. Registering Settings Page and Options
- *    4. Assign plugin settings
- *    5. Instantiate wp_scss object and run compiler
- *    6. Handle Errors
- *    7. Enqueue Styles
+ *    4. Read correct DB values for version 2.0.1 (Leafo => ScssPhp)
+ *    5. Assign plugin settings
+ *    6. Instantiate wp_scss object and run compiler
+ *    7. Handle Errors
+ *    8. Enqueue Styles
  */
 
 
@@ -29,9 +30,6 @@
  */
 
 // Plugin Paths
-if (!defined('WPSCSS_THEME_DIR'))
-  define('WPSCSS_THEME_DIR', get_stylesheet_directory());
-
 if (!defined('WPSCSS_PLUGIN_NAME'))
   define('WPSCSS_PLUGIN_NAME', trim(dirname(plugin_basename(__FILE__)), '/'));
 
@@ -104,7 +102,7 @@ function wpscss_plugin_action_links($links, $file) {
 }
 
 /**
- * 3.5 UPDATE DATABASE VALUES
+ * 4. UPDATE DATABASE VALUES
  *
  * Correction for when Leafo is stored in DB
  * as a value in compiling_options
@@ -118,7 +116,7 @@ function wpscss_plugin_db_cleanup($option_values){
 }
 
 /**
- * 4. PLUGIN SETTINGS
+ * 5. PLUGIN SETTINGS
  *
  * Pull settings from options table
  * Scrub empty fields or directories that don't exists
@@ -126,10 +124,11 @@ function wpscss_plugin_db_cleanup($option_values){
  */
 
 $wpscss_options = get_option( 'wpscss_options' );
+$base_compiling_folder = isset($wpscss_options['base_compiling_folder']) ? $wpscss_options['base_compiling_folder'] : get_stylesheet_directory();
 $scss_dir_setting = isset($wpscss_options['scss_dir']) ? $wpscss_options['scss_dir'] : '';
 $css_dir_setting = isset($wpscss_options['css_dir']) ? $wpscss_options['css_dir'] : '';
 
-// Checks if directories are empty
+// Checks if directories are not yet defined
 if( $scss_dir_setting == false || $css_dir_setting == false ) {
   function wpscss_settings_error() {
     echo '<div class="error">
@@ -139,29 +138,30 @@ if( $scss_dir_setting == false || $css_dir_setting == false ) {
   add_action('admin_notices', 'wpscss_settings_error');
   return 0; //exits
 
-  // Checks if directory exists
-} elseif ( !is_dir(WPSCSS_THEME_DIR . $scss_dir_setting) ) {
-  function wpscss_settings_error() {
+  // Checks if SCSS directory exists
+} elseif ( !is_dir($base_compiling_folder . $scss_dir_setting) ) {
+  add_action('admin_notices', function() use ($base_compiling_folder, $scss_dir_setting){
     echo '<div class="error">
-      <p><strong>Wp-Scss:</strong> SCSS directory does not exist (' . WPSCSS_THEME_DIR . $scss_dir_setting . '). Please create the directory or <a href="' . get_bloginfo('wpurl') . '/wp-admin/admin.php?page=wpscss_options">update your settings.</a></p>
+      <p><strong>Wp-Scss:</strong> SCSS directory does not exist (' . $base_compiling_folder . $scss_dir_setting . '). Please create the directory or <a href="' . get_bloginfo('wpurl') . '/wp-admin/admin.php?page=wpscss_options">update your settings.</a></p>
       </div>';
-  }
-  add_action('admin_notices', 'wpscss_settings_error');
+  });
+  add_action('admin_notices', array($this, 'wpscss_settings_error'));
   return 0; //exits
-} elseif ( !is_dir(WPSCSS_THEME_DIR . $css_dir_setting) ) {
-  function wpscss_settings_error() {
+
+  // Checks if CSS directory exists
+} elseif ( !is_dir($base_compiling_folder . $css_dir_setting) ) {
+  add_action('admin_notices', function() use ($base_compiling_folder, $css_dir_setting){
     echo '<div class="error">
-      <p><strong>Wp-Scss:</strong> CSS directory does not exist (' . WPSCSS_THEME_DIR . $css_dir_setting . '). Please create the directory or <a href="' . get_bloginfo('wpurl') . '/wp-admin/admin.php?page=wpscss_options">update your settings.</a></p>
+      <p><strong>Wp-Scss:</strong> CSS directory does not exist (' . $base_compiling_folder . $css_dir_setting . '). Please create the directory or <a href="' . get_bloginfo('wpurl') . '/wp-admin/admin.php?page=wpscss_options">update your settings.</a></p>
       </div>';
-  }
-  add_action('admin_notices', 'wpscss_settings_error');
+  });
   return 0; //exits
 }
 
 // Plugin Settings
 $wpscss_settings = array(
-  'scss_dir'         => WPSCSS_THEME_DIR . $scss_dir_setting,
-  'css_dir'          => WPSCSS_THEME_DIR . $css_dir_setting,
+  'scss_dir'         => $base_compiling_folder . $scss_dir_setting,
+  'css_dir'          => $base_compiling_folder . $css_dir_setting,
   'compiling'        => isset($wpscss_options['compiling_options']) ? $wpscss_options['compiling_options'] : 'ScssPhp\ScssPhp\Formatter\Expanded',
   'always_recompile' => isset($wpscss_options['always_recompile'])  ? $wpscss_options['always_recompile']  : false,
   'errors'           => isset($wpscss_options['errors'])            ? $wpscss_options['errors']            : 'show',
@@ -171,7 +171,7 @@ $wpscss_settings = array(
 
 
 /**
- * 5. INSTANTIATE & EXECUTE COMPILER
+ * 6. INSTANTIATE & EXECUTE COMPILER
  *
  * Passes settings to the object
  * If needs_compiling passes, runs compile method
@@ -212,7 +212,7 @@ function wp_scss_compile() {
 }
 
 /**
- * 6. HANDLE COMPILING ERRORS
+ * 7. HANDLE COMPILING ERRORS
  *
  * First block handles print errors to front end.
  * This adds a small style block the header to help errors get noticed
@@ -296,7 +296,7 @@ function wpscss_handle_errors() {
 
 
 /**
- * 7. ENQUEUE STYLES
+ * 8. ENQUEUE STYLES
  */
 
 if ( $wpscss_settings['enqueue'] == '1' ) {
