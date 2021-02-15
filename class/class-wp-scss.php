@@ -74,7 +74,7 @@ class Wp_Scss {
               'sourceMapWriteTo' => $instance->css_dir . $map, // absolute path to a file to write the map to
               'sourceMapURL' => $map, // url of the map
               'sourceMapBasepath' => rtrim(ABSPATH, '/'), // base path for filename normalization
-              'sourceRoot' => '/', // This value is prepended to the individual entries in the 'source' field.
+              'sourceRoot' => home_url('/'), // This value is prepended to the individual entries in the 'source' field.
             ));
 
             $css = $scssc->compile(file_get_contents($in), $in);
