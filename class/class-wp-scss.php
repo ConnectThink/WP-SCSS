@@ -1,6 +1,7 @@
 <?php
-
-include_once( WPSCSS_PLUGIN_DIR . '/scssphp/scss.inc.php' );
+//Required to use get_home_path()
+require_once(ABSPATH . 'wp-admin/includes/file.php');
+include_once(WPSCSS_PLUGIN_DIR . '/scssphp/scss.inc.php');
 use ScssPhp\ScssPhp\Compiler;
 
 class Wp_Scss {
@@ -10,7 +11,7 @@ class Wp_Scss {
    * @var string
    * @access public
    */
-  public $scss_dir, $css_dir, $compile_method, $always_recompile, $scssc, $compile_errors, $sourcemaps;
+  public $scss_dir, $css_dir, $compile_method, $scssc, $compile_errors, $sourcemaps;
 
   /**
    * Set values for Wp_Scss::properties
@@ -23,12 +24,11 @@ class Wp_Scss {
    *
    * @var array compile_errors - catches errors from compile
    */
-  public function __construct ($scss_dir, $css_dir, $compile_method, $always_recompile, $sourcemaps) {
+  public function __construct ($scss_dir, $css_dir, $compile_method, $sourcemaps) {
     global $scssc;
     $this->scss_dir         = $scss_dir;
     $this->css_dir          = $css_dir;
     $this->compile_method   = $compile_method;
-    $this->always_recompile = $always_recompile;
     $this->compile_errors   = array();
     $scssc                  = new Compiler();
 
@@ -158,8 +158,8 @@ class Wp_Scss {
    * @return bool - true if compiling is needed
    */
   public function needs_compiling() {
-    global $always_recompile;
-    if (defined('WP_SCSS_ALWAYS_RECOMPILE') && WP_SCSS_ALWAYS_RECOMPILE || $always_recompile) {
+    global $wpscss_settings;
+    if (defined('WP_SCSS_ALWAYS_RECOMPILE') && WP_SCSS_ALWAYS_RECOMPILE || $wpscss_settings['always_recompile'] === "1") {
       return true;
     }
 
@@ -210,12 +210,13 @@ class Wp_Scss {
    * @param $css_folder - directory from theme root. We need this passed in separately
    *                      so it can be used in a url, not path
    */
-  public function enqueue_files($css_folder) {
+  public function enqueue_files($base_folder_path, $css_folder) {
 
+    $relative_path = explode(get_home_path(), $base_folder_path)[1];
     foreach( new DirectoryIterator($this->css_dir) as $stylesheet ) {
       if ( pathinfo($stylesheet->getFilename(), PATHINFO_EXTENSION) == 'css' ) {
         $name = $stylesheet->getBasename('.css') . '-style';
-        $uri = get_stylesheet_directory_uri().$css_folder.$stylesheet->getFilename();
+        $uri = '/'.$relative_path.$css_folder.$stylesheet->getFilename();
         $ver = $stylesheet->getMTime();
 
 

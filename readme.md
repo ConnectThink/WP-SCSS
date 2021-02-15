@@ -89,6 +89,8 @@ Alternatively, you can include [Bourbon](https://github.com/thoughtbot/bourbon) 
 This plugin will only work with .scss format.
 
 ## Changelog
+* 2.1.1
+  * Bug fixes after merging 2.0.2 and 2.1.0 defaults worked, but new options did not. [Shadoath](https://github.com/ConnectThink/WP-SCSS/issues/165)
 * 2.1.0
   * Settings dropdown added for choosing additional base compile locations outside of current theme. Suggestion by [pixeldesignstudio ](https://github.com/ConnectThink/WP-SCSS/issues/127)
 * 2.0.2
