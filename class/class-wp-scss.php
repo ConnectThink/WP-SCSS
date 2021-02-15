@@ -1,7 +1,7 @@
 <?php
+//Required to use get_home_path()
 require_once(ABSPATH . 'wp-admin/includes/file.php');
-
-include_once( WPSCSS_PLUGIN_DIR . '/scssphp/scss.inc.php' );
+include_once(WPSCSS_PLUGIN_DIR . '/scssphp/scss.inc.php');
 use ScssPhp\ScssPhp\Compiler;
 
 class Wp_Scss {
