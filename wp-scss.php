@@ -300,7 +300,7 @@ function wpscss_handle_errors() {
 if ( $wpscss_settings['enqueue'] == '1' ) {
   function wpscss_enqueue_styles() {
     global $wpscss_compiler, $wpscss_options;
-    $wpscss_compiler->enqueue_files($wpscss_options['base_compiling_folder'], $wpscss_options['css_dir']);
+    $wpscss_compiler->enqueue_files($base_compiling_folder, $wpscss_options['css_dir']);
   }
   add_action('wp_enqueue_scripts', 'wpscss_enqueue_styles', 50);
 }
