@@ -89,6 +89,8 @@ Alternatively, you can include [Bourbon](https://github.com/thoughtbot/bourbon) 
 This plugin will only work with .scss format.
 
 ## Changelog
+* 2.1.3
+  * Must declare global to use it for $base_compiling_folder.
 * 2.1.2
   * Correction for enqueueing styles not defaulting to get_stylesheet_directory() [Issue](https://github.com/ConnectThink/WP-SCSS/issues/168)
 * 2.1.1
