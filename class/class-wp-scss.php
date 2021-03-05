@@ -211,13 +211,15 @@ class Wp_Scss {
    *                      so it can be used in a url, not path
    */
   public function enqueue_files($base_folder_path, $css_folder) {
-
     $relative_path = explode(get_home_path(), $base_folder_path)[1];
+    $enqueue_url = get_home_url() . '/' . $relative_path;
+
     foreach( new DirectoryIterator($this->css_dir) as $stylesheet ) {
       if ( pathinfo($stylesheet->getFilename(), PATHINFO_EXTENSION) == 'css' ) {
         $name = $stylesheet->getBasename('.css') . '-style';
-        $uri = '/'.$relative_path.$css_folder.$stylesheet->getFilename();
+        $uri = $enqueue_url . $css_folder . $stylesheet->getFilename();
         $ver = $stylesheet->getMTime();
+
 
 
         wp_register_style(
