@@ -212,15 +212,15 @@ class Wp_Scss {
    */
   public function enqueue_files($base_folder_path, $css_folder) {
     $relative_path = explode(get_home_path(), $base_folder_path)[1];
-    $enqueue_url = get_home_url() . '/' . $relative_path;
+    $enqueue_base_url = get_home_url() . '/' . $relative_path;
 
     foreach( new DirectoryIterator($this->css_dir) as $stylesheet ) {
       if ( pathinfo($stylesheet->getFilename(), PATHINFO_EXTENSION) == 'css' ) {
         $name = $stylesheet->getBasename('.css') . '-style';
-        $uri = $enqueue_url . $css_folder . $stylesheet->getFilename();
+        $uri = $enqueue_base_url . $css_folder . $stylesheet->getFilename();
         $ver = $stylesheet->getMTime();
 
-
+        var_dump($uri);
 
         wp_register_style(
           $name,
