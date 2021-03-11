@@ -88,7 +88,8 @@ class Wp_Scss_Settings
         'name' => 'base_compiling_folder',
         'type' => apply_filters( 'wp_scss_base_compiling_modes',
           array(
-            get_stylesheet_directory()  => 'Current theme',
+            get_template_directory()  => 'Parent theme (or current)',
+            get_stylesheet_directory()  => 'Current theme (child if in use)',
             wp_get_upload_dir()['basedir'] => 'Uploads directory',
             WPSCSS_PLUGIN_DIR => 'WP-SCSS Plugin',
           )
