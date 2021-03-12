@@ -64,6 +64,15 @@ class Wp_Scss_Settings
    */
   public function page_init()
   {
+    $base_compiling_folder_options = array(
+      get_stylesheet_directory()  => 'Current theme',
+      wp_get_upload_dir()['basedir'] => 'Uploads directory',
+      WPSCSS_PLUGIN_DIR => 'WP-SCSS Plugin',
+    );
+    if (defined('WPSCSS_CUSTOM_BASE_COMPILING_FOLDER')){
+      $base_compiling_folder_options[] = WPSCSS_CUSTOM_BASE_COMPILING_FOLDER;
+    }
+
     register_setting(
       'wpscss_options_group',    // Option group
       'wpscss_options',          // Option name
@@ -87,11 +96,7 @@ class Wp_Scss_Settings
       array(                                   // args
         'name' => 'base_compiling_folder',
         'type' => apply_filters( 'wp_scss_base_compiling_modes',
-          array(
-            get_stylesheet_directory()  => 'Current theme',
-            wp_get_upload_dir()['basedir'] => 'Uploads directory',
-            WPSCSS_PLUGIN_DIR => 'WP-SCSS Plugin',
-          )
+        $base_compiling_folder_options
         )
       )
     );
