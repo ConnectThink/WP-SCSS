@@ -217,7 +217,7 @@ class Wp_Scss {
     // In case we're on a Windows machine
     $relative_path = str_replace('\\', '/', $relative_path);
 
-    $enqueue_base_url = get_home_url() . '/' . $relative_path;
+    $enqueue_base_url = get_home_url() . $relative_path;
 
     foreach( new DirectoryIterator($this->css_dir) as $stylesheet ) {
       if ( pathinfo($stylesheet->getFilename(), PATHINFO_EXTENSION) == 'css' ) {
