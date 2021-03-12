@@ -70,7 +70,7 @@ class Wp_Scss_Settings
       WPSCSS_PLUGIN_DIR => 'WP-SCSS Plugin',
     );
     if (defined('WPSCSS_CUSTOM_BASE_COMPILING_FOLDER')){
-      $base_compiling_folder_options[] = WPSCSS_CUSTOM_BASE_COMPILING_FOLDER;
+      $base_compiling_folder_options[WPSCSS_CUSTOM_BASE_COMPILING_FOLDER] = "Custom folder";
     }
 
     register_setting(

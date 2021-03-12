@@ -10,7 +10,7 @@ The plugin only compiles when changes have been made to the scss files. Compiles
 #### Directories
 Directories are defined relative to your `Base Location` which defaults to the theme folder. You can choose the uploads directory or plugin directory.
 They must be separate from one another, so you cannot define the root folder to compile into itself.
-You can also define `WPSCSS_CUSTOM_BASE_COMPILING_FOLDER` as an absolute path in your wp-config.php for full control.
+You can also define `WPSCSS_CUSTOM_BASE_COMPILING_FOLDER` as an absolute path in your wp-config.php. Must be nested inside the WordPress root folder.
 
 Ideally you should setup a scss folder and a css folder within your theme. This will ensure the most accurate compiling.
 
