@@ -12,7 +12,9 @@ Directories are defined relative to your `Base Location` which defaults to the t
 They must be separate from one another, so you cannot define the root folder to compile into itself.
 You can also define `WPSCSS_CUSTOM_BASE_COMPILING_FOLDER` as an absolute path in your wp-config.php. Must be nested inside the WordPress root folder.
 
+#### CSS & SCSS folders
 Ideally you should setup a scss folder and a css folder within your theme. This will ensure the most accurate compiling.
+You can choose to preface your css and scss folders with `/../` to resolve to a parent directory.
 
     library
     |-css
