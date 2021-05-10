@@ -89,6 +89,8 @@ Alternatively, you can include [Bourbon](https://github.com/thoughtbot/bourbon) 
 This plugin will only work with .scss format.
 
 ## Changelog
+* 2.1.5
+  * Enqueue CSS files using `realpath` function. Addition by [mmcev106](https://github.com/ConnectThink/WP-SCSS/pull/179)
 * 2.1.4
   * Set source URL to be home_url('/') not simply `/`. Issue found by [realjjaveweb](https://github.com/ConnectThink/WP-SCSS/issues/128)
 * 2.1.3
