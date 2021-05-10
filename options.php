@@ -89,7 +89,7 @@ class Wp_Scss_Settings
         'type' => apply_filters( 'wp_scss_base_compiling_modes',
           array(
             get_template_directory()  => 'Parent theme', // Won't display if no parent theme as it would have duplicate keys in array
-            get_stylesheet_directory()  => (get_stylesheet_directory() == get_template_directory() ? 'Current theme' : 'Child theme'),
+            get_stylesheet_directory()  => (get_stylesheet_directory() === get_template_directory() ? 'Current theme' : 'Child theme'),
             wp_get_upload_dir()['basedir'] => 'Uploads directory',
             WPSCSS_PLUGIN_DIR => 'WP-SCSS Plugin',
           )
