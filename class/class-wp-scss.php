@@ -217,7 +217,10 @@ class Wp_Scss {
     else if($base_folder_path === WPSCSS_PLUGIN_DIR){
       $enqueue_base_url = plugins_url();
     }
-    else{ // assume get_stylesheet_directory()
+    else if($base_folder_path === get_template_directory()){
+      $enqueue_base_url = get_template_directory_uri();
+    }
+    else{ // assume default of get_stylesheet_directory()
       $enqueue_base_url = get_stylesheet_directory_uri();
     }
 
