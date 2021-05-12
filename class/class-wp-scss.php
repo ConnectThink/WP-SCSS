@@ -211,13 +211,18 @@ class Wp_Scss {
    *                      so it can be used in a url, not path
    */
   public function enqueue_files($base_folder_path, $css_folder) {
-    // We use realpath() to normalize any forward, backward, or trailing slack inconsistencies.
-    $relative_path = explode(realpath(get_home_path()), realpath($base_folder_path))[1];
-
-    // In case we're on a Windows machine
-    $relative_path = str_replace('\\', '/', $relative_path);
-
-    $enqueue_base_url = get_home_url() . $relative_path;
+    if($base_folder_path === wp_get_upload_dir()['basedir']){
+      $enqueue_base_url = wp_get_upload_dir()['baseurl'];
+    }
+    else if($base_folder_path === WPSCSS_PLUGIN_DIR){
+      $enqueue_base_url = plugins_url();
+    }
+    else if($base_folder_path === get_template_directory()){
+      $enqueue_base_url = get_template_directory_uri();
+    }
+    else{ // assume default of get_stylesheet_directory()
+      $enqueue_base_url = get_stylesheet_directory_uri();
+    }
 
     foreach( new DirectoryIterator($this->css_dir) as $stylesheet ) {
       if ( pathinfo($stylesheet->getFilename(), PATHINFO_EXTENSION) == 'css' ) {
