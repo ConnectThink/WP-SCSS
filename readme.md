@@ -100,6 +100,8 @@ Alternatively, you can include [Bourbon](https://github.com/thoughtbot/bourbon) 
 
 This plugin will only work with .scss format.
 
+#### Maintainers
+
 ## Changelog
 
 - 2.1.6
@@ -162,5 +164,6 @@ This plugin will only work with .scss format.
 
 ## License
 
-This plugin is developed and maintained by Connect Think and contributers.
+This plugin was developed by Connect Think. Now maintained by [shadoath](https://github.com/shadoath/), and contributers.
+
 [GPL V3](http://www.gnu.org/copyleft/gpl.html)
