@@ -159,7 +159,7 @@ class Wp_Scss {
    */
   public function needs_compiling() {
     global $wpscss_settings;
-    if (defined('WP_SCSS_ALWAYS_RECOMPILE') && WP_SCSS_ALWAYS_RECOMPILE || $wpscss_settings['always_recompile'] === "1") {
+    if (defined('WP_SCSS_ALWAYS_RECOMPILE') && WP_SCSS_ALWAYS_RECOMPILE || isset($wpscss_settings['always_recompile']) ? $wpscss_settings['always_recompile'] === "1" : false) {
       return true;
     }
 
