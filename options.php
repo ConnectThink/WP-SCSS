@@ -247,8 +247,8 @@ class Wp_Scss_Settings
    * Print the Section text
    */
   public function print_paths_info() {
-    print 'Location of your SCSS/CSS folders. Folders must be nested under your <b>Base Location</b> and start with <code>/</code>.'+
-      '</br>Examples: <code>/custom-scss/</code> and <code>/custom-css/</code>'+
+    print 'Location of your SCSS/CSS folders. Folders must be nested under your <b>Base Location</b> and start with <code>/</code>.' .
+      '</br>Examples: <code>/custom-scss/</code> and <code>/custom-css/</code>' .
       '</br><b>Caution</b> updating some themes or plugins will delete the custom WP-SCSS Base Location when nested.';
   }
   public function print_compile_info() {
