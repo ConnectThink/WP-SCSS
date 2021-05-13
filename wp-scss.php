@@ -3,7 +3,7 @@
  * Plugin Name: WP-SCSS
  * Plugin URI: https://github.com/ConnectThink/WP-SCSS
  * Description: Compiles scss files live on WordPress.
- * Version: 2.1.7
+ * Version: 2.1.6
  * Author: Connect Think
  * Author URI: http://connectthink.com
  * License: GPLv3
@@ -269,10 +269,10 @@ function wpscss_handle_errors() {
 
   $compile_errors = $wpscss_compiler->get_compile_errors();
   if ( !is_admin() && $wpscss_settings['errors'] === 'show-logged-in' && !empty($_COOKIE[LOGGED_IN_COOKIE]) && count($compile_errors) > 0) {
-    wpscss_settings_show_errors($wpscss_compiler->compile_errors);
+    wpscss_settings_show_errors($compile_errors);
     // Show in the header to anyone
-  } else if ( !is_admin() && $wpscss_settings['errors'] === 'show' && count($wpscss_compiler->compile_errors) > 0) {
-    wpscss_settings_show_errors($wpscss_compiler->compile_errors);
+  } else if ( !is_admin() && $wpscss_settings['errors'] === 'show' && count($compile_errors) > 0) {
+    wpscss_settings_show_errors($compile_errors);
   } else { // Hide errors and print them to a log file.
     foreach ($compile_errors as $error) {
       $error_string = date('m/d/y g:i:s', time()) .': ';
