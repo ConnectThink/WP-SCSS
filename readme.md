@@ -104,6 +104,9 @@ This plugin will only work with .scss format.
 
 ## Changelog
 
+- 2.2.0
+  - Updates to allow compile() from outside the plugin [niaccurshi](https://github.com/ConnectThink/WP-SCSS/pull/190)
+  - Update src to use [ScssPHP github repo at 1.2.1](https://github.com/scssphp/scssphp/releases/tag/1.2.1)
 - 2.1.6
   - When enqueueing CSS files Defer to WordPress for URLs instead of trying to guess them. Change by [mmcev106](https://github.com/ConnectThink/WP-SCSS/pull/185)
   - Allow setting Base Directory to Parent theme folder. [Shadoath](https://github.com/ConnectThink/WP-SCSS/issues/178)
