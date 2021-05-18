@@ -30,7 +30,7 @@ class Wp_Scss {
     $this->css_dir          = $css_dir;
     $this->compile_method   = $compile_method;
     $this->compile_errors   = array();
-    $this->scssc                  = new Compiler();
+    $this->scssc            = new Compiler();
 
     $this->cache = WPSCSS_PLUGIN_DIR . '/cache/';
 
