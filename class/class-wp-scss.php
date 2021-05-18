@@ -159,7 +159,7 @@ class Wp_Scss {
 
         $css = $this->scssc->compile(file_get_contents($in), $in);
 
-        file_put_contents($this->cache.basename($out), $css);
+        file_put_contents($this->cache . basename($out), $css);
       } catch (Exception $e) {
         $errors = array (
           'file' => basename($in),
