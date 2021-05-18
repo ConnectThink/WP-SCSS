@@ -276,7 +276,7 @@ function wpscss_handle_errors() {
   } else { // Hide errors and print them to a log file.
     foreach ($compile_errors as $error) {
       $error_string = date('m/d/y g:i:s', time()) .': ';
-      $error_string .= $error['file'] .' - '. $error['message'] . PHP_EOL;
+      $error_string .= $error['file'] . ' - ' . $error['message'] . PHP_EOL;
       file_put_contents($log_file, $error_string, FILE_APPEND);
       $error_string = "";
     }
