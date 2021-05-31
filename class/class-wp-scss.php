@@ -9,9 +9,9 @@ class Wp_Scss {
    * Compiling preferences properites
    *
    * @var string
-   * @access public
+   * @access private
    */
-  public $scss_dir, $css_dir, $compile_method, $scssc, $compile_errors, $sourcemaps;
+  private $scss_dir, $css_dir, $compile_method, $scssc, $compile_errors, $sourcemaps, $cache;
 
   /**
    * Set values for Wp_Scss::properties
@@ -25,26 +25,61 @@ class Wp_Scss {
    * @var array compile_errors - catches errors from compile
    */
   public function __construct ($scss_dir, $css_dir, $compile_method, $sourcemaps) {
-    global $scssc;
+  
     $this->scss_dir         = $scss_dir;
     $this->css_dir          = $css_dir;
     $this->compile_method   = $compile_method;
     $this->compile_errors   = array();
-    $scssc                  = new Compiler();
+    $this->scssc            = new Compiler();
 
-    $scssc->setFormatter( $compile_method );
-    $scssc->setImportPaths( $this->scss_dir );
+    $this->cache = WPSCSS_PLUGIN_DIR . '/cache/';
+
+    $this->scssc->setFormatter( $compile_method );
+    $this->scssc->setImportPaths( $this->scss_dir );
 
     $this->sourcemaps = $sourcemaps;
+  }
+
+  /**
+   * METHOD GET SCSS DIRECTORY
+   * Returns the stored SCSS directory for this compile instance
+   *
+   * @return string - Value of the SCSS directory
+   *
+   * @access public
+   */
+  public function get_scss_dir() {
+    return $this->scss_dir;
+  }
+
+  /**
+   * METHOD GET CSS DIRECTORY
+   * Returns the stored CSS directory for this compile instance
+   *
+   * @return string - Value of the CSS directory
+   *
+   * @access public
+   */
+  public function get_css_dir() {
+    return $this->css_dir;
+  }
+
+  /**
+   * METHOD GET CSS DIRECTORY
+   * Returns the stored CSS directory for this compile instance
+   *
+   * @return array - List of errors from the compile process, if any
+   *
+   * @access public
+   */
+  public function get_compile_errors() {
+    return $this->compile_errors;
   }
 
   /**
    * METHOD COMPILE
    * Loops through scss directory and compilers files that end
    * with .scss and do not have '_' in front.
-   *
-   * @function compiler - passes input content through scssphp,
-   *                      puts compiled css into cache file
    *
    * @var array input_files - array of .scss files with no '_' in front
    * @var array sdir_arr - an array of all the files in the scss directory
@@ -54,90 +89,92 @@ class Wp_Scss {
    * @access public
    */
   public function compile() {
-    global $scssc, $cache;
-    $cache = WPSCSS_PLUGIN_DIR . '/cache/';
+   
+    $input_files = array();
 
-    //Compiler - Takes scss $in and writes compiled css to $out file
-    // catches errors and puts them the object's compiled_errors property
-    if (!function_exists( 'compiler' )) {
-      function compiler($in, $out, $instance) {
-        global $scssc, $cache;
+    // Loop through directory and get .scss file that do not start with '_'
+    foreach(new DirectoryIterator($this->scss_dir) as $file) {
+      if (substr($file, 0, 1) != "_" && pathinfo($file->getFilename(), PATHINFO_EXTENSION) == 'scss') {
+        array_push($input_files, $file->getFilename());
+      }
+    }
 
-        if (!file_exists($cache)) {
-          mkdir($cache, 0644);
-        }
-        if (is_writable($cache)) {
-          try {
-            $map = basename($out) . '.map';
-            $scssc->setSourceMap(constant('ScssPhp\ScssPhp\Compiler::' . $instance->sourcemaps));
-            $scssc->setSourceMapOptions(array(
-              'sourceMapWriteTo' => $instance->css_dir . $map, // absolute path to a file to write the map to
-              'sourceMapURL' => $map, // url of the map
-              'sourceMapBasepath' => rtrim(ABSPATH, '/'), // base path for filename normalization
-              'sourceRoot' => home_url('/'), // This value is prepended to the individual entries in the 'source' field.
-            ));
+    // For each input file, find matching css file and compile
+    foreach ($input_files as $scss_file) {
+      $input = $this->scss_dir . $scss_file;
+      $outputName = preg_replace("/\.[^$]*/", ".css", $scss_file);
+      $output = $this->css_dir . $outputName;
 
-            $css = $scssc->compile(file_get_contents($in), $in);
+      $this->compiler($input, $output, $this);
+    }
 
-            file_put_contents($cache.basename($out), $css);
-          } catch (Exception $e) {
-            $errors = array (
-              'file' => basename($in),
-              'message' => $e->getMessage(),
-            );
-            array_push($instance->compile_errors, $errors);
+    if (count($this->compile_errors) < 1) {
+      if  ( is_writable($this->css_dir) ) {
+        foreach (new DirectoryIterator($this->cache) as $this->cache_file) {
+          if ( pathinfo($this->cache_file->getFilename(), PATHINFO_EXTENSION) == 'css') {
+            file_put_contents($this->css_dir . $this->cache_file, file_get_contents($this->cache . $this->cache_file));
+            unlink($this->cache . $this->cache_file->getFilename()); // Delete file on successful write
           }
-        } else {
-          $errors = array (
-            'file' => $cache,
-            'message' => "File Permission Error, permission denied. Please make the cache directory writable."
-          );
-          array_push($instance->compile_errors, $errors);
         }
+      } else {
+        $errors = array(
+          'file' => 'CSS Directory',
+          'message' => "File Permissions Error, permission denied. Please make your CSS directory writable."
+        );
+        array_push($this->compile_errors, $errors);
       }
-
-      $input_files = array();
-      // Loop through directory and get .scss file that do not start with '_'
-      foreach(new DirectoryIterator($this->scss_dir) as $file) {
-        if (substr($file, 0, 1) != "_" && pathinfo($file->getFilename(), PATHINFO_EXTENSION) == 'scss') {
-          array_push($input_files, $file->getFilename());
-        }
-      }
-
-      // For each input file, find matching css file and compile
-      foreach ($input_files as $scss_file) {
-        $input = $this->scss_dir.$scss_file;
-        $outputName = preg_replace("/\.[^$]*/",".css", $scss_file);
-        $output = $this->css_dir.$outputName;
-
-        compiler($input, $output, $this);
-      }
-
-      if (count($this->compile_errors) < 1) {
-        if  ( is_writable($this->css_dir) ) {
-          foreach (new DirectoryIterator($cache) as $cache_file) {
-            if ( pathinfo($cache_file->getFilename(), PATHINFO_EXTENSION) == 'css') {
-              file_put_contents($this->css_dir.$cache_file, file_get_contents($cache.$cache_file));
-              unlink($cache.$cache_file->getFilename()); // Delete file on successful write
-            }
-          }
-        } else {
-          $errors = array(
-            'file' => 'CSS Directory',
-            'message' => "File Permissions Error, permission denied. Please make your CSS directory writable."
-          );
-          array_push($this->compile_errors, $errors);
-        }
-      }
-    }else{
-      $errors = array (
-        'file' => 'SCSS compiler',
-        'message' => "Compiling Error, function 'compiler' already exists."
-      );
-      array_push($this->compile_errors, $errors);
     }
   }
 
+  /**
+   * METHOD COMPILER
+   * Takes scss $in and writes compiled css to $out file
+   * catches errors and puts them the object's compiled_errors property
+   *
+   * @function compiler - passes input content through scssphp,
+   *                      puts compiled css into cache file
+   *
+   * @var array input_files - array of .scss files with no '_' in front
+   * @var array sdir_arr - an array of all the files in the scss directory
+   *
+   * @return nothing - Puts successfully compiled css into appropriate location
+   *                   Puts error in 'compile_errors' property
+   * @access public
+   */
+  private function compiler($in, $out, $instance) {
+
+    if (!file_exists($this->cache)) {
+      mkdir($this->cache, 0644);
+    }
+    if (is_writable($this->cache)) {
+      try {
+        $map = basename($out) . '.map';
+        $this->scssc->setSourceMap(constant('ScssPhp\ScssPhp\Compiler::' . $instance->sourcemaps));
+        $this->scssc->setSourceMapOptions(array(
+          'sourceMapWriteTo' => $instance->css_dir . $map, // absolute path to a file to write the map to
+          'sourceMapURL' => $map, // url of the map
+          'sourceMapBasepath' => rtrim(ABSPATH, '/'), // base path for filename normalization
+          'sourceRoot' => home_url('/'), // This value is prepended to the individual entries in the 'source' field.
+        ));
+
+        $css = $this->scssc->compile(file_get_contents($in), $in);
+
+        file_put_contents($this->cache . basename($out), $css);
+      } catch (Exception $e) {
+        $errors = array (
+          'file' => basename($in),
+          'message' => $e->getMessage(),
+        );
+        array_push($instance->compile_errors, $errors);
+      }
+    } else {
+      $errors = array (
+        'file' => $this->cache,
+        'message' => "File Permission Error, permission denied. Please make the cache directory writable."
+      );
+      array_push($instance->compile_errors, $errors);
+    }
+  }
 
   /**
    * METHOD NEEDS_COMPILING
@@ -159,14 +196,14 @@ class Wp_Scss {
    */
   public function needs_compiling() {
     global $wpscss_settings;
-    if (defined('WP_SCSS_ALWAYS_RECOMPILE') && WP_SCSS_ALWAYS_RECOMPILE || $wpscss_settings['always_recompile'] === "1") {
+    if (defined('WP_SCSS_ALWAYS_RECOMPILE') && WP_SCSS_ALWAYS_RECOMPILE || isset($wpscss_settings['always_recompile']) ? $wpscss_settings['always_recompile'] === "1" : false) {
       return true;
     }
 
     $latest_scss = 0;
     $latest_css = 0;
 
-    foreach ( new RecursiveIteratorIterator(new RecursiveDirectoryIterator($this->scss_dir), FilesystemIterator::SKIP_DOTS) as $sfile ) {
+    foreach ( new RecursiveIteratorIterator(new RecursiveDirectoryIterator($this->scss_dir), RecursiveDirectoryIterator::SKIP_DOTS) as $sfile ) {
       if (pathinfo($sfile->getFilename(), PATHINFO_EXTENSION) == 'scss') {
         $file_time = $sfile->getMTime();
 
@@ -176,7 +213,7 @@ class Wp_Scss {
       }
     }
 
-    foreach ( new RecursiveIteratorIterator(new RecursiveDirectoryIterator($this->css_dir), FilesystemIterator::SKIP_DOTS) as $cfile ) {
+    foreach ( new RecursiveIteratorIterator(new RecursiveDirectoryIterator($this->css_dir), RecursiveDirectoryIterator::SKIP_DOTS) as $cfile ) {
       if (pathinfo($cfile->getFilename(), PATHINFO_EXTENSION) == 'css') {
         $file_time = $cfile->getMTime();
 
@@ -211,13 +248,18 @@ class Wp_Scss {
    *                      so it can be used in a url, not path
    */
   public function enqueue_files($base_folder_path, $css_folder) {
-    // We use realpath() to normalize any forward, backward, or trailing slack inconsistencies.
-    $relative_path = explode(realpath(get_home_path()), realpath($base_folder_path))[1];
-
-    // In case we're on a Windows machine
-    $relative_path = str_replace('\\', '/', $relative_path);
-
-    $enqueue_base_url = get_home_url() . $relative_path;
+    if($base_folder_path === wp_get_upload_dir()['basedir']){
+      $enqueue_base_url = wp_get_upload_dir()['baseurl'];
+    }
+    else if($base_folder_path === WPSCSS_PLUGIN_DIR){
+      $enqueue_base_url = plugins_url();
+    }
+    else if($base_folder_path === get_template_directory()){
+      $enqueue_base_url = get_template_directory_uri();
+    }
+    else{ // assume default of get_stylesheet_directory()
+      $enqueue_base_url = get_stylesheet_directory_uri();
+    }
 
     foreach( new DirectoryIterator($this->css_dir) as $stylesheet ) {
       if ( pathinfo($stylesheet->getFilename(), PATHINFO_EXTENSION) == 'css' ) {
@@ -240,7 +282,7 @@ class Wp_Scss {
   }
 
   public function set_variables(array $variables) {
-    global $scssc;
-    $scssc->setVariables($variables);
+
+    $this->scssc->setVariables($variables);
   }
 } // End Wp_Scss Class

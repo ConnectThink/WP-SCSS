@@ -3,7 +3,7 @@
  * Plugin Name: WP-SCSS
  * Plugin URI: https://github.com/ConnectThink/WP-SCSS
  * Description: Compiles scss files live on WordPress.
- * Version: 2.1.5
+ * Version: 2.2.0
  * Author: Connect Think
  * Author URI: http://connectthink.com
  * License: GPLv3
@@ -44,7 +44,7 @@ if (!defined('WPSCSS_VERSION_KEY'))
   define('WPSCSS_VERSION_KEY', 'wpscss_version');
 
 if (!defined('WPSCSS_VERSION_NUM'))
-  define('WPSCSS_VERSION_NUM', '2.1.5');
+  define('WPSCSS_VERSION_NUM', '2.2.0');
 
 // Add version to options table
 if ( get_option( WPSCSS_VERSION_KEY ) !== false ) {
@@ -220,7 +220,7 @@ function wp_scss_compile() {
  * half of entries in the file.
  */
 
-$log_file = $wpscss_compiler->scss_dir.'error_log.log';
+$log_file = $wpscss_compiler->get_scss_dir() . 'error_log.log';
 
 function wpscss_error_styles() {
   echo
@@ -266,15 +266,17 @@ function wpscss_settings_show_errors($errors) {
 function wpscss_handle_errors() {
   global $wpscss_settings, $log_file, $wpscss_compiler;
   // Show to logged in users: All the methods for checking user login are set up later in the WP flow, so this only checks that there is a cookie
-  if ( !is_admin() && $wpscss_settings['errors'] === 'show-logged-in' && !empty($_COOKIE[LOGGED_IN_COOKIE]) && count($wpscss_compiler->compile_errors) > 0) {
-    wpscss_settings_show_errors($wpscss_compiler->compile_errors);
+
+  $compile_errors = $wpscss_compiler->get_compile_errors();
+  if ( !is_admin() && $wpscss_settings['errors'] === 'show-logged-in' && !empty($_COOKIE[LOGGED_IN_COOKIE]) && count($compile_errors) > 0) {
+    wpscss_settings_show_errors($compile_errors);
     // Show in the header to anyone
-  } else if ( !is_admin() && $wpscss_settings['errors'] === 'show' && count($wpscss_compiler->compile_errors) > 0) {
-    wpscss_settings_show_errors($wpscss_compiler->compile_errors);
+  } else if ( !is_admin() && $wpscss_settings['errors'] === 'show' && count($compile_errors) > 0) {
+    wpscss_settings_show_errors($compile_errors);
   } else { // Hide errors and print them to a log file.
-    foreach ($wpscss_compiler->compile_errors as $error) {
+    foreach ($compile_errors as $error) {
       $error_string = date('m/d/y g:i:s', time()) .': ';
-      $error_string .= $error['file'] .' - '. $error['message'] . PHP_EOL;
+      $error_string .= $error['file'] . ' - ' . $error['message'] . PHP_EOL;
       file_put_contents($log_file, $error_string, FILE_APPEND);
       $error_string = "";
     }

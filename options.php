@@ -65,7 +65,8 @@ class Wp_Scss_Settings
   public function page_init()
   {
     $base_compiling_folder_options = array(
-      get_stylesheet_directory()  => 'Current theme',
+      get_template_directory()  => 'Parent theme', // Won't display if no parent theme as it would have duplicate keys in array
+      get_stylesheet_directory()  => (get_stylesheet_directory() === get_template_directory() ? 'Current theme' : 'Child theme'),
       wp_get_upload_dir()['basedir'] => 'Uploads directory',
       WPSCSS_PLUGIN_DIR => 'WP-SCSS Plugin',
     );
@@ -96,7 +97,7 @@ class Wp_Scss_Settings
       array(                                   // args
         'name' => 'base_compiling_folder',
         'type' => apply_filters( 'wp_scss_base_compiling_modes',
-        $base_compiling_folder_options
+          $base_compiling_folder_options
         )
       )
     );
@@ -251,7 +252,9 @@ class Wp_Scss_Settings
    * Print the Section text
    */
   public function print_paths_info() {
-    print 'Location of your SCSS/CSS folders. Folders must be nested under your <b>Base Location</b> and start with <code>/</code>.</br>Examples: <code>/custom-scss/</code> and <code>/custom-css/</code>';
+    print 'Location of your SCSS/CSS folders. Folders must be nested under your <b>Base Location</b> and start with <code>/</code>.' .
+      '</br>Examples: <code>/custom-scss/</code> and <code>/custom-css/</code>' .
+      '</br><b>Caution</b> updating some themes or plugins will delete the custom WP-SCSS Base Location when nested.';
   }
   public function print_compile_info() {
     print 'Choose how you would like SCSS and source maps to be compiled and how you would like the plugin to handle errors';
