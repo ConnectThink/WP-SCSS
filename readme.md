@@ -24,7 +24,7 @@ Ideally you should setup a scss folder and a css folder within your theme. This 
 
 #### Compiling Mode
 
-Compiling comes in five modes:
+Compiling comes in two modes:
 
 - Compressed - More compressed css. Entire rule block on one line. No indentation.
 - Expanded - Full open css. One line per property. Brackets close on their own line.
