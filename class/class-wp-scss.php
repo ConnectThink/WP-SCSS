@@ -97,7 +97,7 @@ class Wp_Scss {
       $outputName = preg_replace("/\.[^$]*/", ".css", $scss_file);
       $output = $this->css_dir . $outputName;
 
-      $this->compiler($input, $output, $this);
+      $this->compiler($input, $output);
     }
 
     if (count($this->compile_errors) < 1) {
@@ -133,7 +133,7 @@ class Wp_Scss {
    *                   Puts error in 'compile_errors' property
    * @access public
    */
-  private function compiler($in, $out, $instance) {
+  private function compiler($in, $out) {
 
     if (!file_exists($this->cache)) {
       mkdir($this->cache, 0644);
@@ -141,9 +141,9 @@ class Wp_Scss {
     if (is_writable($this->cache)) {
       try {
         $map = basename($out) . '.map';
-        $this->scssc->setSourceMap(constant('ScssPhp\ScssPhp\Compiler::' . $instance->sourcemaps));
+        $this->scssc->setSourceMap(constant('ScssPhp\ScssPhp\Compiler::' . $this->sourcemaps->sourcemaps));
         $this->scssc->setSourceMapOptions(array(
-          'sourceMapWriteTo' => $instance->css_dir . $map, // absolute path to a file to write the map to
+          'sourceMapWriteTo' => $this->css_dir . $map, // absolute path to a file to write the map to
           'sourceMapURL' => $map, // url of the map
           'sourceMapBasepath' => rtrim(ABSPATH, '/'), // base path for filename normalization
           'sourceRoot' => home_url('/'), // This value is prepended to the individual entries in the 'source' field.
@@ -157,14 +157,14 @@ class Wp_Scss {
           'file' => basename($in),
           'message' => $e->getMessage(),
         );
-        array_push($instance->compile_errors, $errors);
+        array_push($this->compile_errors, $errors);
       }
     } else {
       $errors = array (
         'file' => $this->cache,
         'message' => "File Permission Error, permission denied. Please make the cache directory writable."
       );
-      array_push($instance->compile_errors, $errors);
+      array_push($this->compile_errors, $errors);
     }
   }
 
