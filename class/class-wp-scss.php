@@ -141,7 +141,7 @@ class Wp_Scss {
     if (is_writable($this->cache)) {
       try {
         $map = basename($out) . '.map';
-        $this->scssc->setSourceMap(constant('ScssPhp\ScssPhp\Compiler::' . $this->sourcemaps->sourcemaps));
+        $this->scssc->setSourceMap(constant('ScssPhp\ScssPhp\Compiler::' . $this->sourcemaps));
         $this->scssc->setSourceMapOptions(array(
           'sourceMapWriteTo' => $this->css_dir . $map, // absolute path to a file to write the map to
           'sourceMapURL' => $map, // url of the map
@@ -149,7 +149,8 @@ class Wp_Scss {
           'sourceRoot' => home_url('/'), // This value is prepended to the individual entries in the 'source' field.
         ));
 
-        $css = $this->scssc->compile(file_get_contents($in), $in);
+        $compilationResult = $this->scssc->compileString(file_get_contents($in), $in);
+        $css = ($compilationResult->getCss();
 
         file_put_contents($this->cache . basename($out), $css);
       } catch (Exception $e) {
@@ -275,6 +276,6 @@ class Wp_Scss {
 
   public function set_variables(array $variables) {
 
-    $this->scssc->setVariables($variables);
+    $this->scssc->addVariables($variables);
   }
 } // End Wp_Scss Class
