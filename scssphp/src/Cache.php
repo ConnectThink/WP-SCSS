@@ -1,8 +1,9 @@
 <?php
+
 /**
  * SCSSPHP
  *
- * @copyright 2012-2019 Leaf Corcoran
+ * @copyright 2012-2020 Leaf Corcoran
  *
  * @license http://opensource.org/licenses/MIT MIT
  *
@@ -22,13 +23,12 @@ use Exception;
  * taking in account options that affects the result
  *
  * The cache manager is agnostic about data format and only the operation is expected to be described by string
- *
  */
 
 /**
  * SCSS cache
  *
- * @author Cedric Morin
+ * @author Cedric Morin <cedric@yterium.com>
  */
 class Cache
 {
@@ -57,12 +57,12 @@ class Cache
     public function __construct($options)
     {
         // check $cacheDir
-        if (isset($options['cache_dir'])) {
-            self::$cacheDir = $options['cache_dir'];
+        if (isset($options['cacheDir'])) {
+            self::$cacheDir = $options['cacheDir'];
         }
 
         if (empty(self::$cacheDir)) {
-            throw new Exception('cache_dir not set');
+            throw new Exception('cacheDir not set');
         }
 
         if (isset($options['prefix'])) {
@@ -74,7 +74,7 @@ class Cache
         }
 
         if (isset($options['forceRefresh'])) {
-            self::$forceRefresh = $options['force_refresh'];
+            self::$forceRefresh = $options['forceRefresh'];
         }
 
         self::checkCacheDir();
@@ -97,18 +97,20 @@ class Cache
     {
         $fileCache = self::$cacheDir . self::cacheName($operation, $what, $options);
 
-        if ((! self::$forceRefresh || (self::$forceRefresh === 'once' &&
+        if (
+            ((self::$forceRefresh === false) || (self::$forceRefresh === 'once' &&
             isset(self::$refreshed[$fileCache]))) && file_exists($fileCache)
         ) {
             $cacheTime = filemtime($fileCache);
 
-            if ((is_null($lastModified) || $cacheTime > $lastModified) &&
+            if (
+                (\is_null($lastModified) || $cacheTime > $lastModified) &&
                 $cacheTime + self::$gcLifetime > time()
             ) {
                 $c = file_get_contents($fileCache);
                 $c = unserialize($c);
 
-                if (is_array($c) && isset($c['value'])) {
+                if (\is_array($c) && isset($c['value'])) {
                     return $c['value'];
                 }
             }
@@ -132,6 +134,7 @@ class Cache
 
         $c = ['value' => $value];
         $c = serialize($c);
+
         file_put_contents($fileCache, $c);
 
         if (self::$forceRefresh === 'once') {
@@ -176,13 +179,11 @@ class Cache
         self::$cacheDir = str_replace('\\', '/', self::$cacheDir);
         self::$cacheDir = rtrim(self::$cacheDir, '/') . '/';
 
-        if (! file_exists(self::$cacheDir)) {
-            if (! mkdir(self::$cacheDir)) {
-                throw new Exception('Cache directory couldn\'t be created: ' . self::$cacheDir);
-            }
-        } elseif (! is_dir(self::$cacheDir)) {
+        if (! is_dir(self::$cacheDir)) {
             throw new Exception('Cache directory doesn\'t exist: ' . self::$cacheDir);
-        } elseif (! is_writable(self::$cacheDir)) {
+        }
+
+        if (! is_writable(self::$cacheDir)) {
             throw new Exception('Cache directory isn\'t writable: ' . self::$cacheDir);
         }
     }
