@@ -111,7 +111,12 @@ function wpscss_plugin_action_links($links, $file) {
 
 add_filter('option_wpscss_options', 'wpscss_plugin_db_cleanup');
 function wpscss_plugin_db_cleanup($option_values){
-  $option_values['compiling_options'] = str_replace("Leafo", "ScssPhp", $option_values['compiling_options']);
+  $deprecated_options = ["Nested", "Compact", "Crunched"];
+  $compiling_options = str_replace("Leafo", "ScssPhp", $option_values['compiling_options']);
+  $compiling_options = str_replace("ScssPhp\\ScssPhp\\Formatter\\", "", $compiling_options);
+  $compiling_options = str_replace($deprecated_options, "compressed", $compiling_options);
+  $compiling_options = strtolower($compiling_options);
+  $option_values['compiling_options'] = $compiling_options;
   return $option_values;
 }
 

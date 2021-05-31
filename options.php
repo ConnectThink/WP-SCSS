@@ -137,12 +137,8 @@ class Wp_Scss_Settings
         'name' => 'compiling_options',
         'type' => apply_filters( 'wp_scss_compiling_modes',
           array(
-            'ScssPhp\ScssPhp\Formatter\Expanded'   => 'Expanded',
-            'ScssPhp\ScssPhp\Formatter\Nested'     => 'Nested',
-            'ScssPhp\ScssPhp\Formatter\Compressed' => 'Compressed',
-            'ScssPhp\ScssPhp\Formatter\Compact'    => 'Compact',
-            'ScssPhp\ScssPhp\Formatter\Crunched'   => 'Crunched',
-            'ScssPhp\ScssPhp\Formatter\Debug'      => 'Debug'
+            'compressed' => 'Compressed',
+            'expanded'   => 'Expanded',
           )
         )
       )

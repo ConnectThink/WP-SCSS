@@ -5,20 +5,13 @@ include_once(WPSCSS_PLUGIN_DIR . '/scssphp/scss.inc.php');
 use ScssPhp\ScssPhp\Compiler;
 
 class Wp_Scss {
-  /**
-   * Compiling preferences properites
-   *
-   * @var string
-   * @access private
-   */
-  private $scss_dir, $css_dir, $compile_method, $scssc, $compile_errors, $sourcemaps, $cache;
 
   /**
    * Set values for Wp_Scss::properties
    *
    * @param string scss_dir - path to source directory for scss files
    * @param string css_dir - path to output directory for css files
-   * @param string method - type of compile (compressed, expanded, etc)
+   * @param string compile_method - type of compile (compressed or expanded)
    *
    * @var object scssc - instantiate the compiling object.
    *
@@ -28,13 +21,12 @@ class Wp_Scss {
   
     $this->scss_dir         = $scss_dir;
     $this->css_dir          = $css_dir;
-    $this->compile_method   = $compile_method;
     $this->compile_errors   = array();
     $this->scssc            = new Compiler();
 
     $this->cache = WPSCSS_PLUGIN_DIR . '/cache/';
 
-    $this->scssc->setFormatter( $compile_method );
+    $this->scssc->setOutputStyle( $compile_method );
     $this->scssc->setImportPaths( $this->scss_dir );
 
     $this->sourcemaps = $sourcemaps;
