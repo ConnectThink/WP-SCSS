@@ -166,7 +166,7 @@ if( $scss_dir_setting == false || $css_dir_setting == false ) {
 $wpscss_settings = array(
   'scss_dir'         => $base_compiling_folder . $scss_dir_setting,
   'css_dir'          => $base_compiling_folder . $css_dir_setting,
-  'compiling'        => isset($wpscss_options['compiling_options']) ? $wpscss_options['compiling_options'] : 'ScssPhp\ScssPhp\Formatter\Expanded',
+  'compiling'        => isset($wpscss_options['compiling_options']) ? $wpscss_options['compiling_options'] : 'compressed',
   'always_recompile' => isset($wpscss_options['always_recompile'])  ? $wpscss_options['always_recompile']  : false,
   'errors'           => isset($wpscss_options['errors'])            ? $wpscss_options['errors']            : 'show',
   'sourcemaps'       => isset($wpscss_options['sourcemap_options']) ? $wpscss_options['sourcemap_options'] : 'SOURCE_MAP_NONE',
@@ -199,7 +199,6 @@ function wp_scss_needs_compiling() {
     wpscss_handle_errors();
   }
 }
-
 add_action('wp_loaded', 'wp_scss_needs_compiling');
 
 function wp_scss_compile() {
