@@ -5,7 +5,7 @@ Plugin URI: https://github.com/ConnectThink/WP-SCSS
 Requires at least: 3.0.1
 Tested up to: 5.7.1
 Requires PHP: 5.6
-Stable tag: 2.1.6
+Stable tag: 2.2.0
 License: GPLv3 or later
 License URI: http://www.gnu.org/copyleft/gpl.html
 
@@ -76,6 +76,10 @@ If you are having issues with the plugin, create an issue on [github](https://gi
 
 == Changelog ==
 
+= 2.2.0 =
+  - Updates to allow compile() from outside the plugin [niaccurshi](https://github.com/ConnectThink/WP-SCSS/pull/190)
+  - Update src to use [ScssPHP github repo at 1.2.1](https://github.com/scssphp/scssphp/releases/tag/1.2.1)
+  
 = 2.1.6 =
   - When enqueueing CSS files Defer to WordPress for URLs instead of trying to guess them. Change by [mmcev106](https://github.com/ConnectThink/WP-SCSS/pull/185)
   - Allow setting Base Directory to Parent theme folder. [Shadoath](https://github.com/ConnectThink/WP-SCSS/issues/178)
