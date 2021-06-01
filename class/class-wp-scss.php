@@ -18,7 +18,7 @@ class Wp_Scss {
    * @var array compile_errors - catches errors from compile
    */
   public function __construct ($scss_dir, $css_dir, $compile_method, $sourcemaps) {
-  
+
     $this->scss_dir         = $scss_dir;
     $this->css_dir          = $css_dir;
     $this->compile_errors   = array();
@@ -81,7 +81,7 @@ class Wp_Scss {
    * @access public
    */
   public function compile() {
-   
+
     $input_files = array();
 
     // Loop through directory and get .scss file that do not start with '_'
@@ -276,6 +276,6 @@ class Wp_Scss {
 
   public function set_variables(array $variables) {
 
-    $this->scssc->addVariables(array_map('Scssphp\Scssphp\ValueConverter::parseValue', $variables));
+    $this->scssc->addVariables(array_map('ScssPhp\ScssPhp\ValueConverter::parseValue', $variables));
   }
 } // End Wp_Scss Class
