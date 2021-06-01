@@ -150,7 +150,7 @@ class Wp_Scss {
         ));
 
         $compilationResult = $this->scssc->compileString(file_get_contents($in), $in);
-        $css = ($compilationResult->getCss();
+        $css = $compilationResult->getCss();
 
         file_put_contents($this->cache . basename($out), $css);
       } catch (Exception $e) {
@@ -276,6 +276,6 @@ class Wp_Scss {
 
   public function set_variables(array $variables) {
 
-    $this->scssc->addVariables($variables);
+    $this->scssc->addVariables(array_map('Scssphp\Scssphp\ValueConverter::parseValue', $variables));
   }
 } // End Wp_Scss Class
