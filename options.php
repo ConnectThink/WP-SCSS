@@ -1,6 +1,9 @@
 <?php
-class Wp_Scss_Settings
-{
+
+use ScssPhp\ScssPhp\Formatter\Compressed;
+use ScssPhp\ScssPhp\Formatter\Expanded;
+
+class Wp_Scss_Settings {
   /**
    * Holds the values to be used in the fields callbacks
    */
@@ -9,8 +12,7 @@ class Wp_Scss_Settings
   /**
    * Start up
    */
-  public function __construct()
-  {
+  public function __construct() {
     add_action( 'admin_menu', array( $this, 'add_plugin_page' ) );
     add_action( 'admin_init', array( $this, 'page_init' ) );
   }
@@ -18,8 +20,7 @@ class Wp_Scss_Settings
   /**
    * Add options page
    */
-  public function add_plugin_page()
-  {
+  public function add_plugin_page() {
     // This page will be under "Settings"
     add_options_page(
       'Settings Admin',
@@ -33,8 +34,7 @@ class Wp_Scss_Settings
   /**
    * Options page callback
    */
-  public function create_admin_page()
-  {
+  public function create_admin_page() {
     // Set class property
     $this->options = get_option( 'wpscss_options' );
     ?>
@@ -62,8 +62,7 @@ class Wp_Scss_Settings
   /**
    * Register and add settings
    */
-  public function page_init()
-  {
+  public function page_init() {
     register_setting(
       'wpscss_options_group',    // Option group
       'wpscss_options',          // Option name
@@ -137,8 +136,8 @@ class Wp_Scss_Settings
         'name' => 'compiling_options',
         'type' => apply_filters( 'wp_scss_compiling_modes',
           array(
-            'compressed' => 'Compressed',
-            'expanded'   => 'Expanded',
+            OutputStyle::COMPRESSED => 'Compressed',
+            OutputStyle::EXPANDED   => 'Expanded',
           )
         )
       )
