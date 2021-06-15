@@ -1,7 +1,6 @@
 <?php
 
-use ScssPhp\ScssPhp\Formatter\Compressed;
-use ScssPhp\ScssPhp\Formatter\Expanded;
+use ScssPhp\ScssPhp\OutputStyle;
 
 class Wp_Scss_Settings {
   /**
@@ -136,8 +135,8 @@ class Wp_Scss_Settings {
         'name' => 'compiling_options',
         'type' => apply_filters( 'wp_scss_compiling_modes',
           array(
-            OutputStyle::COMPRESSED => 'Compressed',
-            OutputStyle::EXPANDED   => 'Expanded',
+            OutputStyle::COMPRESSED => ucfirst(OutputStyle::COMPRESSED),
+            OutputStyle::EXPANDED   => ucfirst(OutputStyle::EXPANDED),
           )
         )
       )
