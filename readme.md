@@ -24,11 +24,14 @@ Ideally you should setup a scss folder and a css folder within your theme. This 
 
 #### Compiling Mode
 
-Compiling comes in five modes:
+Compiling comes in two modes:
 
-- Expanded - Full open css. One line per property. Brackets close on their own line.
-- Nested - Lightly compressed css. Brackets close with css block. Indents to match scss nesting.
 - Compressed - More compressed css. Entire rule block on one line. No indentation.
+- Expanded - Full open css. One line per property. Brackets close on their own line.
+
+**Removed** compiling modes
+
+- Nested - Lightly compressed css. Brackets close with css block. Indents to match scss nesting.
 - Compact - Removes all line breaks, unnecessary whitespace, and single-line comments.
 - Crunched - Same as Compressed, but also removes multi-line comments.
 
