@@ -24,11 +24,14 @@ Ideally you should setup a scss folder and a css folder within your theme. This 
 
 #### Compiling Mode
 
-Compiling comes in five modes:
+Compiling comes in two modes:
 
-- Expanded - Full open css. One line per property. Brackets close on their own line.
-- Nested - Lightly compressed css. Brackets close with css block. Indents to match scss nesting.
 - Compressed - More compressed css. Entire rule block on one line. No indentation.
+- Expanded - Full open css. One line per property. Brackets close on their own line.
+
+**Removed** compiling modes
+
+- Nested - Lightly compressed css. Brackets close with css block. Indents to match scss nesting.
 - Compact - Removes all line breaks, unnecessary whitespace, and single-line comments.
 - Crunched - Same as Compressed, but also removes multi-line comments.
 
@@ -104,6 +107,9 @@ This plugin will only work with .scss format.
 
 ## Changelog
 
+- 2.3.0
+  - Update src to use [ScssPHP github repo at 1.5.2](https://github.com/scssphp/scssphp/releases/tag/1.5.2)
+  - Update deprecated setFormatter to setOutputStyle and provide db migration [shadoath](https://github.com/ConnectThink/WP-SCSS/pull/195)
 - 2.2.0
   - Updates to allow compile() from outside the plugin [niaccurshi](https://github.com/ConnectThink/WP-SCSS/pull/190)
   - Update src to use [ScssPHP github repo at 1.2.1](https://github.com/scssphp/scssphp/releases/tag/1.2.1)

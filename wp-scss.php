@@ -3,7 +3,7 @@
  * Plugin Name: WP-SCSS
  * Plugin URI: https://github.com/ConnectThink/WP-SCSS
  * Description: Compiles scss files live on WordPress.
- * Version: 2.2.0
+ * Version: 2.3.0
  * Author: Connect Think
  * Author URI: http://connectthink.com
  * License: GPLv3
@@ -44,7 +44,7 @@ if (!defined('WPSCSS_VERSION_KEY'))
   define('WPSCSS_VERSION_KEY', 'wpscss_version');
 
 if (!defined('WPSCSS_VERSION_NUM'))
-  define('WPSCSS_VERSION_NUM', '2.2.0');
+  define('WPSCSS_VERSION_NUM', '2.3.0');
 
 // Add version to options table
 if ( get_option( WPSCSS_VERSION_KEY ) !== false ) {
@@ -111,7 +111,12 @@ function wpscss_plugin_action_links($links, $file) {
 
 add_filter('option_wpscss_options', 'wpscss_plugin_db_cleanup');
 function wpscss_plugin_db_cleanup($option_values){
-  $option_values['compiling_options'] = str_replace("Leafo", "ScssPhp", $option_values['compiling_options']);
+  $compiling_options = str_replace("Leafo", "ScssPhp", $option_values['compiling_options']);
+  $compiling_options = str_replace("ScssPhp\\ScssPhp\\Formatter\\", "", $compiling_options);
+  $compiling_options = str_replace(["Compact", "Crunched"], "compressed", $compiling_options);
+  $compiling_options = str_replace("Nested", "expanded", $compiling_options);
+  $compiling_options = strtolower($compiling_options);
+  $option_values['compiling_options'] = $compiling_options;
   return $option_values;
 }
 
@@ -161,7 +166,7 @@ if( $scss_dir_setting == false || $css_dir_setting == false ) {
 $wpscss_settings = array(
   'scss_dir'         => $base_compiling_folder . $scss_dir_setting,
   'css_dir'          => $base_compiling_folder . $css_dir_setting,
-  'compiling'        => isset($wpscss_options['compiling_options']) ? $wpscss_options['compiling_options'] : 'ScssPhp\ScssPhp\Formatter\Expanded',
+  'compiling'        => isset($wpscss_options['compiling_options']) ? $wpscss_options['compiling_options'] : 'compressed',
   'always_recompile' => isset($wpscss_options['always_recompile'])  ? $wpscss_options['always_recompile']  : false,
   'errors'           => isset($wpscss_options['errors'])            ? $wpscss_options['errors']            : 'show',
   'sourcemaps'       => isset($wpscss_options['sourcemap_options']) ? $wpscss_options['sourcemap_options'] : 'SOURCE_MAP_NONE',
@@ -194,7 +199,6 @@ function wp_scss_needs_compiling() {
     wpscss_handle_errors();
   }
 }
-
 add_action('wp_loaded', 'wp_scss_needs_compiling');
 
 function wp_scss_compile() {

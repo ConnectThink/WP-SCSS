@@ -5,36 +5,28 @@ include_once(WPSCSS_PLUGIN_DIR . '/scssphp/scss.inc.php');
 use ScssPhp\ScssPhp\Compiler;
 
 class Wp_Scss {
-  /**
-   * Compiling preferences properites
-   *
-   * @var string
-   * @access private
-   */
-  private $scss_dir, $css_dir, $compile_method, $scssc, $compile_errors, $sourcemaps, $cache;
 
   /**
    * Set values for Wp_Scss::properties
    *
    * @param string scss_dir - path to source directory for scss files
    * @param string css_dir - path to output directory for css files
-   * @param string method - type of compile (compressed, expanded, etc)
+   * @param string compile_method - type of compile (compressed or expanded)
    *
    * @var object scssc - instantiate the compiling object.
    *
    * @var array compile_errors - catches errors from compile
    */
   public function __construct ($scss_dir, $css_dir, $compile_method, $sourcemaps) {
-  
+
     $this->scss_dir         = $scss_dir;
     $this->css_dir          = $css_dir;
-    $this->compile_method   = $compile_method;
     $this->compile_errors   = array();
     $this->scssc            = new Compiler();
 
     $this->cache = WPSCSS_PLUGIN_DIR . '/cache/';
 
-    $this->scssc->setFormatter( $compile_method );
+    $this->scssc->setOutputStyle( $compile_method );
     $this->scssc->setImportPaths( $this->scss_dir );
 
     $this->sourcemaps = $sourcemaps;
@@ -89,7 +81,7 @@ class Wp_Scss {
    * @access public
    */
   public function compile() {
-   
+
     $input_files = array();
 
     // Loop through directory and get .scss file that do not start with '_'
@@ -105,7 +97,7 @@ class Wp_Scss {
       $outputName = preg_replace("/\.[^$]*/", ".css", $scss_file);
       $output = $this->css_dir . $outputName;
 
-      $this->compiler($input, $output, $this);
+      $this->compiler($input, $output);
     }
 
     if (count($this->compile_errors) < 1) {
@@ -141,7 +133,7 @@ class Wp_Scss {
    *                   Puts error in 'compile_errors' property
    * @access public
    */
-  private function compiler($in, $out, $instance) {
+  private function compiler($in, $out) {
 
     if (!file_exists($this->cache)) {
       mkdir($this->cache, 0644);
@@ -149,15 +141,16 @@ class Wp_Scss {
     if (is_writable($this->cache)) {
       try {
         $map = basename($out) . '.map';
-        $this->scssc->setSourceMap(constant('ScssPhp\ScssPhp\Compiler::' . $instance->sourcemaps));
+        $this->scssc->setSourceMap(constant('ScssPhp\ScssPhp\Compiler::' . $this->sourcemaps));
         $this->scssc->setSourceMapOptions(array(
-          'sourceMapWriteTo' => $instance->css_dir . $map, // absolute path to a file to write the map to
+          'sourceMapWriteTo' => $this->css_dir . $map, // absolute path to a file to write the map to
           'sourceMapURL' => $map, // url of the map
           'sourceMapBasepath' => rtrim(ABSPATH, '/'), // base path for filename normalization
           'sourceRoot' => home_url('/'), // This value is prepended to the individual entries in the 'source' field.
         ));
 
-        $css = $this->scssc->compile(file_get_contents($in), $in);
+        $compilationResult = $this->scssc->compileString(file_get_contents($in), $in);
+        $css = $compilationResult->getCss();
 
         file_put_contents($this->cache . basename($out), $css);
       } catch (Exception $e) {
@@ -165,14 +158,14 @@ class Wp_Scss {
           'file' => basename($in),
           'message' => $e->getMessage(),
         );
-        array_push($instance->compile_errors, $errors);
+        array_push($this->compile_errors, $errors);
       }
     } else {
       $errors = array (
         'file' => $this->cache,
         'message' => "File Permission Error, permission denied. Please make the cache directory writable."
       );
-      array_push($instance->compile_errors, $errors);
+      array_push($this->compile_errors, $errors);
     }
   }
 
@@ -283,6 +276,6 @@ class Wp_Scss {
 
   public function set_variables(array $variables) {
 
-    $this->scssc->setVariables($variables);
+    $this->scssc->addVariables(array_map('ScssPhp\ScssPhp\ValueConverter::parseValue', $variables));
   }
 } // End Wp_Scss Class
