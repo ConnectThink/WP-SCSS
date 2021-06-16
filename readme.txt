@@ -61,7 +61,7 @@ Alternatively, you can include [Bourbon](https://github.com/thoughtbot/bourbon) 
 
 This plugin will only work with .scss format.
 
- 
+
 = It's not updating my css, what's happening? =
 
 Do you have errors printing to the front end? If not, check your log file in your scss directory. The css will not be updated if there are errors in your sass file(s).
@@ -79,11 +79,11 @@ If you are having issues with the plugin, create an issue on [github](https://gi
 = 2.3.0 =
   - Update src to use [ScssPHP github repo at 1.5.2](https://github.com/scssphp/scssphp/releases/tag/1.5.2)
   - Update deprecated setFormatter to setOutputStyle and provide db migration [shadoath](https://github.com/ConnectThink/WP-SCSS/pull/195)
-  
+
 = 2.2.0 =
   - Updates to allow compile() from outside the plugin [niaccurshi](https://github.com/ConnectThink/WP-SCSS/pull/190)
   - Update src to use [ScssPHP github repo at 1.2.1](https://github.com/scssphp/scssphp/releases/tag/1.2.1)
-  
+
 = 2.1.6 =
   - When enqueueing CSS files Defer to WordPress for URLs instead of trying to guess them. Change by [mmcev106](https://github.com/ConnectThink/WP-SCSS/pull/185)
   - Allow setting Base Directory to Parent theme folder. [Shadoath](https://github.com/ConnectThink/WP-SCSS/issues/178)
