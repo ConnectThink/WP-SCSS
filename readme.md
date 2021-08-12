@@ -107,6 +107,9 @@ This plugin will only work with .scss format.
 
 ## Changelog
 
+
+- 2.3.1
+  - Wrap check for WP_SCSS_ALWAYS_RECOMPILE with () [niaccurshi](https://github.com/ConnectThink/WP-SCSS/pull/199)
 - 2.3.0
   - Update src to use [ScssPHP github repo at 1.5.2](https://github.com/scssphp/scssphp/releases/tag/1.5.2)
   - Update deprecated setFormatter to setOutputStyle and provide db migration [shadoath](https://github.com/ConnectThink/WP-SCSS/pull/195)
