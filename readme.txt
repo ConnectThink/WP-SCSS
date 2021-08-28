@@ -3,7 +3,7 @@ Contributors: connectthink, sky-bolt
 Tags: sass, scss, css, ScssPhp
 Plugin URI: https://github.com/ConnectThink/WP-SCSS
 Requires at least: 3.0.1
-Tested up to: 5.7.1
+Tested up to: 5.8
 Requires PHP: 5.6
 Stable tag: 2.3.1
 License: GPLv3 or later
