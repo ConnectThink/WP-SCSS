@@ -253,12 +253,13 @@ function wpscss_error_styles() {
 }
 
 function wpscss_settings_show_errors($errors) {
+  $allowed_html = array( 'string' => array(), 'br' => array(), 'em' => array() );
   echo '<div class="scss_errors"><pre>';
   echo '<h6 style="margin: 15px 0;">Sass Compiling Error</h6>';
 
   foreach( $errors as $error) {
     echo '<p class="sass_error">';
-    echo '<strong>'. $error['file'] .'</strong> <br/><em>"'. $error['message'] .'"</em>';
+    echo wp_kses('<strong>'. $error['file'] .'</strong> <br/><em>"'. $error['message'] .'"</em>', $allowed_html);
     echo '<p class="sass_error">';
   }
 
