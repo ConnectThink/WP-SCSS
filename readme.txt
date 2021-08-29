@@ -3,9 +3,9 @@ Contributors: connectthink, sky-bolt
 Tags: sass, scss, css, ScssPhp
 Plugin URI: https://github.com/ConnectThink/WP-SCSS
 Requires at least: 3.0.1
-Tested up to: 5.7.1
+Tested up to: 5.8
 Requires PHP: 5.6
-Stable tag: 2.3.1
+Stable tag: 2.3.2
 License: GPLv3 or later
 License URI: http://www.gnu.org/copyleft/gpl.html
 
@@ -75,6 +75,9 @@ If you are having issues with the plugin, create an issue on [github](https://gi
 
 
 == Changelog ==
+
+= 2.3.2 =
+  - Add wp_kses() to echos with potential user input [shadoath](https://github.com/ConnectThink/WP-SCSS/pull/208)
 
 = 2.3.1 =
   - Wrap check for WP_SCSS_ALWAYS_RECOMPILE with () [niaccurshi](https://github.com/ConnectThink/WP-SCSS/pull/199)

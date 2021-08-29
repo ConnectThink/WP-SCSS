@@ -40,7 +40,7 @@ class Wp_Scss_Settings {
     <div class="wrap">
         <h2>WP-SCSS Settings</h2>
         <p>
-          <span class="version">Version <em><?php echo get_option('wpscss_version'); ?></em>
+          <span class="version">Version <em><?php echo wp_kses(get_option('wpscss_version'), array()); ?></em>
           <br/>
           <span class="author">By: <a href="http://connectthink.com" target="_blank">Connect Think</a></span>
           <br/>
@@ -274,7 +274,7 @@ class Wp_Scss_Settings {
     }
     $html .= '</select>';
 
-    echo $html;
+    echo wp_kses($html, array( 'select' => array(), 'option' => array()));
   }
 
   /**
@@ -291,7 +291,6 @@ class Wp_Scss_Settings {
       $html .= '<label for="' . esc_attr( $args['name'] ) . '"></label>';
     }
 
-
-    echo $html;
+    echo wp_kses($html, array('input' => array(), 'label' => array() ));
   }
 }

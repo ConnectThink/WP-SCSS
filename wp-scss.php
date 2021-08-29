@@ -3,7 +3,7 @@
  * Plugin Name: WP-SCSS
  * Plugin URI: https://github.com/ConnectThink/WP-SCSS
  * Description: Compiles scss files live on WordPress.
- * Version: 2.3.1
+ * Version: 2.3.2
  * Author: Connect Think
  * Author URI: http://connectthink.com
  * License: GPLv3
@@ -44,7 +44,7 @@ if (!defined('WPSCSS_VERSION_KEY'))
   define('WPSCSS_VERSION_KEY', 'wpscss_version');
 
 if (!defined('WPSCSS_VERSION_NUM'))
-  define('WPSCSS_VERSION_NUM', '2.3.1');
+  define('WPSCSS_VERSION_NUM', '2.3.2');
 
 // Add version to options table
 if ( get_option( WPSCSS_VERSION_KEY ) !== false ) {
@@ -253,12 +253,13 @@ function wpscss_error_styles() {
 }
 
 function wpscss_settings_show_errors($errors) {
+  $allowed_html = array( 'string' => array(), 'br' => array(), 'em' => array() );
   echo '<div class="scss_errors"><pre>';
   echo '<h6 style="margin: 15px 0;">Sass Compiling Error</h6>';
 
   foreach( $errors as $error) {
     echo '<p class="sass_error">';
-    echo '<strong>'. $error['file'] .'</strong> <br/><em>"'. $error['message'] .'"</em>';
+    echo wp_kses('<strong>'. $error['file'] .'</strong> <br/><em>"'. $error['message'] .'"</em>', $allowed_html);
     echo '<p class="sass_error">';
   }
 
