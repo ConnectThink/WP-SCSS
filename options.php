@@ -262,9 +262,6 @@ class Wp_Scss_Settings {
     );
   }
 
-  public function kses_allowed_html_for_inputs(){
-    return array( 'select' => array(), 'option' => array(), 'input' => array(), 'label' => array() );
-  }
   /**
    * Select Boxes' Callbacks
    */
@@ -277,7 +274,7 @@ class Wp_Scss_Settings {
     }
     $html .= '</select>';
 
-    echo wp_kses($html, kses_allowed_html_for_inputs());
+    echo wp_kses($html, array( 'select' => array(), 'option' => array()));
   }
 
   /**
@@ -294,6 +291,6 @@ class Wp_Scss_Settings {
       $html .= '<label for="' . esc_attr( $args['name'] ) . '"></label>';
     }
 
-    echo wp_kses($html, kses_allowed_html_for_inputs());
+    echo wp_kses($html, array('input' => array(), 'label' => array() ));
   }
 }
