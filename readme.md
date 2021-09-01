@@ -107,6 +107,8 @@ This plugin will only work with .scss format.
 
 ## Changelog
 
+- 2.3.3
+  - Fix params passed to wp_kses() [shadoath](https://github.com/ConnectThink/WP-SCSS/pull/211)
 - 2.3.2
   - Add wp_kses() to echos with potential user input [shadoath](https://github.com/ConnectThink/WP-SCSS/pull/208)
 - 2.3.1
