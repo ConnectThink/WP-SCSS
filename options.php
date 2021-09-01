@@ -274,7 +274,7 @@ class Wp_Scss_Settings {
     }
     $html .= '</select>';
 
-    echo wp_kses($html, array( 'select' => array(), 'option' => array()));
+    echo wp_kses($html, array( 'select' => array('id' => array(), 'name' => array()), 'option' => array('value' => array())));
   }
 
   /**
@@ -291,6 +291,6 @@ class Wp_Scss_Settings {
       $html .= '<label for="' . esc_attr( $args['name'] ) . '"></label>';
     }
 
-    echo wp_kses($html, array('input' => array(), 'label' => array() ));
+    echo wp_kses($html, array('input' => array('type' => array(), 'name' => array(), 'value' => array(), 'disabled' => array()), 'label' => array('for' => array()) ));
   }
 }
