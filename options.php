@@ -283,14 +283,15 @@ class Wp_Scss_Settings {
   public function input_checkbox_callback( $args ) {
     $this->options = get_option( 'wpscss_options' );
     $html = "";
-    if($args['name'] == 'always_recompile' && defined('WP_SCSS_ALWAYS_RECOMPILE') && WP_SCSS_ALWAYS_RECOMPILE){
-      $html .= '<input type="checkbox" id="' . esc_attr( $args['name'] ) . '" name="wpscss_options[' . esc_attr( $args['name'] ) . ']" value="1"' . checked( 1, isset( $this->options[esc_attr( $args['name'] )] ) ? $this->options[esc_attr( $args['name'] )] : 1, false ) . ' disabled=disabled/>';
-      $html .= '<label for="' . esc_attr( $args['name'] ) . '">Currently overwritten by constant <code>WP_SCSS_ALWAYS_RECOMPILE</code></label>';
+    $option_name = esc_attr( $args['name']);
+    if($option_name == 'always_recompile' && defined('WP_SCSS_ALWAYS_RECOMPILE') && WP_SCSS_ALWAYS_RECOMPILE){
+      $html .= '<input type="checkbox" id="' . $option_name . '" name="wpscss_options[' . $option_name . ']" value="1"' . checked( 1, isset( $this->options[$option_name] ) ? $this->options[$option_name] : 1, false ) . ' disabled=disabled/>';
+      $html .= '<label for="' . $option_name . '">Currently overwritten by constant <code>WP_SCSS_ALWAYS_RECOMPILE</code></label>';
     }else{
-      $html .= '<input type="checkbox" id="' . esc_attr( $args['name'] ) . '" name="wpscss_options[' . esc_attr( $args['name'] ) . ']" value="1"' . checked( 1, isset( $this->options[esc_attr( $args['name'] )] ) ? $this->options[esc_attr( $args['name'] )] : 0, false ) . '/>';
-      $html .= '<label for="' . esc_attr( $args['name'] ) . '"></label>';
+      $html .= '<input type="checkbox" id="' . $option_name . '" name="wpscss_options[' . $option_name . ']" value="1"' . checked( 1, isset( $this->options[$option_name] ) ? $this->options[$option_name] : 0, false ) . '/>';
+      $html .= '<label for="' . $option_name . '"></label>';
     }
 
-    echo wp_kses($html, array('input' => array('type' => array(), 'name' => array(), 'value' => array(), 'disabled' => array()), 'label' => array('for' => array()) ));
+    echo wp_kses($html, array('input' => array('type' => array(), 'id' => array(), 'name' => array(), 'value' => array(), 'checked' => array(), 'disabled' => array()), 'label' => array('for' => array()) ));
   }
 }
