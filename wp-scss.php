@@ -3,7 +3,7 @@
  * Plugin Name: WP-SCSS
  * Plugin URI: https://github.com/ConnectThink/WP-SCSS
  * Description: Compiles scss files live on WordPress.
- * Version: 2.3.3
+ * Version: 2.3.4
  * Author: Connect Think
  * Author URI: http://connectthink.com
  * License: GPLv3
@@ -44,7 +44,7 @@ if (!defined('WPSCSS_VERSION_KEY'))
   define('WPSCSS_VERSION_KEY', 'wpscss_version');
 
 if (!defined('WPSCSS_VERSION_NUM'))
-  define('WPSCSS_VERSION_NUM', '2.3.3');
+  define('WPSCSS_VERSION_NUM', '2.3.4');
 
 // Add version to options table
 if ( get_option( WPSCSS_VERSION_KEY ) !== false ) {
@@ -111,12 +111,14 @@ function wpscss_plugin_action_links($links, $file) {
 
 add_filter('option_wpscss_options', 'wpscss_plugin_db_cleanup');
 function wpscss_plugin_db_cleanup($option_values){
-  $compiling_options = str_replace("Leafo", "ScssPhp", $option_values['compiling_options']);
-  $compiling_options = str_replace("ScssPhp\\ScssPhp\\Formatter\\", "", $compiling_options);
-  $compiling_options = str_replace(["Compact", "Crunched"], "compressed", $compiling_options);
-  $compiling_options = str_replace("Nested", "expanded", $compiling_options);
-  $compiling_options = strtolower($compiling_options);
-  $option_values['compiling_options'] = $compiling_options;
+  if( array_key_exists('compiling_options', $option_values) ) {
+    $compiling_options = str_replace("Leafo", "ScssPhp", $option_values['compiling_options']);
+    $compiling_options = str_replace("ScssPhp\\ScssPhp\\Formatter\\", "", $compiling_options);
+    $compiling_options = str_replace(["Compact", "Crunched"], "compressed", $compiling_options);
+    $compiling_options = str_replace("Nested", "expanded", $compiling_options);
+    $compiling_options = strtolower($compiling_options);
+    $option_values['compiling_options'] = $compiling_options;
+  }
   return $option_values;
 }
 

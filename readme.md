@@ -29,7 +29,7 @@ Compiling comes in two modes:
 - Compressed - More compressed css. Entire rule block on one line. No indentation.
 - Expanded - Full open css. One line per property. Brackets close on their own line.
 
-**Removed** compiling modes
+**Removed** compiling modes. If you used these in the past you will need to update your settings.
 
 - Nested - Lightly compressed css. Brackets close with css block. Indents to match scss nesting.
 - Compact - Removes all line breaks, unnecessary whitespace, and single-line comments.
@@ -105,8 +105,14 @@ This plugin will only work with .scss format.
 
 #### Maintainers
 
+- [@shadoath](https://github.com/shadoath)
+- Bug reporters, issues, and pull request contributers metioned below. Thank you.
+
 ## Changelog
 
+- 2.3.4
+  - Add check to compiling_options on load() [alianschiavoncini](https://github.com/ConnectThink/WP-SCSS/issues/209)
+  - Add more params to wp_kses in options() [evHaitch ](https://github.com/ConnectThink/WP-SCSS/issues/213)
 - 2.3.3
   - Fix params passed to wp_kses() [shadoath](https://github.com/ConnectThink/WP-SCSS/pull/211)
 - 2.3.2
