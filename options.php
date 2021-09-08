@@ -76,24 +76,50 @@ class Wp_Scss_Settings {
       'wpscss_options'                    // Page
     );
 
+    $base_folder_options = array(
+      wp_get_upload_dir()['basedir'] => 'Uploads Directory',
+      WPSCSS_PLUGIN_DIR => 'WP-SCSS Plugin'
+    );
+    if(get_stylesheet_directory() === get_template_directory()){
+      array_unshift($base_folder_options, array(get_stylesheet_directory() => 'Current Theme'));
+    }else{
+      array_unshift($base_folder_options, array(get_template_directory() => 'Parent Theme'));
+      array_unshift($base_folder_options, array(get_stylesheet_directory() => 'Child Theme'));
+    }
+
+    echo $base_folder_options;
+
     add_settings_field(
       'wpscss_base_folder',                    // ID
       'Base Location',                         // Title
       array( $this, 'input_select_callback' ), // Callback
       'wpscss_options',                        // Page
-      'wpscss_paths_section',                // Section
+      'wpscss_paths_section',                  // Section
       array(                                   // args
         'name' => 'base_compiling_folder',
         'type' => apply_filters( 'wp_scss_base_compiling_modes',
-          array(
-            get_template_directory()  => 'Parent theme', // Won't display if no parent theme as it would have duplicate keys in array
-            get_stylesheet_directory()  => (get_stylesheet_directory() === get_template_directory() ? 'Current theme' : 'Child theme'),
-            wp_get_upload_dir()['basedir'] => 'Uploads directory',
-            WPSCSS_PLUGIN_DIR => 'WP-SCSS Plugin',
-          )
+        $base_folder_options
+          // array(
+          //   get_template_directory()  => 'Parent theme', // Won't display if no parent theme as it would have duplicate keys in array
+          //   get_stylesheet_directory()  => (get_stylesheet_directory() === get_template_directory() ? 'Current theme' : 'Child theme'),
+          //   wp_get_upload_dir()['basedir'] => 'Uploads directory',
+          //   WPSCSS_PLUGIN_DIR => 'WP-SCSS Plugin',
+          // )
         )
       )
     );
+
+    add_settings_field(
+      'Use Absolute Path',                       // ID
+      'Use Absolute Path',                       // Title
+      array( $this, 'input_checkbox_callback' ), // Callback
+      'wpscss_options',                          // Page
+      'wpscss_paths_section',                    // Section
+      array(                                     // args
+        'name' => 'use_absolute_paths'
+      )
+    );
+
 
     add_settings_field(
       'wpscss_scss_dir',                     // ID

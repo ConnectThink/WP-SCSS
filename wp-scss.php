@@ -130,7 +130,19 @@ function wpscss_plugin_db_cleanup($option_values){
  * Assign settings via settings array to pass to object
  */
 
+// Allow current WP to keep these values don't store to db
+function get_base_dir_from_name($name){
+  $possible_directories = array(
+    'Parent Theme'      => get_template_directory(), // Won't display if no parent theme as it would have duplicate keys in array
+    'Current Theme'     => get_stylesheet_directory(),
+    'Child Theme'       => get_stylesheet_directory(),
+    'Uploads Directory' => wp_get_upload_dir()['basedir'],
+    'WP-SCSS Plugin'    => WPSCSS_PLUGIN_DIR,
+  );
+  return $possible_directories[$name];
+}
 $wpscss_options = get_option( 'wpscss_options' );
+// $base_compiling_folder = isset($wpscss_options['base_compiling_folder']) ? get_base_dir_from_name($wpscss_options['base_compiling_folder']) : get_stylesheet_directory();
 $base_compiling_folder = isset($wpscss_options['base_compiling_folder']) ? $wpscss_options['base_compiling_folder'] : get_stylesheet_directory();
 $scss_dir_setting = isset($wpscss_options['scss_dir']) ? $wpscss_options['scss_dir'] : '';
 $css_dir_setting = isset($wpscss_options['css_dir']) ? $wpscss_options['css_dir'] : '';
