@@ -87,8 +87,6 @@ class Wp_Scss_Settings {
       $base_folder_options['Child Theme'] = 'Child Theme';
     }
 
-    /* echo var_dump($base_folder_options); */
-
     add_settings_field(
       'wpscss_base_folder',                    // ID
       'Base Location',                         // Title
@@ -98,13 +96,7 @@ class Wp_Scss_Settings {
       array(                                   // args
         'name' => 'base_compiling_folder',
         'type' => apply_filters( 'wp_scss_base_compiling_modes',
-        $base_folder_options
-          // array(
-          //   get_template_directory()  => 'Parent theme', // Won't display if no parent theme as it would have duplicate keys in array
-          //   get_stylesheet_directory()  => (get_stylesheet_directory() === get_template_directory() ? 'Current theme' : 'Child theme'),
-          //   wp_get_upload_dir()['basedir'] => 'Uploads directory',
-          //   WPSCSS_PLUGIN_DIR => 'WP-SCSS Plugin',
-          // )
+          $base_folder_options
         )
       )
     );
