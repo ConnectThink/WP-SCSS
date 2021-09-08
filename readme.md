@@ -110,9 +110,11 @@ This plugin will only work with .scss format.
 
 ## Changelog
 
+- 2.3.5
+  - Add 'selected' to wp_kses on select() [shadoath](https://github.com/ConnectThink/WP-SCSS/issues/217)
 - 2.3.4
   - Add check to compiling_options on load() [alianschiavoncini](https://github.com/ConnectThink/WP-SCSS/issues/209)
-  - Add more params to wp_kses in options() [evHaitch ](https://github.com/ConnectThink/WP-SCSS/issues/213)
+  - Add more params to wp_kses in options() [evHaitch](https://github.com/ConnectThink/WP-SCSS/issues/213)
 - 2.3.3
   - Fix params passed to wp_kses() [shadoath](https://github.com/ConnectThink/WP-SCSS/pull/211)
 - 2.3.2
