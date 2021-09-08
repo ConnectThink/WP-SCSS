@@ -140,6 +140,8 @@ function get_base_dir_from_name($name_or_old_path){
     'WP-SCSS Plugin'    => WPSCSS_PLUGIN_DIR,
   );
   $directory_path = $possible_directories[$name_or_old_path];
+  echo($name_or_old_path);
+  echo($directory_path);
   if($directory_path){
     return $directory_path;
   }else{
@@ -149,9 +151,7 @@ function get_base_dir_from_name($name_or_old_path){
 
 $wpscss_options = get_option( 'wpscss_options' );
 $test = get_base_dir_from_name($wpscss_options['base_compiling_folder']);
-echo($test);
-// $base_compiling_folder = isset($wpscss_options['base_compiling_folder']) ? get_base_dir_from_name($wpscss_options['base_compiling_folder']) : get_stylesheet_directory();
-$base_compiling_folder = isset($wpscss_options['base_compiling_folder']) ? $wpscss_options['base_compiling_folder'] : get_stylesheet_directory();
+$base_compiling_folder = isset($wpscss_options['base_compiling_folder']) ? get_base_dir_from_name($wpscss_options['base_compiling_folder']) : get_stylesheet_directory();
 $scss_dir_setting = isset($wpscss_options['scss_dir']) ? $wpscss_options['scss_dir'] : '';
 $css_dir_setting = isset($wpscss_options['css_dir']) ? $wpscss_options['css_dir'] : '';
 

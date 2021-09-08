@@ -87,7 +87,7 @@ class Wp_Scss_Settings {
       $base_folder_options['Child Theme'] = 'Child Theme';
     }
 
-    echo $base_folder_options;
+    /* echo var_dump($base_folder_options); */
 
     add_settings_field(
       'wpscss_base_folder',                    // ID
