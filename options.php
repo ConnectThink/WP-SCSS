@@ -274,7 +274,7 @@ class Wp_Scss_Settings {
     }
     $html .= '</select>';
 
-    echo wp_kses($html, array( 'select' => array('id' => array(), 'name' => array()), 'option' => array('value' => array())));
+    echo wp_kses($html, array( 'select' => array('id' => array(), 'name' => array()), 'option' => array('value' => array(), 'selected' => array())));
   }
 
   /**
