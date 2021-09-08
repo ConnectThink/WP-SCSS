@@ -77,14 +77,14 @@ class Wp_Scss_Settings {
     );
 
     $base_folder_options = array(
-      wp_get_upload_dir()['basedir'] => 'Uploads Directory',
-      WPSCSS_PLUGIN_DIR => 'WP-SCSS Plugin'
+      'Uploads Directory' => 'Uploads Directory',
+      'WP-SCSS Plugin' => 'WP-SCSS Plugin'
     );
     if(get_stylesheet_directory() === get_template_directory()){
-      array_unshift($base_folder_options, array(get_stylesheet_directory() => 'Current Theme'));
+      $base_folder_options['Current Theme'] = 'Current Theme';
     }else{
-      array_unshift($base_folder_options, array(get_template_directory() => 'Parent Theme'));
-      array_unshift($base_folder_options, array(get_stylesheet_directory() => 'Child Theme'));
+      $base_folder_options['Parent Theme'] = 'Parent Theme';
+      $base_folder_options['Child Theme'] = 'Child Theme';
     }
 
     echo $base_folder_options;

@@ -131,7 +131,7 @@ function wpscss_plugin_db_cleanup($option_values){
  */
 
 // Allow current WP to keep these values don't store to db
-function get_base_dir_from_name($name){
+function get_base_dir_from_name($name_or_old_path){
   $possible_directories = array(
     'Parent Theme'      => get_template_directory(), // Won't display if no parent theme as it would have duplicate keys in array
     'Current Theme'     => get_stylesheet_directory(),
@@ -139,9 +139,17 @@ function get_base_dir_from_name($name){
     'Uploads Directory' => wp_get_upload_dir()['basedir'],
     'WP-SCSS Plugin'    => WPSCSS_PLUGIN_DIR,
   );
-  return $possible_directories[$name];
+  $directory_path = $possible_directories[$name_or_old_path];
+  if($directory_path){
+    return $directory_path;
+  }else{
+    return $name_or_old_path;
+  }
 }
+
 $wpscss_options = get_option( 'wpscss_options' );
+$test = get_base_dir_from_name($wpscss_options['base_compiling_folder']);
+echo($test);
 // $base_compiling_folder = isset($wpscss_options['base_compiling_folder']) ? get_base_dir_from_name($wpscss_options['base_compiling_folder']) : get_stylesheet_directory();
 $base_compiling_folder = isset($wpscss_options['base_compiling_folder']) ? $wpscss_options['base_compiling_folder'] : get_stylesheet_directory();
 $scss_dir_setting = isset($wpscss_options['scss_dir']) ? $wpscss_options['scss_dir'] : '';
