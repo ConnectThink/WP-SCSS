@@ -5,7 +5,7 @@ Plugin URI: https://github.com/ConnectThink/WP-SCSS
 Requires at least: 3.0.1
 Tested up to: 5.8
 Requires PHP: 5.6
-Stable tag: 2.3.4
+Stable tag: 2.3.5
 License: GPLv3 or later
 License URI: http://www.gnu.org/copyleft/gpl.html
 
@@ -75,6 +75,9 @@ If you are having issues with the plugin, create an issue on [github](https://gi
 
 
 == Changelog ==
+
+= 2.3.5 = 
+  - Add 'selected' to wp_kses on select() [shadoath](https://github.com/ConnectThink/WP-SCSS/issues/217)
 
 = 2.3.4 =
   - Add check to compiling_options on load() [alianschiavoncini](https://github.com/ConnectThink/WP-SCSS/issues/209)
