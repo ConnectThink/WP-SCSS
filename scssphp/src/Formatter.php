@@ -19,6 +19,8 @@ use ScssPhp\ScssPhp\SourceMap\SourceMapGenerator;
  * Base formatter
  *
  * @author Leaf Corcoran <leafot@gmail.com>
+ *
+ * @internal
  */
 abstract class Formatter
 {
@@ -78,7 +80,7 @@ abstract class Formatter
     protected $currentColumn;
 
     /**
-     * @var \ScssPhp\ScssPhp\SourceMap\SourceMapGenerator
+     * @var \ScssPhp\ScssPhp\SourceMap\SourceMapGenerator|null
      */
     protected $sourceMapGenerator;
 
@@ -139,6 +141,8 @@ abstract class Formatter
      * Output lines inside a block
      *
      * @param \ScssPhp\ScssPhp\Formatter\OutputBlock $block
+     *
+     * @return void
      */
     protected function blockLines(OutputBlock $block)
     {
@@ -156,9 +160,13 @@ abstract class Formatter
      * Output block selectors
      *
      * @param \ScssPhp\ScssPhp\Formatter\OutputBlock $block
+     *
+     * @return void
      */
     protected function blockSelectors(OutputBlock $block)
     {
+        assert(! empty($block->selectors));
+
         $inner = $this->indentStr();
 
         $this->write($inner
@@ -170,6 +178,8 @@ abstract class Formatter
      * Output block children
      *
      * @param \ScssPhp\ScssPhp\Formatter\OutputBlock $block
+     *
+     * @return void
      */
     protected function blockChildren(OutputBlock $block)
     {
@@ -182,6 +192,8 @@ abstract class Formatter
      * Output non-empty block
      *
      * @param \ScssPhp\ScssPhp\Formatter\OutputBlock $block
+     *
+     * @return void
      */
     protected function block(OutputBlock $block)
     {
@@ -285,6 +297,8 @@ abstract class Formatter
      * Output content
      *
      * @param string $str
+     *
+     * @return void
      */
     protected function write($str)
     {
@@ -310,22 +324,39 @@ abstract class Formatter
         }
 
         if ($this->sourceMapGenerator) {
-            $this->sourceMapGenerator->addMapping(
-                $this->currentLine,
-                $this->currentColumn,
-                $this->currentBlock->sourceLine,
-                //columns from parser are off by one
-                $this->currentBlock->sourceColumn > 0 ? $this->currentBlock->sourceColumn - 1 : 0,
-                $this->currentBlock->sourceName
-            );
-
             $lines = explode("\n", $str);
-            $lineCount = \count($lines);
-            $this->currentLine += $lineCount - 1;
-
             $lastLine = array_pop($lines);
 
-            $this->currentColumn = ($lineCount === 1 ? $this->currentColumn : 0) + \strlen($lastLine);
+            foreach ($lines as $line) {
+                // If the written line starts is empty, adding a mapping would add it for
+                // a non-existent column as we are at the end of the line
+                if ($line !== '') {
+                    $this->sourceMapGenerator->addMapping(
+                        $this->currentLine,
+                        $this->currentColumn,
+                        $this->currentBlock->sourceLine,
+                        //columns from parser are off by one
+                        $this->currentBlock->sourceColumn > 0 ? $this->currentBlock->sourceColumn - 1 : 0,
+                        $this->currentBlock->sourceName
+                    );
+                }
+
+                $this->currentLine++;
+                $this->currentColumn = 0;
+            }
+
+            if ($lastLine !== '') {
+                $this->sourceMapGenerator->addMapping(
+                    $this->currentLine,
+                    $this->currentColumn,
+                    $this->currentBlock->sourceLine,
+                    //columns from parser are off by one
+                    $this->currentBlock->sourceColumn > 0 ? $this->currentBlock->sourceColumn - 1 : 0,
+                    $this->currentBlock->sourceName
+                );
+            }
+
+            $this->currentColumn += \strlen($lastLine);
         }
 
         echo $str;

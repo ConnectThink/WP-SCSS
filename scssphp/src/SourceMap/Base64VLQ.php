@@ -12,8 +12,6 @@
 
 namespace ScssPhp\ScssPhp\SourceMap;
 
-use ScssPhp\ScssPhp\SourceMap\Base64;
-
 /**
  * Base 64 VLQ
  *
@@ -36,6 +34,8 @@ use ScssPhp\ScssPhp\SourceMap\Base64;
  *
  * @author John Lenz <johnlenz@google.com>
  * @author Anthon Pang <anthon.pang@gmail.com>
+ *
+ * @internal
  */
 class Base64VLQ
 {

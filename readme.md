@@ -29,11 +29,14 @@ You can choose to preface your css and scss folders with `/../` to resolve to a 
 
 #### Compiling Mode
 
-Compiling comes in five modes:
+Compiling comes in two modes:
 
-- Expanded - Full open css. One line per property. Brackets close on their own line.
-- Nested - Lightly compressed css. Brackets close with css block. Indents to match scss nesting.
 - Compressed - More compressed css. Entire rule block on one line. No indentation.
+- Expanded - Full open css. One line per property. Brackets close on their own line.
+
+**Removed** compiling modes. If you used these in the past you will need to update your settings.
+
+- Nested - Lightly compressed css. Brackets close with css block. Indents to match scss nesting.
 - Compact - Removes all line breaks, unnecessary whitespace, and single-line comments.
 - Crunched - Same as Compressed, but also removes multi-line comments.
 
@@ -107,8 +110,25 @@ This plugin will only work with .scss format.
 
 #### Maintainers
 
+- [@shadoath](https://github.com/shadoath)
+- Bug reporters, issues, and pull request contributers metioned below. Thank you.
+
 ## Changelog
 
+- 2.3.5
+  - Add 'selected' to wp_kses on select() [shadoath](https://github.com/ConnectThink/WP-SCSS/issues/217)
+- 2.3.4
+  - Add check to compiling_options on load() [alianschiavoncini](https://github.com/ConnectThink/WP-SCSS/issues/209)
+  - Add more params to wp_kses in options() [evHaitch](https://github.com/ConnectThink/WP-SCSS/issues/213)
+- 2.3.3
+  - Fix params passed to wp_kses() [shadoath](https://github.com/ConnectThink/WP-SCSS/pull/211)
+- 2.3.2
+  - Add wp_kses() to echos with potential user input [shadoath](https://github.com/ConnectThink/WP-SCSS/pull/208)
+- 2.3.1
+  - Wrap check for WP_SCSS_ALWAYS_RECOMPILE with () [niaccurshi](https://github.com/ConnectThink/WP-SCSS/pull/199)
+- 2.3.0
+  - Update src to use [ScssPHP github repo at 1.5.2](https://github.com/scssphp/scssphp/releases/tag/1.5.2)
+  - Update deprecated setFormatter to setOutputStyle and provide db migration [shadoath](https://github.com/ConnectThink/WP-SCSS/pull/195)
 - 2.2.0
   - Updates to allow compile() from outside the plugin [niaccurshi](https://github.com/ConnectThink/WP-SCSS/pull/190)
   - Update src to use [ScssPHP github repo at 1.2.1](https://github.com/scssphp/scssphp/releases/tag/1.2.1)

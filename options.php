@@ -1,6 +1,8 @@
 <?php
-class Wp_Scss_Settings
-{
+
+use ScssPhp\ScssPhp\OutputStyle;
+
+class Wp_Scss_Settings {
   /**
    * Holds the values to be used in the fields callbacks
    */
@@ -9,8 +11,7 @@ class Wp_Scss_Settings
   /**
    * Start up
    */
-  public function __construct()
-  {
+  public function __construct() {
     add_action( 'admin_menu', array( $this, 'add_plugin_page' ) );
     add_action( 'admin_init', array( $this, 'page_init' ) );
   }
@@ -18,8 +19,7 @@ class Wp_Scss_Settings
   /**
    * Add options page
    */
-  public function add_plugin_page()
-  {
+  public function add_plugin_page() {
     // This page will be under "Settings"
     add_options_page(
       'Settings Admin',
@@ -33,15 +33,14 @@ class Wp_Scss_Settings
   /**
    * Options page callback
    */
-  public function create_admin_page()
-  {
+  public function create_admin_page() {
     // Set class property
     $this->options = get_option( 'wpscss_options' );
     ?>
     <div class="wrap">
         <h2>WP-SCSS Settings</h2>
         <p>
-          <span class="version">Version <em><?php echo get_option('wpscss_version'); ?></em>
+          <span class="version">Version <em><?php echo wp_kses(get_option('wpscss_version'), array()); ?></em>
           <br/>
           <span class="author">By: <a href="http://connectthink.com" target="_blank">Connect Think</a></span>
           <br/>
@@ -62,8 +61,8 @@ class Wp_Scss_Settings
   /**
    * Register and add settings
    */
-  public function page_init()
-  {
+  public function page_init() {
+
     $base_compiling_folder_options = array(
       get_template_directory()  => 'Parent theme', // Won't display if no parent theme as it would have duplicate keys in array
       get_stylesheet_directory()  => (get_stylesheet_directory() === get_template_directory() ? 'Current theme' : 'Child theme'),
@@ -142,12 +141,8 @@ class Wp_Scss_Settings
         'name' => 'compiling_options',
         'type' => apply_filters( 'wp_scss_compiling_modes',
           array(
-            'ScssPhp\ScssPhp\Formatter\Expanded'   => 'Expanded',
-            'ScssPhp\ScssPhp\Formatter\Nested'     => 'Nested',
-            'ScssPhp\ScssPhp\Formatter\Compressed' => 'Compressed',
-            'ScssPhp\ScssPhp\Formatter\Compact'    => 'Compact',
-            'ScssPhp\ScssPhp\Formatter\Crunched'   => 'Crunched',
-            'ScssPhp\ScssPhp\Formatter\Debug'      => 'Debug'
+            OutputStyle::COMPRESSED => ucfirst(OutputStyle::COMPRESSED),
+            OutputStyle::EXPANDED   => ucfirst(OutputStyle::EXPANDED),
           )
         )
       )
@@ -285,7 +280,7 @@ class Wp_Scss_Settings
     }
     $html .= '</select>';
 
-    echo $html;
+    echo wp_kses($html, array( 'select' => array('id' => array(), 'name' => array()), 'option' => array('value' => array(), 'selected' => array())));
   }
 
   /**
@@ -294,15 +289,15 @@ class Wp_Scss_Settings
   public function input_checkbox_callback( $args ) {
     $this->options = get_option( 'wpscss_options' );
     $html = "";
-    if($args['name'] == 'always_recompile' && defined('WP_SCSS_ALWAYS_RECOMPILE') && WP_SCSS_ALWAYS_RECOMPILE){
-      $html .= '<input type="checkbox" id="' . esc_attr( $args['name'] ) . '" name="wpscss_options[' . esc_attr( $args['name'] ) . ']" value="1"' . checked( 1, isset( $this->options[esc_attr( $args['name'] )] ) ? $this->options[esc_attr( $args['name'] )] : 1, false ) . ' disabled=disabled/>';
-      $html .= '<label for="' . esc_attr( $args['name'] ) . '">Currently overwritten by constant <code>WP_SCSS_ALWAYS_RECOMPILE</code></label>';
+    $option_name = esc_attr( $args['name']);
+    if($option_name == 'always_recompile' && defined('WP_SCSS_ALWAYS_RECOMPILE') && WP_SCSS_ALWAYS_RECOMPILE){
+      $html .= '<input type="checkbox" id="' . $option_name . '" name="wpscss_options[' . $option_name . ']" value="1"' . checked( 1, isset( $this->options[$option_name] ) ? $this->options[$option_name] : 1, false ) . ' disabled=disabled/>';
+      $html .= '<label for="' . $option_name . '">Currently overwritten by constant <code>WP_SCSS_ALWAYS_RECOMPILE</code></label>';
     }else{
-      $html .= '<input type="checkbox" id="' . esc_attr( $args['name'] ) . '" name="wpscss_options[' . esc_attr( $args['name'] ) . ']" value="1"' . checked( 1, isset( $this->options[esc_attr( $args['name'] )] ) ? $this->options[esc_attr( $args['name'] )] : 0, false ) . '/>';
-      $html .= '<label for="' . esc_attr( $args['name'] ) . '"></label>';
+      $html .= '<input type="checkbox" id="' . $option_name . '" name="wpscss_options[' . $option_name . ']" value="1"' . checked( 1, isset( $this->options[$option_name] ) ? $this->options[$option_name] : 0, false ) . '/>';
+      $html .= '<label for="' . $option_name . '"></label>';
     }
 
-
-    echo $html;
+    echo wp_kses($html, array('input' => array('type' => array(), 'id' => array(), 'name' => array(), 'value' => array(), 'checked' => array(), 'disabled' => array()), 'label' => array('for' => array()) ));
   }
 }
