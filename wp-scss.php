@@ -140,7 +140,8 @@ function get_base_dir_from_name($name_or_old_path){
     'WP-SCSS Plugin'    => WPSCSS_PLUGIN_DIR,
   );
   if(array_key_exists($name_or_old_path, $possible_directories)){
-    return $directory_path;
+    return $possible_directories[$name_or_old_path];
+    /* return $directory_path; */
   }else{
     add_action('admin_notices', function(){
       echo '<div class="notice notice-info">
