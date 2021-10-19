@@ -110,6 +110,9 @@ This plugin will only work with .scss format.
 
 ## Changelog
 
+- 2.4.0
+  - Changes the base_compiling_folder to store key not path to directory [shadoath](https://github.com/ConnectThink/WP-SCSS/issues/219)
+  - This allows deploying from local or staging to production by not saving absolute paths in DB.
 - 2.3.5
   - Add 'selected' to wp_kses on select() [shadoath](https://github.com/ConnectThink/WP-SCSS/issues/217)
 - 2.3.4

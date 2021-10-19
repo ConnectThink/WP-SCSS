@@ -76,24 +76,43 @@ class Wp_Scss_Settings {
       'wpscss_options'                    // Page
     );
 
+    $base_folder_options = array(
+      'Uploads Directory' => 'Uploads Directory',
+      'WP-SCSS Plugin' => 'WP-SCSS Plugin'
+    );
+    if(get_stylesheet_directory() === get_template_directory()){
+      $base_folder_options['Current Theme'] = 'Current Theme';
+    }else{
+      $base_folder_options['Parent Theme'] = 'Parent Theme';
+      $base_folder_options['Child Theme'] = 'Child Theme';
+    }
+
     add_settings_field(
       'wpscss_base_folder',                    // ID
       'Base Location',                         // Title
       array( $this, 'input_select_callback' ), // Callback
       'wpscss_options',                        // Page
-      'wpscss_paths_section',                // Section
+      'wpscss_paths_section',                  // Section
       array(                                   // args
         'name' => 'base_compiling_folder',
         'type' => apply_filters( 'wp_scss_base_compiling_modes',
-          array(
-            get_template_directory()  => 'Parent theme', // Won't display if no parent theme as it would have duplicate keys in array
-            get_stylesheet_directory()  => (get_stylesheet_directory() === get_template_directory() ? 'Current theme' : 'Child theme'),
-            wp_get_upload_dir()['basedir'] => 'Uploads directory',
-            WPSCSS_PLUGIN_DIR => 'WP-SCSS Plugin',
-          )
+          $base_folder_options
         )
       )
     );
+
+    // #TODO see if this is ever warrented
+    // add_settings_field(
+    //   'Use Absolute Path',                       // ID
+    //   'Use Absolute Path',                       // Title
+    //   array( $this, 'input_checkbox_callback' ), // Callback
+    //   'wpscss_options',                          // Page
+    //   'wpscss_paths_section',                    // Section
+    //   array(                                     // args
+    //     'name' => 'use_absolute_paths'
+    //   )
+    // );
+
 
     add_settings_field(
       'wpscss_scss_dir',                     // ID

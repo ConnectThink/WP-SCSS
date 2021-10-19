@@ -3,7 +3,7 @@
  * Plugin Name: WP-SCSS
  * Plugin URI: https://github.com/ConnectThink/WP-SCSS
  * Description: Compiles scss files live on WordPress.
- * Version: 2.3.5
+ * Version: 2.4.0
  * Author: Connect Think
  * Author URI: http://connectthink.com
  * License: GPLv3
@@ -44,7 +44,7 @@ if (!defined('WPSCSS_VERSION_KEY'))
   define('WPSCSS_VERSION_KEY', 'wpscss_version');
 
 if (!defined('WPSCSS_VERSION_NUM'))
-  define('WPSCSS_VERSION_NUM', '2.3.5');
+  define('WPSCSS_VERSION_NUM', '2.4.0');
 
 // Add version to options table
 if ( get_option( WPSCSS_VERSION_KEY ) !== false ) {
@@ -130,15 +130,45 @@ function wpscss_plugin_db_cleanup($option_values){
  * Assign settings via settings array to pass to object
  */
 
+// Use current WP functions to get directory values, only store key
+function get_base_dir_from_name($name_or_old_path){
+  $possible_directories = array(
+    'Uploads Directory' => wp_get_upload_dir()['basedir'],
+    'WP-SCSS Plugin'    => WPSCSS_PLUGIN_DIR,
+  );
+  // Won't display if no parent theme as it would have duplicate keys in array
+  if(get_stylesheet_directory() === get_template_directory()){
+    $possible_directories['Current Theme'] = get_stylesheet_directory();
+  }else{
+    $possible_directories['Parent Theme'] = get_template_directory();
+    $possible_directories['Child Theme'] = get_stylesheet_directory();
+  }
+  if(array_key_exists($name_or_old_path, $possible_directories)){
+    return $possible_directories[$name_or_old_path];
+  }else{
+    $key = array_search($name_or_old_path, $possible_directories);
+    $notice = '<p><strong>WP-SCSS:</strong> <a href="' . get_bloginfo('wpurl') . '/wp-admin/admin.php?page=wpscss_options">Please save your settings</a>';
+    if($key){
+      $notice .= ' with the Base Location of <b>'. $key .'</b> specified.</p>';
+    }else{
+      $notice .= ' with the <b>correct</b> Base Location specified.</p>';
+    }
+    add_action('admin_notices', function() use ($notice){
+      echo '<div class="notice notice-info">' . $notice . '</div>';
+    });
+    return $name_or_old_path;
+  }
+}
+
 $wpscss_options = get_option( 'wpscss_options' );
-$base_compiling_folder = isset($wpscss_options['base_compiling_folder']) ? $wpscss_options['base_compiling_folder'] : get_stylesheet_directory();
+$base_compiling_folder = isset($wpscss_options['base_compiling_folder']) ? get_base_dir_from_name($wpscss_options['base_compiling_folder']) : get_stylesheet_directory();
 $scss_dir_setting = isset($wpscss_options['scss_dir']) ? $wpscss_options['scss_dir'] : '';
 $css_dir_setting = isset($wpscss_options['css_dir']) ? $wpscss_options['css_dir'] : '';
 
 // Checks if directories are not yet defined
 if( $scss_dir_setting == false || $css_dir_setting == false ) {
   function wpscss_settings_error() {
-    echo '<div class="error">
+    echo '<div class="notice notice-error">
       <p><strong>WP-SCSS</strong> requires both directories be specified. <a href="' . get_bloginfo('wpurl') . '/wp-admin/admin.php?page=wpscss_options">Please update your settings.</a></p>
       </div>';
   }
@@ -148,7 +178,7 @@ if( $scss_dir_setting == false || $css_dir_setting == false ) {
   // Checks if SCSS directory exists
 } elseif ( !is_dir($base_compiling_folder . $scss_dir_setting) ) {
   add_action('admin_notices', function() use ($base_compiling_folder, $scss_dir_setting){
-    echo '<div class="error">
+    echo '<div class="notice notice-error">
       <p><strong>WP-SCSS:</strong> The SCSS directory does not exist (' . $base_compiling_folder . $scss_dir_setting . '). Please create the directory or <a href="' . get_bloginfo('wpurl') . '/wp-admin/admin.php?page=wpscss_options">update your settings.</a></p>
       </div>';
   });
@@ -157,7 +187,7 @@ if( $scss_dir_setting == false || $css_dir_setting == false ) {
   // Checks if CSS directory exists
 } elseif ( !is_dir($base_compiling_folder . $css_dir_setting) ) {
   add_action('admin_notices', function() use ($base_compiling_folder, $css_dir_setting){
-    echo '<div class="error">
+    echo '<div class="notice notice-error">
       <p><strong>WP-SCSS:</strong> The CSS directory does not exist (' . $base_compiling_folder . $css_dir_setting . '). Please create the directory or <a href="' . get_bloginfo('wpurl') . '/wp-admin/admin.php?page=wpscss_options">update your settings.</a></p>
       </div>';
   });
