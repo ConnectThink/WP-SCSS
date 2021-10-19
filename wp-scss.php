@@ -145,9 +145,9 @@ function get_base_dir_from_name($name_or_old_path){
     $key = array_search($name_or_old_path, $possible_directories);
     $notice = '<p><strong>WP-SCSS:</strong> <a href="' . get_bloginfo('wpurl') . '/wp-admin/admin.php?page=wpscss_options">Please save your settings</a>';
     if($key){
-      $notice += ' with the Base Location of <i>'. $key .'</i> specified.</p>';
+      $notice .= ' with the Base Location of <i>'. $key .'</i> specified.</p>';
     }else{
-      $notice += ' with the <i>correct</i> Base Location specified.</p>';
+      $notice .= ' with the <i>correct</i> Base Location specified.</p>';
     }
     add_action('admin_notices', function(){
       echo '<div class="notice notice-info">' . $notice . '</div>';
