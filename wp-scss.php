@@ -149,7 +149,7 @@ function get_base_dir_from_name($name_or_old_path){
     }else{
       $notice .= ' with the <i>correct</i> Base Location specified.</p>';
     }
-    add_action('admin_notices', function(){
+    add_action('admin_notices', function() use ($notice){
       echo '<div class="notice notice-info">' . $notice . '</div>';
     });
     return $name_or_old_path;
