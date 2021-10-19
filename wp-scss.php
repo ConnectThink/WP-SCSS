@@ -3,7 +3,7 @@
  * Plugin Name: WP-SCSS
  * Plugin URI: https://github.com/ConnectThink/WP-SCSS
  * Description: Compiles scss files live on WordPress.
- * Version: 2.3.5
+ * Version: 2.4.0
  * Author: Connect Think
  * Author URI: http://connectthink.com
  * License: GPLv3
@@ -130,7 +130,7 @@ function wpscss_plugin_db_cleanup($option_values){
  * Assign settings via settings array to pass to object
  */
 
-// Allow current WP to keep these values don't store to db
+// Use current WP functions to get directory values, only store key
 function get_base_dir_from_name($name_or_old_path){
   $possible_directories = array(
     'Parent Theme'      => get_template_directory(), // Won't display if no parent theme as it would have duplicate keys in array

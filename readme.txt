@@ -5,7 +5,7 @@ Plugin URI: https://github.com/ConnectThink/WP-SCSS
 Requires at least: 3.0.1
 Tested up to: 5.8
 Requires PHP: 5.6
-Stable tag: 2.3.5
+Stable tag: 2.4.0
 License: GPLv3 or later
 License URI: http://www.gnu.org/copyleft/gpl.html
 
