@@ -101,16 +101,17 @@ class Wp_Scss_Settings {
       )
     );
 
-    add_settings_field(
-      'Use Absolute Path',                       // ID
-      'Use Absolute Path',                       // Title
-      array( $this, 'input_checkbox_callback' ), // Callback
-      'wpscss_options',                          // Page
-      'wpscss_paths_section',                    // Section
-      array(                                     // args
-        'name' => 'use_absolute_paths'
-      )
-    );
+    // #TODO see if this is ever warrented
+    // add_settings_field(
+    //   'Use Absolute Path',                       // ID
+    //   'Use Absolute Path',                       // Title
+    //   array( $this, 'input_checkbox_callback' ), // Callback
+    //   'wpscss_options',                          // Page
+    //   'wpscss_paths_section',                    // Section
+    //   array(                                     // args
+    //     'name' => 'use_absolute_paths'
+    //   )
+    // );
 
 
     add_settings_field(
