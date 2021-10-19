@@ -133,21 +133,25 @@ function wpscss_plugin_db_cleanup($option_values){
 // Use current WP functions to get directory values, only store key
 function get_base_dir_from_name($name_or_old_path){
   $possible_directories = array(
-    'Parent Theme'      => get_template_directory(), // Won't display if no parent theme as it would have duplicate keys in array
-    'Current Theme'     => get_stylesheet_directory(),
-    'Child Theme'       => get_stylesheet_directory(),
     'Uploads Directory' => wp_get_upload_dir()['basedir'],
     'WP-SCSS Plugin'    => WPSCSS_PLUGIN_DIR,
   );
+  // Won't display if no parent theme as it would have duplicate keys in array
+  if(get_stylesheet_directory() === get_template_directory()){
+    $possible_directories['Current Theme'] = get_stylesheet_directory();
+  }else{
+    $possible_directories['Parent Theme'] = get_template_directory();
+    $possible_directories['Child Theme'] = get_stylesheet_directory();
+  }
   if(array_key_exists($name_or_old_path, $possible_directories)){
     return $possible_directories[$name_or_old_path];
   }else{
     $key = array_search($name_or_old_path, $possible_directories);
     $notice = '<p><strong>WP-SCSS:</strong> <a href="' . get_bloginfo('wpurl') . '/wp-admin/admin.php?page=wpscss_options">Please save your settings</a>';
     if($key){
-      $notice .= ' with the Base Location of <i>'. $key .'</i> specified.</p>';
+      $notice .= ' with the Base Location of <b>'. $key .'</b> specified.</p>';
     }else{
-      $notice .= ' with the <i>correct</i> Base Location specified.</p>';
+      $notice .= ' with the <b>correct</b> Base Location specified.</p>';
     }
     add_action('admin_notices', function() use ($notice){
       echo '<div class="notice notice-info">' . $notice . '</div>';
