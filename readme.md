@@ -35,7 +35,9 @@ Compiling comes in two modes:
 - Compact - Removes all line breaks, unnecessary whitespace, and single-line comments.
 - Crunched - Same as Compressed, but also removes multi-line comments.
 
-See examples of each in [scssphp's documentation](http://scssphp.github.io/scssphp)
+See examples of each in [ScssPHP's documentation](http://scssphp.github.io/scssphp)
+
+- Current version of ScssPHP is 1.10.0
 
 #### Source Map Mode
 
@@ -59,7 +61,7 @@ Also keep in mind, that if you disable this plugin it can no longer enqueue file
 
 ## Directions
 
-_This plugin requires at least php 5.6 to work._
+_This plugin requires at least php 5.6 to work._ . Tested up to php 7.4
 
 #### Importing Subfiles
 
@@ -110,8 +112,10 @@ This plugin will only work with .scss format.
 
 ## Changelog
 
+- 3.0.0
+  - Updates ScssPHP to version [1.10.0](https://github.com/scssphp/scssphp/releases/tag/v1.10.0) thanks to [fabarea](https://github.com/ConnectThink/WP-SCSS/issues/228)
 - 2.4.0
-  - Changes the base_compiling_folder to store key not path to directory [shadoath](https://github.com/ConnectThink/WP-SCSS/issues/219)
+  - Changes the base_compiling_folder to store key not path of directory [shadoath](https://github.com/ConnectThink/WP-SCSS/issues/219)
   - This allows deploying from local or staging to production by not saving absolute paths in DB.
 - 2.3.5
   - Add 'selected' to wp_kses on select() [shadoath](https://github.com/ConnectThink/WP-SCSS/issues/217)

@@ -3,9 +3,9 @@ Contributors: connectthink, sky-bolt
 Tags: sass, scss, css, ScssPhp
 Plugin URI: https://github.com/ConnectThink/WP-SCSS
 Requires at least: 3.0.1
-Tested up to: 5.8
+Tested up to: 6.0
 Requires PHP: 5.6
-Stable tag: 2.4.0
+Stable tag: 3.0.0
 License: GPLv3 or later
 License URI: http://www.gnu.org/copyleft/gpl.html
 
@@ -75,6 +75,13 @@ If you are having issues with the plugin, create an issue on [github](https://gi
 
 
 == Changelog ==
+
+= 3.0.0 =
+  - Updates ScssPHP to version [1.10.0](https://github.com/scssphp/scssphp/releases/tag/v1.10.0) thanks to [fabarea](https://github.com/ConnectThink/WP-SCSS/issues/228)
+
+= 2.4.0 = 
+  - Changes the base_compiling_folder to store key not path to directory [shadoath](https://github.com/ConnectThink/WP-SCSS/issues/219)
+  - This allows deploying from local or staging to production by not saving absolute paths in DB.
 
 = 2.3.5 = 
   - Add 'selected' to wp_kses on select() [shadoath](https://github.com/ConnectThink/WP-SCSS/issues/217)
