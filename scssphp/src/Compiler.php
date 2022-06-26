@@ -13,6 +13,17 @@
 namespace ScssPhp\ScssPhp;
 
 use ScssPhp\ScssPhp\Base\Range;
+use ScssPhp\ScssPhp\Block\AtRootBlock;
+use ScssPhp\ScssPhp\Block\CallableBlock;
+use ScssPhp\ScssPhp\Block\DirectiveBlock;
+use ScssPhp\ScssPhp\Block\EachBlock;
+use ScssPhp\ScssPhp\Block\ElseBlock;
+use ScssPhp\ScssPhp\Block\ElseifBlock;
+use ScssPhp\ScssPhp\Block\ForBlock;
+use ScssPhp\ScssPhp\Block\IfBlock;
+use ScssPhp\ScssPhp\Block\MediaBlock;
+use ScssPhp\ScssPhp\Block\NestedPropertyBlock;
+use ScssPhp\ScssPhp\Block\WhileBlock;
 use ScssPhp\ScssPhp\Compiler\CachedResult;
 use ScssPhp\ScssPhp\Compiler\Environment;
 use ScssPhp\ScssPhp\Exception\CompilerException;
@@ -137,6 +148,7 @@ class Compiler
     public static $emptyString  = [Type::T_STRING, '"', []];
     public static $with         = [Type::T_KEYWORD, 'with'];
     public static $without      = [Type::T_KEYWORD, 'without'];
+    private static $emptyArgumentList = [Type::T_LIST, '', [], []];
 
     /**
      * @var array<int, string|callable>
@@ -194,6 +206,11 @@ class Compiler
     protected $sourceMapOptions = [];
 
     /**
+     * @var bool
+     */
+    private $charset = true;
+
+    /**
      * @var string|\ScssPhp\ScssPhp\Formatter
      */
     protected $formatter = Expanded::class;
@@ -221,6 +238,8 @@ class Compiler
     protected $storeEnv;
     /**
      * @var bool|null
+     *
+     * @deprecated
      */
     protected $charsetSeen;
     /**
@@ -463,7 +482,6 @@ class Compiler
         $this->env            = null;
         $this->scope          = null;
         $this->storeEnv       = null;
-        $this->charsetSeen    = null;
         $this->shouldEvaluate = null;
         $this->ignoreCallStackMessage = false;
         $this->parsedFiles = [];
@@ -516,11 +534,9 @@ class Compiler
 
             $prefix = '';
 
-            if (!$this->charsetSeen) {
-                if (strlen($out) !== Util::mbStrlen($out)) {
-                    $prefix = '@charset "UTF-8";' . "\n";
-                    $out = $prefix . $out;
-                }
+            if ($this->charset && strlen($out) !== Util::mbStrlen($out)) {
+                $prefix = '@charset "UTF-8";' . "\n";
+                $out = $prefix . $out;
             }
 
             $sourceMap = null;
@@ -639,7 +655,7 @@ class Compiler
      * @param array $target
      * @param array $origin
      *
-     * @return boolean
+     * @return bool
      */
     protected function isSelfExtend($target, $origin)
     {
@@ -848,10 +864,10 @@ class Compiler
     /**
      * Match extends
      *
-     * @param array   $selector
-     * @param array   $out
-     * @param integer $from
-     * @param boolean $initial
+     * @param array $selector
+     * @param array $out
+     * @param int   $from
+     * @param bool  $initial
      *
      * @return void
      */
@@ -984,7 +1000,7 @@ class Compiler
      * @param string $part
      * @param array  $matches
      *
-     * @return boolean
+     * @return bool
      */
     protected function isPseudoSelector($part, &$matches)
     {
@@ -1046,11 +1062,11 @@ class Compiler
     /**
      * Match extends single
      *
-     * @param array   $rawSingle
-     * @param array   $outOrigin
-     * @param boolean $initial
+     * @param array $rawSingle
+     * @param array $outOrigin
+     * @param bool  $initial
      *
-     * @return boolean
+     * @return bool
      */
     protected function matchExtendsSingle($rawSingle, &$outOrigin, $initial = true)
     {
@@ -1265,6 +1281,7 @@ class Compiler
      */
     protected function compileMedia(Block $media)
     {
+        assert($media instanceof MediaBlock);
         $this->pushEnv($media);
 
         $mediaQueries = $this->compileMediaQuery($this->multiplyMedia($this->env));
@@ -1342,7 +1359,7 @@ class Compiler
     /**
      * Compile directive
      *
-     * @param \ScssPhp\ScssPhp\Block|array $directive
+     * @param DirectiveBlock|array                   $directive
      * @param \ScssPhp\ScssPhp\Formatter\OutputBlock $out
      *
      * @return void
@@ -1408,6 +1425,7 @@ class Compiler
      */
     protected function compileAtRoot(Block $block)
     {
+        assert($block instanceof AtRootBlock);
         $env     = $this->pushEnv($block);
         $envs    = $this->compactEnv($env);
         list($with, $without) = $this->compileWith(isset($block->with) ? $block->with : null);
@@ -1456,7 +1474,7 @@ class Compiler
     }
 
     /**
-     * Filter at-root scope depending of with/without option
+     * Filter at-root scope depending on with/without option
      *
      * @param \ScssPhp\ScssPhp\Formatter\OutputBlock $scope
      * @param array                                  $with
@@ -1556,7 +1574,7 @@ class Compiler
      * Find a selector by the depth node in the scope
      *
      * @param \ScssPhp\ScssPhp\Formatter\OutputBlock $scope
-     * @param integer                                $depth
+     * @param int                                    $depth
      *
      * @return array
      */
@@ -1580,9 +1598,11 @@ class Compiler
     /**
      * Compile @at-root's with: inclusion / without: exclusion into 2 lists uses to filter scope/env later
      *
-     * @param array $withCondition
+     * @param array|null $withCondition
      *
      * @return array
+     *
+     * @phpstan-return array{array<string, bool>, array<string, bool>}
      */
     protected function compileWith($withCondition)
     {
@@ -1602,9 +1622,10 @@ class Compiler
                 }
             }
 
-            if ($this->mapHasKey($withCondition, static::$with)) {
+            $withConfig = $this->mapGet($withCondition, static::$with);
+            if ($withConfig !== null) {
                 $without = []; // cancel the default
-                $list = $this->coerceList($this->libMapGet([$withCondition, static::$with]));
+                $list = $this->coerceList($withConfig);
 
                 foreach ($list[2] as $item) {
                     $keyword = $this->compileStringContent($this->coerceString($item));
@@ -1613,9 +1634,10 @@ class Compiler
                 }
             }
 
-            if ($this->mapHasKey($withCondition, static::$without)) {
+            $withoutConfig = $this->mapGet($withCondition, static::$without);
+            if ($withoutConfig !== null) {
                 $without = []; // cancel the default
-                $list = $this->coerceList($this->libMapGet([$withCondition, static::$without]));
+                $list = $this->coerceList($withoutConfig);
 
                 foreach ($list[2] as $item) {
                     $keyword = $this->compileStringContent($this->coerceString($item));
@@ -1665,7 +1687,7 @@ class Compiler
      * @param array                                                         $with
      * @param array                                                         $without
      *
-     * @return boolean
+     * @return bool
      */
     protected function isWith($block, $with, $without)
     {
@@ -1675,6 +1697,7 @@ class Compiler
             }
 
             if ($block->type === Type::T_DIRECTIVE) {
+                assert($block instanceof DirectiveBlock || $block instanceof OutputBlock);
                 if (isset($block->name)) {
                     return $this->testWithWithout($this->compileDirectiveName($block->name), $with, $without);
                 } elseif (isset($block->selectors) && preg_match(',@(\w+),ims', json_encode($block->selectors), $m)) {
@@ -1710,7 +1733,7 @@ class Compiler
      * @param array  $with
      * @param array  $without
      *
-     * @return boolean
+     * @return bool
      *   true if the block should be kept, false to reject
      */
     protected function testWithWithout($what, $with, $without)
@@ -1765,6 +1788,7 @@ class Compiler
      */
     protected function compileNestedPropertiesBlock(Block $block, OutputBlock $out)
     {
+        assert($block instanceof NestedPropertyBlock);
         $prefix = $this->compileValue($block->prefix) . '-';
 
         $nested = $this->makeOutputBlock($block->type);
@@ -1783,6 +1807,7 @@ class Compiler
                     break;
 
                 case Type::T_NESTED_PROPERTY:
+                    assert($child[1] instanceof NestedPropertyBlock);
                     array_unshift($child[1]->prefix[2], $prefix);
                     break;
             }
@@ -1808,7 +1833,7 @@ class Compiler
 
         // wrap assign children in a block
         // except for @font-face
-        if ($block->type !== Type::T_DIRECTIVE || $this->compileDirectiveName($block->name) !== 'font-face') {
+        if (!$block instanceof DirectiveBlock || $this->compileDirectiveName($block->name) !== 'font-face') {
             // need wrapping?
             $needWrapping = false;
 
@@ -1897,8 +1922,8 @@ class Compiler
     /**
      * Compile the value of a comment that can have interpolation
      *
-     * @param array   $value
-     * @param boolean $pushEnv
+     * @param array $value
+     * @param bool  $pushEnv
      *
      * @return string
      */
@@ -2215,7 +2240,7 @@ class Compiler
      *
      * @param array $selector
      *
-     * @return boolean
+     * @return bool
      */
     protected function hasSelectorPlaceholder($selector)
     {
@@ -2632,9 +2657,9 @@ class Compiler
      *
      * @param array                                  $rawPath
      * @param \ScssPhp\ScssPhp\Formatter\OutputBlock $out
-     * @param boolean                                $once
+     * @param bool                                   $once
      *
-     * @return boolean
+     * @return bool
      */
     protected function compileImport($rawPath, OutputBlock $out, $once = false)
     {
@@ -2769,7 +2794,7 @@ class Compiler
         // insert the directive as a comment
         $child = $this->makeOutputBlock(Type::T_COMMENT);
         $child->lines[]      = $line;
-        $child->sourceName   = $this->sourceNames[$this->sourceIndex];
+        $child->sourceName   = $this->sourceNames[$this->sourceIndex] ?: '(stdin)';
         $child->sourceLine   = $this->sourceLine;
         $child->sourceColumn = $this->sourceColumn;
 
@@ -2877,10 +2902,6 @@ class Compiler
                 break;
 
             case Type::T_CHARSET:
-                if (! $this->charsetSeen) {
-                    $this->charsetSeen = true;
-                    $this->appendRootDirective('@charset ' . $this->compileValue($child[1]) . ';', $out);
-                }
                 break;
 
             case Type::T_CUSTOM_PROPERTY:
@@ -3044,6 +3065,7 @@ class Compiler
             case Type::T_MIXIN:
             case Type::T_FUNCTION:
                 list(, $block) = $child;
+                assert($block instanceof CallableBlock);
                 // the block need to be able to go up to it's parent env to resolve vars
                 $block->parentEnv = $this->getStoreEnv();
                 $this->set(static::$namespaces[$block->type] . $block->name, $block, true);
@@ -3072,6 +3094,21 @@ class Compiler
                             $selectors = $this->multiplySelectors($this->env, $child['selfParent']);
                         }
 
+                        if (\count($result) > 1) {
+                            $replacement = implode(', ', $result);
+                            $fname = $this->getPrettyPath($this->sourceNames[$this->sourceIndex]);
+                            $line = $this->sourceLine;
+
+                            $message = <<<EOL
+on line $line of $fname:
+Compound selectors may no longer be extended.
+Consider `@extend $replacement` instead.
+See http://bit.ly/ExtendCompound for details.
+EOL;
+
+                            $this->logger->warn($message);
+                        }
+
                         $this->pushExtends($result, $selectors, $child);
                     }
                 }
@@ -3079,6 +3116,7 @@ class Compiler
 
             case Type::T_IF:
                 list(, $if) = $child;
+                assert($if instanceof IfBlock);
 
                 if ($this->isTruthy($this->reduce($if->cond, true))) {
                     return $this->compileChildren($if->children, $out);
@@ -3086,8 +3124,8 @@ class Compiler
 
                 foreach ($if->cases as $case) {
                     if (
-                        $case->type === Type::T_ELSE ||
-                        $case->type === Type::T_ELSEIF && $this->isTruthy($this->reduce($case->cond))
+                        $case instanceof ElseBlock ||
+                        $case instanceof ElseifBlock && $this->isTruthy($this->reduce($case->cond))
                     ) {
                         return $this->compileChildren($case->children, $out);
                     }
@@ -3096,6 +3134,7 @@ class Compiler
 
             case Type::T_EACH:
                 list(, $each) = $child;
+                assert($each instanceof EachBlock);
 
                 $list = $this->coerceList($this->reduce($each->list), ',', true);
 
@@ -3130,6 +3169,7 @@ class Compiler
 
             case Type::T_WHILE:
                 list(, $while) = $child;
+                assert($while instanceof WhileBlock);
 
                 while ($this->isTruthy($this->reduce($while->cond, true))) {
                     $ret = $this->compileChildren($while->children, $out);
@@ -3142,6 +3182,7 @@ class Compiler
 
             case Type::T_FOR:
                 list(, $for) = $child;
+                assert($for instanceof ForBlock);
 
                 $startNumber = $this->assertNumber($this->reduce($for->start, true));
                 $endNumber = $this->assertNumber($this->reduce($for->end, true));
@@ -3201,6 +3242,8 @@ class Compiler
                 if (! $mixin) {
                     throw $this->error("Undefined mixin $name");
                 }
+
+                assert($mixin instanceof CallableBlock);
 
                 $callingScope = $this->getStoreEnv();
 
@@ -3374,7 +3417,7 @@ class Compiler
      *
      * @param array|Number $value
      *
-     * @return boolean
+     * @return bool
      */
     public function isTruthy($value)
     {
@@ -3386,7 +3429,7 @@ class Compiler
      *
      * @param string $value
      *
-     * @return boolean
+     * @return bool
      */
     protected function isImmediateRelationshipCombinator($value)
     {
@@ -3398,7 +3441,7 @@ class Compiler
      *
      * @param array $value
      *
-     * @return boolean
+     * @return bool
      */
     protected function shouldEval($value)
     {
@@ -3421,7 +3464,7 @@ class Compiler
      * Reduce value
      *
      * @param array|Number $value
-     * @param boolean $inExp
+     * @param bool         $inExp
      *
      * @return array|Number
      */
@@ -3812,7 +3855,6 @@ class Compiler
 
         // try to find a native lib function
         $normalizedName = $this->normalizeName($name);
-        $libName = null;
 
         if (isset($this->userFunctions[$normalizedName])) {
             // see if we can find a user function
@@ -3821,9 +3863,44 @@ class Compiler
             return [Type::T_FUNCTION_REFERENCE, 'user', $name, $f, $prototype];
         }
 
+        $lowercasedName = strtolower($normalizedName);
+
+        // Special functions overriding a CSS function are case-insensitive. We normalize them as lowercase
+        // to avoid the deprecation warning about the wrong case being used.
+        if ($lowercasedName === 'min' || $lowercasedName === 'max') {
+            $normalizedName = $lowercasedName;
+        }
+
         if (($f = $this->getBuiltinFunction($normalizedName)) && \is_callable($f)) {
             $libName   = $f[1];
             $prototype = isset(static::$$libName) ? static::$$libName : null;
+
+            // All core functions have a prototype defined. Not finding the
+            // prototype can mean 2 things:
+            // - the function comes from a child class (deprecated just after)
+            // - the function was found with a different case, which relates to calling the
+            //   wrong Sass function due to our camelCase usage (`fade-in()` vs `fadein()`),
+            //   because PHP method names are case-insensitive while property names are
+            //   case-sensitive.
+            if ($prototype === null || strtolower($normalizedName) !== $normalizedName) {
+                $r = new \ReflectionMethod($this, $libName);
+                $actualLibName = $r->name;
+
+                if ($actualLibName !== $libName || strtolower($normalizedName) !== $normalizedName) {
+                    $kebabCaseName = preg_replace('~(?<=\\w)([A-Z])~', '-$1', substr($actualLibName, 3));
+                    assert($kebabCaseName !== null);
+                    $originalName = strtolower($kebabCaseName);
+                    $warning = "Calling built-in functions with a non-standard name is deprecated since Scssphp 1.8.0 and will not work anymore in 2.0 (they will be treated as CSS function calls instead).\nUse \"$originalName\" instead of \"$name\".";
+                    @trigger_error($warning, E_USER_DEPRECATED);
+                    $fname = $this->getPrettyPath($this->sourceNames[$this->sourceIndex]);
+                    $line  = $this->sourceLine;
+                    Warn::deprecation("$warning\n         on line $line of $fname");
+
+                    // Use the actual function definition
+                    $prototype = isset(static::$$actualLibName) ? static::$$actualLibName : null;
+                    $f[1] = $libName = $actualLibName;
+                }
+            }
 
             if (\get_class($this) !== __CLASS__ && !isset($this->warnedChildFunctions[$libName])) {
                 $r = new \ReflectionMethod($this, $libName);
@@ -3890,6 +3967,10 @@ class Compiler
 
                 if (! empty($value['enclosing'])) {
                     unset($value['enclosing']);
+                }
+
+                if ($value[1] === '' && count($value[2]) > 1) {
+                    $value[1] = ' ';
                 }
 
                 return $value;
@@ -4007,8 +4088,8 @@ class Compiler
      * Boolean and
      *
      * @param array|Number $left
-     * @param array|Number  $right
-     * @param boolean $shouldEval
+     * @param array|Number $right
+     * @param bool         $shouldEval
      *
      * @return array|Number|null
      */
@@ -4036,7 +4117,7 @@ class Compiler
      *
      * @param array|Number $left
      * @param array|Number $right
-     * @param boolean $shouldEval
+     * @param bool         $shouldEval
      *
      * @return array|Number|null
      */
@@ -4462,8 +4543,7 @@ class Compiler
                     // force double quote as string quote for the output in certain cases
                     if (
                         $value[1] === "'" &&
-                        (strpos($content, '"') === false or strpos($content, "'") !== false) &&
-                        strpbrk($content, '{}\\\'') !== false
+                        (strpos($content, '"') === false or strpos($content, "'") !== false)
                     ) {
                         $value[1] = '"';
                     } elseif (
@@ -4516,6 +4596,8 @@ class Compiler
                     }
                 }
 
+                $separator = $delim === '/' ? ' /' : $delim;
+
                 $prefix_value = '';
 
                 if ($delim !== ' ') {
@@ -4554,7 +4636,7 @@ class Compiler
                     $filtered[] = $compiled;
                 }
 
-                return $pre . substr(implode("$delim", $filtered), \strlen($prefix_value)) . $post;
+                return $pre . substr(implode($separator, $filtered), \strlen($prefix_value)) . $post;
 
             case Type::T_MAP:
                 $keys     = $value[1];
@@ -4826,10 +4908,10 @@ class Compiler
     /**
      * Join selectors; looks for & to replace, or append parent before child
      *
-     * @param array   $parent
-     * @param array   $child
-     * @param boolean $stillHasSelf
-     * @param array   $selfParentSelectors
+     * @param array $parent
+     * @param array $child
+     * @param bool  $stillHasSelf
+     * @param array $selfParentSelectors
 
      * @return array
      */
@@ -4906,6 +4988,8 @@ class Compiler
         if (empty($env->block->type)) {
             return $this->multiplyMedia($env->parent, $childQueries);
         }
+
+        assert($env->block instanceof MediaBlock);
 
         $parentQueries = isset($env->block->queryList)
             ? $env->block->queryList
@@ -5041,7 +5125,7 @@ class Compiler
      *
      * @param string                                $name
      * @param mixed                                 $value
-     * @param boolean                               $shadow
+     * @param bool                                  $shadow
      * @param \ScssPhp\ScssPhp\Compiler\Environment $env
      * @param mixed                                 $valueUnreduced
      *
@@ -5147,9 +5231,9 @@ class Compiler
      * @internal
      *
      * @param string                                $name
-     * @param boolean                               $shouldThrow
+     * @param bool                                  $shouldThrow
      * @param \ScssPhp\ScssPhp\Compiler\Environment $env
-     * @param boolean                               $unreduced
+     * @param bool                                  $unreduced
      *
      * @return mixed|null
      */
@@ -5216,7 +5300,7 @@ class Compiler
      * @param string                                $name
      * @param \ScssPhp\ScssPhp\Compiler\Environment $env
      *
-     * @return boolean
+     * @return bool
      */
     protected function has($name, Environment $env = null)
     {
@@ -5406,7 +5490,7 @@ class Compiler
      *
      * @api
      *
-     * @param integer $numberPrecision
+     * @param int $numberPrecision
      *
      * @return void
      *
@@ -5484,11 +5568,30 @@ class Compiler
     }
 
     /**
+     * Configures the handling of non-ASCII outputs.
+     *
+     * If $charset is `true`, this will include a `@charset` declaration or a
+     * UTF-8 [byte-order mark][] if the stylesheet contains any non-ASCII
+     * characters. Otherwise, it will never include a `@charset` declaration or a
+     * byte-order mark.
+     *
+     * [byte-order mark]: https://en.wikipedia.org/wiki/Byte_order_mark#UTF-8
+     *
+     * @param bool $charset
+     *
+     * @return void
+     */
+    public function setCharset($charset)
+    {
+        $this->charset = $charset;
+    }
+
+    /**
      * Enable/disable source maps
      *
      * @api
      *
-     * @param integer $sourceMap
+     * @param int $sourceMap
      *
      * @return void
      *
@@ -5857,7 +5960,7 @@ class Compiler
         }
 
         if (0 === strpos($normalizedPath, $normalizedRootDirectory)) {
-            return substr($normalizedPath, \strlen($normalizedRootDirectory));
+            return substr($path, \strlen($normalizedRootDirectory));
         }
 
         return $path;
@@ -5890,7 +5993,7 @@ class Compiler
      *
      * @api
      *
-     * @param boolean $ignoreErrors
+     * @param bool $ignoreErrors
      *
      * @return \ScssPhp\ScssPhp\Compiler
      *
@@ -6029,7 +6132,7 @@ class Compiler
     /**
      * Beautify call stack for output
      *
-     * @param boolean  $all
+     * @param bool     $all
      * @param int|null $limit
      *
      * @return string
@@ -6089,8 +6192,8 @@ class Compiler
     /**
      * Call SCSS @function
      *
-     * @param Object $func
-     * @param array  $argValues
+     * @param CallableBlock|null $func
+     * @param array              $argValues
      *
      * @return array|Number
      */
@@ -6664,9 +6767,8 @@ class Compiler
      *
      * @param array[]    $argDef
      * @param array|null $argValues
-     * @param boolean $storeInEnv
-     * @param boolean $reduce
-     *   only used if $storeInEnv = false
+     * @param bool       $storeInEnv
+     * @param bool       $reduce     only used if $storeInEnv = false
      *
      * @return array<string, array|Number>
      *
@@ -6861,14 +6963,18 @@ class Compiler
     }
 
     /**
-     * Coerce something to map
+     * Tries to convert an item to a Sass map
      *
-     * @param array|Number $item
+     * @param Number|array $item
      *
-     * @return array|Number
+     * @return array|null
      */
-    protected function coerceMap($item)
+    private function tryMap($item)
     {
+        if ($item instanceof Number) {
+            return null;
+        }
+
         if ($item[0] === Type::T_MAP) {
             return $item;
         }
@@ -6880,6 +6986,24 @@ class Compiler
             return static::$emptyMap;
         }
 
+        return null;
+    }
+
+    /**
+     * Coerce something to map
+     *
+     * @param array|Number $item
+     *
+     * @return array|Number
+     */
+    protected function coerceMap($item)
+    {
+        $map = $this->tryMap($item);
+
+        if ($map !== null) {
+            return $map;
+        }
+
         return $item;
     }
 
@@ -6888,14 +7012,14 @@ class Compiler
      *
      * @param array|Number $item
      * @param string       $delim
-     * @param boolean      $removeTrailingNull
+     * @param bool         $removeTrailingNull
      *
      * @return array
      */
     protected function coerceList($item, $delim = ',', $removeTrailingNull = false)
     {
         if ($item instanceof Number) {
-            return [Type::T_LIST, $delim, [$item]];
+            return [Type::T_LIST, '', [$item]];
         }
 
         if ($item[0] === Type::T_LIST) {
@@ -6916,29 +7040,17 @@ class Compiler
                 $key = $keys[$i];
                 $value = $values[$i];
 
-                switch ($key[0]) {
-                    case Type::T_LIST:
-                    case Type::T_MAP:
-                    case Type::T_STRING:
-                    case Type::T_NULL:
-                        break;
-
-                    default:
-                        $key = [Type::T_KEYWORD, $this->compileStringContent($this->coerceString($key))];
-                        break;
-                }
-
                 $list[] = [
                     Type::T_LIST,
-                    '',
+                    ' ',
                     [$key, $value]
                 ];
             }
 
-            return [Type::T_LIST, ',', $list];
+            return [Type::T_LIST, $list ? ',' : '', $list];
         }
 
-        return [Type::T_LIST, $delim, [$item]];
+        return [Type::T_LIST, '', [$item]];
     }
 
     /**
@@ -7079,10 +7191,10 @@ class Compiler
     }
 
     /**
-     * @param integer|Number $value
-     * @param boolean        $isAlpha
+     * @param int|Number $value
+     * @param bool       $isAlpha
      *
-     * @return integer|mixed
+     * @return int|mixed
      */
     protected function compileRGBAValue($value, $isAlpha = false)
     {
@@ -7094,12 +7206,12 @@ class Compiler
     }
 
     /**
-     * @param mixed         $value
-     * @param integer|float $min
-     * @param integer|float $max
-     * @param boolean       $isInt
+     * @param mixed     $value
+     * @param int|float $min
+     * @param int|float $max
+     * @param bool      $isInt
      *
-     * @return integer|mixed
+     * @return int|mixed
      */
     protected function compileColorPartValue($value, $min, $max, $isInt = true)
     {
@@ -7193,10 +7305,14 @@ class Compiler
      *
      * @param array|Number $value
      *
-     * @return integer|float
+     * @return int|float
+     *
+     * @deprecated
      */
     protected function coercePercent($value)
     {
+        @trigger_error(sprintf('"%s" is deprecated since 1.7.0.', __METHOD__), E_USER_DEPRECATED);
+
         if ($value instanceof Number) {
             if ($value->hasUnit('%')) {
                 return $value->getDimension() / 100;
@@ -7222,15 +7338,15 @@ class Compiler
      */
     public function assertMap($value, $varName = null)
     {
-        $value = $this->coerceMap($value);
+        $map = $this->tryMap($value);
 
-        if ($value[0] !== Type::T_MAP) {
+        if ($map === null) {
             $value = $this->compileValue($value);
 
             throw SassScriptException::forArgument("$value is not a map.", $varName);
         }
 
-        return $value;
+        return $map;
     }
 
     /**
@@ -7327,7 +7443,7 @@ class Compiler
      * @param array|Number $value
      * @param string|null  $varName
      *
-     * @return integer
+     * @return int
      *
      * @throws SassScriptException
      */
@@ -7391,9 +7507,9 @@ class Compiler
      *
      * @internal
      *
-     * @param integer $red
-     * @param integer $green
-     * @param integer $blue
+     * @param int $red
+     * @param int $green
+     * @param int $blue
      *
      * @return array
      */
@@ -7423,7 +7539,7 @@ class Compiler
             }
         }
 
-        return [Type::T_HSL, fmod($h, 360), $s * 100, $l / 5.1];
+        return [Type::T_HSL, fmod($h + 360, 360), $s * 100, $l / 5.1];
     }
 
     /**
@@ -7497,9 +7613,9 @@ class Compiler
      *
      * @api
      *
-     * @param integer $hue        H from 0 to 360
-     * @param integer $whiteness  W from 0 to 100
-     * @param integer $blackness  B from 0 to 100
+     * @param int $hue        H from 0 to 360
+     * @param int $whiteness  W from 0 to 100
+     * @param int $blackness  B from 0 to 100
      *
      * @return array
      */
@@ -7529,9 +7645,9 @@ class Compiler
      *
      * @api
      *
-     * @param integer $red
-     * @param integer $green
-     * @param integer $blue
+     * @param int $red
+     * @param int $green
+     * @param int $blue
      *
      * @return array
      */
@@ -7659,7 +7775,6 @@ class Compiler
 
         $values = [];
 
-
         foreach ($list[2] as $item) {
             $values[] = $this->normalizeValue($item);
         }
@@ -7704,7 +7819,7 @@ class Compiler
                             [$funcName . '(', $color[1], ', ', $color[2], ', ', $color[3], ', ', $alpha, ')']];
                     }
                 } else {
-                    $color = [Type::T_STRING, '', [$funcName . '(', $args[0], ')']];
+                    $color = [Type::T_STRING, '', [$funcName . '(', $args[0], ', ', $args[1], ')']];
                 }
                 break;
 
@@ -8005,8 +8120,8 @@ class Compiler
 
     // mix two colors
     protected static $libMix = [
-        ['color1', 'color2', 'weight:0.5'],
-        ['color-1', 'color-2', 'weight:0.5']
+        ['color1', 'color2', 'weight:50%'],
+        ['color-1', 'color-2', 'weight:50%']
         ];
     protected function libMix($args)
     {
@@ -8014,25 +8129,26 @@ class Compiler
 
         $first = $this->assertColor($first, 'color1');
         $second = $this->assertColor($second, 'color2');
-        $weight = $this->coercePercent($this->assertNumber($weight, 'weight'));
+        $weightScale = $this->assertNumber($weight, 'weight')->valueInRange(0, 100, 'weight') / 100;
 
         $firstAlpha = isset($first[4]) ? $first[4] : 1;
         $secondAlpha = isset($second[4]) ? $second[4] : 1;
 
-        $w = $weight * 2 - 1;
-        $a = $firstAlpha - $secondAlpha;
+        $normalizedWeight = $weightScale * 2 - 1;
+        $alphaDistance = $firstAlpha - $secondAlpha;
 
-        $w1 = (($w * $a === -1 ? $w : ($w + $a) / (1 + $w * $a)) + 1) / 2.0;
-        $w2 = 1.0 - $w1;
+        $combinedWeight = $normalizedWeight * $alphaDistance == -1 ? $normalizedWeight : ($normalizedWeight + $alphaDistance) / (1 + $normalizedWeight * $alphaDistance);
+        $weight1 = ($combinedWeight + 1) / 2.0;
+        $weight2 = 1.0 - $weight1;
 
         $new = [Type::T_COLOR,
-            $w1 * $first[1] + $w2 * $second[1],
-            $w1 * $first[2] + $w2 * $second[2],
-            $w1 * $first[3] + $w2 * $second[3],
+            $weight1 * $first[1] + $weight2 * $second[1],
+            $weight1 * $first[2] + $weight2 * $second[2],
+            $weight1 * $first[3] + $weight2 * $second[3],
         ];
 
         if ($firstAlpha != 1.0 || $secondAlpha != 1.0) {
-            $new[] = $firstAlpha * $weight + $secondAlpha * (1 - $weight);
+            $new[] = $firstAlpha * $weightScale + $secondAlpha * (1 - $weightScale);
         }
 
         return $this->fixColor($new);
@@ -8109,7 +8225,7 @@ class Compiler
             }
         }
 
-        $hueValue = $hue->getDimension() % 360;
+        $hueValue = fmod($hue->getDimension(), 360);
 
         while ($hueValue < 0) {
             $hueValue += 360;
@@ -8287,10 +8403,23 @@ class Compiler
     }
     */
 
+    /**
+     * @param array     $color
+     * @param int       $idx
+     * @param int|float $amount
+     *
+     * @return array
+     */
     protected function adjustHsl($color, $idx, $amount)
     {
         $hsl = $this->toHSL($color[1], $color[2], $color[3]);
         $hsl[$idx] += $amount;
+
+        if ($idx !== 1) {
+            // Clamp the saturation and lightness
+            $hsl[$idx] = min(max(0, $hsl[$idx]), 100);
+        }
+
         $out = $this->toRGB($hsl[1], $hsl[2], $hsl[3]);
 
         if (isset($color[4])) {
@@ -8338,19 +8467,19 @@ class Compiler
             return null;
         }
 
-        $color = $this->assertColor($value, 'color');
-        $amount = 100 * $this->coercePercent($this->assertNumber($args[1], 'amount'));
+        $color = $this->assertColor($args[0], 'color');
+        $amount = $this->assertNumber($args[1], 'amount');
 
-        return $this->adjustHsl($color, 2, $amount);
+        return $this->adjustHsl($color, 2, $amount->valueInRange(0, 100, 'amount'));
     }
 
     protected static $libDesaturate = ['color', 'amount'];
     protected function libDesaturate($args)
     {
         $color = $this->assertColor($args[0], 'color');
-        $amount = 100 * $this->coercePercent($this->assertNumber($args[1], 'amount'));
+        $amount = $this->assertNumber($args[1], 'amount');
 
-        return $this->adjustHsl($color, 2, -$amount);
+        return $this->adjustHsl($color, 2, -$amount->valueInRange(0, 100, 'amount'));
     }
 
     protected static $libGrayscale = ['color'];
@@ -8371,16 +8500,20 @@ class Compiler
         return $this->adjustHsl($this->assertColor($args[0], 'color'), 1, 180);
     }
 
-    protected static $libInvert = ['color', 'weight:1'];
+    protected static $libInvert = ['color', 'weight:100%'];
     protected function libInvert($args)
     {
         $value = $args[0];
 
+        $weight = $this->assertNumber($args[1], 'weight');
+
         if ($value instanceof Number) {
+            if ($weight->getDimension() != 100 || !$weight->hasUnit('%')) {
+                throw new SassScriptException('Only one argument may be passed to the plain-CSS invert() function.');
+            }
+
             return null;
         }
-
-        $weight = $this->coercePercent($this->assertNumber($args[1], 'weight'));
 
         $color = $this->assertColor($value, 'color');
         $inverted = $color;
@@ -8388,11 +8521,7 @@ class Compiler
         $inverted[2] = 255 - $inverted[2];
         $inverted[3] = 255 - $inverted[3];
 
-        if ($weight < 1) {
-            return $this->libMix([$inverted, $color, new Number($weight, '')]);
-        }
-
-        return $inverted;
+        return $this->libMix([$inverted, $color, $weight]);
     }
 
     // increases opacity by amount
@@ -8400,9 +8529,9 @@ class Compiler
     protected function libOpacify($args)
     {
         $color = $this->assertColor($args[0], 'color');
-        $amount = $this->coercePercent($this->assertNumber($args[1], 'amount'));
+        $amount = $this->assertNumber($args[1], 'amount');
 
-        $color[4] = (isset($color[4]) ? $color[4] : 1) + $amount;
+        $color[4] = (isset($color[4]) ? $color[4] : 1) + $amount->valueInRange(0, 1, 'amount');
         $color[4] = min(1, max(0, $color[4]));
 
         return $color;
@@ -8419,9 +8548,9 @@ class Compiler
     protected function libTransparentize($args)
     {
         $color = $this->assertColor($args[0], 'color');
-        $amount = $this->coercePercent($this->assertNumber($args[1], 'amount'));
+        $amount = $this->assertNumber($args[1], 'amount');
 
-        $color[4] = (isset($color[4]) ? $color[4] : 1) - $amount;
+        $color[4] = (isset($color[4]) ? $color[4] : 1) - $amount->valueInRange(0, 1, 'amount');
         $color[4] = min(1, max(0, $color[4]));
 
         return $color;
@@ -8570,12 +8699,16 @@ will be an error in future versions of Sass.\n         on line $line of $fname";
 
         $list = $this->coerceList($args[0]);
 
-        if (\count($list[2]) <= 1 && empty($list['enclosing'])) {
+        if ($list[1] === '' && \count($list[2]) <= 1 && empty($list['enclosing'])) {
             return [Type::T_KEYWORD, 'space'];
         }
 
         if ($list[1] === ',') {
             return [Type::T_KEYWORD, 'comma'];
+        }
+
+        if ($list[1] === '/') {
+            return [Type::T_KEYWORD, 'slash'];
         }
 
         return [Type::T_KEYWORD, 'space'];
@@ -8617,23 +8750,72 @@ will be an error in future versions of Sass.\n         on line $line of $fname";
         return $list;
     }
 
-    protected static $libMapGet = ['map', 'key'];
+    protected static $libMapGet = ['map', 'key', 'keys...'];
     protected function libMapGet($args)
     {
         $map = $this->assertMap($args[0], 'map');
-        $key = $args[1];
+        if (!isset($args[2])) {
+            // BC layer for usages of the function from PHP code rather than from the Sass function
+            $args[2] = self::$emptyArgumentList;
+        }
+        $keys = array_merge([$args[1]], $args[2][2]);
+        $value = static::$null;
 
-        if (! \is_null($key)) {
-            $key = $this->compileStringContent($this->coerceString($key));
+        foreach ($keys as $key) {
+            if (!\is_array($map) || $map[0] !== Type::T_MAP) {
+                return static::$null;
+            }
 
-            for ($i = \count($map[1]) - 1; $i >= 0; $i--) {
-                if ($key === $this->compileStringContent($this->coerceString($map[1][$i]))) {
-                    return $map[2][$i];
-                }
+            $map = $this->mapGet($map, $key);
+
+            if ($map === null) {
+                return static::$null;
+            }
+
+            $value = $map;
+        }
+
+        return $value;
+    }
+
+    /**
+     * Gets the value corresponding to that key in the map
+     *
+     * @param array        $map
+     * @param Number|array $key
+     *
+     * @return Number|array|null
+     */
+    private function mapGet(array $map, $key)
+    {
+        $index = $this->mapGetEntryIndex($map, $key);
+
+        if ($index !== null) {
+            return $map[2][$index];
+        }
+
+        return null;
+    }
+
+    /**
+     * Gets the index corresponding to that key in the map entries
+     *
+     * @param array        $map
+     * @param Number|array $key
+     *
+     * @return int|null
+     */
+    private function mapGetEntryIndex(array $map, $key)
+    {
+        $key = $this->compileStringContent($this->coerceString($key));
+
+        for ($i = \count($map[1]) - 1; $i >= 0; $i--) {
+            if ($key === $this->compileStringContent($this->coerceString($map[1][$i]))) {
+                return $i;
             }
         }
 
-        return static::$null;
+        return null;
     }
 
     protected static $libMapKeys = ['map'];
@@ -8683,12 +8865,28 @@ will be an error in future versions of Sass.\n         on line $line of $fname";
         return $map;
     }
 
-    protected static $libMapHasKey = ['map', 'key'];
+    protected static $libMapHasKey = ['map', 'key', 'keys...'];
     protected function libMapHasKey($args)
     {
         $map = $this->assertMap($args[0], 'map');
+        if (!isset($args[2])) {
+            // BC layer for usages of the function from PHP code rather than from the Sass function
+            $args[2] = self::$emptyArgumentList;
+        }
+        $keys = array_merge([$args[1]], $args[2][2]);
+        $lastKey = array_pop($keys);
 
-        return $this->toBool($this->mapHasKey($map, $args[1]));
+        foreach ($keys as $key) {
+            $value = $this->mapGet($map, $key);
+
+            if ($value === null || $value instanceof Number || $value[0] !== Type::T_MAP) {
+                return self::$false;
+            }
+
+            $map = $value;
+        }
+
+        return $this->toBool($this->mapHasKey($map, $lastKey));
     }
 
     /**
@@ -8711,24 +8909,127 @@ will be an error in future versions of Sass.\n         on line $line of $fname";
 
     protected static $libMapMerge = [
         ['map1', 'map2'],
-        ['map-1', 'map-2']
+        ['map-1', 'map-2'],
+        ['map1', 'args...']
     ];
     protected function libMapMerge($args)
     {
         $map1 = $this->assertMap($args[0], 'map1');
-        $map2 = $this->assertMap($args[1], 'map2');
+        $map2 = $args[1];
+        $keys = [];
+        if ($map2[0] === Type::T_LIST && isset($map2[3]) && \is_array($map2[3])) {
+            // This is an argument list for the variadic signature
+            if (\count($map2[2]) === 0) {
+                throw new SassScriptException('Expected $args to contain a key.');
+            }
+            if (\count($map2[2]) === 1) {
+                throw new SassScriptException('Expected $args to contain a value.');
+            }
+            $keys = $map2[2];
+            $map2 = array_pop($keys);
+        }
+        $map2 = $this->assertMap($map2, 'map2');
 
-        foreach ($map2[1] as $i2 => $key2) {
-            $key = $this->compileStringContent($this->coerceString($key2));
+        return $this->modifyMap($map1, $keys, function ($oldValue) use ($map2) {
+            $nestedMap = $this->tryMap($oldValue);
 
-            foreach ($map1[1] as $i1 => $key1) {
-                if ($key === $this->compileStringContent($this->coerceString($key1))) {
-                    $map1[2][$i1] = $map2[2][$i2];
-                    continue 2;
-                }
+            if ($nestedMap === null) {
+                return $map2;
             }
 
-            $map1[1][] = $map2[1][$i2];
+            return $this->mergeMaps($nestedMap, $map2);
+        });
+    }
+
+    /**
+     * @param array    $map
+     * @param array    $keys
+     * @param callable $modify
+     * @param bool     $addNesting
+     *
+     * @return Number|array
+     *
+     * @phpstan-param array<Number|array> $keys
+     * @phpstan-param callable(Number|array): (Number|array) $modify
+     */
+    private function modifyMap(array $map, array $keys, callable $modify, $addNesting = true)
+    {
+        if ($keys === []) {
+            return $modify($map);
+        }
+
+        return $this->modifyNestedMap($map, $keys, $modify, $addNesting);
+    }
+
+    /**
+     * @param array    $map
+     * @param array    $keys
+     * @param callable $modify
+     * @param bool     $addNesting
+     *
+     * @return array
+     *
+     * @phpstan-param non-empty-array<Number|array> $keys
+     * @phpstan-param callable(Number|array): (Number|array) $modify
+     */
+    private function modifyNestedMap(array $map, array $keys, callable $modify, $addNesting)
+    {
+        $key = array_shift($keys);
+
+        $nestedValueIndex = $this->mapGetEntryIndex($map, $key);
+
+        if ($keys === []) {
+            if ($nestedValueIndex !== null) {
+                $map[2][$nestedValueIndex] = $modify($map[2][$nestedValueIndex]);
+            } else {
+                $map[1][] = $key;
+                $map[2][] = $modify(self::$null);
+            }
+
+            return $map;
+        }
+
+        $nestedMap = $nestedValueIndex !== null ? $this->tryMap($map[2][$nestedValueIndex]) : null;
+
+        if ($nestedMap === null && !$addNesting) {
+            return $map;
+        }
+
+        if ($nestedMap === null) {
+            $nestedMap = self::$emptyMap;
+        }
+
+        $newNestedMap = $this->modifyNestedMap($nestedMap, $keys, $modify, $addNesting);
+
+        if ($nestedValueIndex !== null) {
+            $map[2][$nestedValueIndex] = $newNestedMap;
+        } else {
+            $map[1][] = $key;
+            $map[2][] = $newNestedMap;
+        }
+
+        return $map;
+    }
+
+    /**
+     * Merges 2 Sass maps together
+     *
+     * @param array $map1
+     * @param array $map2
+     *
+     * @return array
+     */
+    private function mergeMaps(array $map1, array $map2)
+    {
+        foreach ($map2[1] as $i2 => $key2) {
+            $map1EntryIndex = $this->mapGetEntryIndex($map1, $key2);
+
+            if ($map1EntryIndex !== null) {
+                $map1[2][$map1EntryIndex] = $map2[2][$i2];
+                continue;
+            }
+
+            $map1[1][] = $key2;
             $map1[2][] = $map2[2][$i2];
         }
 
@@ -8776,9 +9077,13 @@ will be an error in future versions of Sass.\n         on line $line of $fname";
      *
      * @return string
      * @throws CompilerException
+     *
+     * @deprecated
      */
     protected function listSeparatorForJoin($list1, $sep)
     {
+        @trigger_error(sprintf('The "%s" method is deprecated.', __METHOD__), E_USER_DEPRECATED);
+
         if (! isset($sep)) {
             return $list1[1];
         }
@@ -8795,14 +9100,40 @@ will be an error in future versions of Sass.\n         on line $line of $fname";
         }
     }
 
-    protected static $libJoin = ['list1', 'list2', 'separator:null', 'bracketed:auto'];
+    protected static $libJoin = ['list1', 'list2', 'separator:auto', 'bracketed:auto'];
     protected function libJoin($args)
     {
         list($list1, $list2, $sep, $bracketed) = $args;
 
         $list1 = $this->coerceList($list1, ' ', true);
         $list2 = $this->coerceList($list2, ' ', true);
-        $sep   = $this->listSeparatorForJoin($list1, $sep);
+
+        switch ($this->compileStringContent($this->assertString($sep, 'separator'))) {
+            case 'comma':
+                $separator = ',';
+                break;
+
+            case 'space':
+                $separator = ' ';
+                break;
+
+            case 'slash':
+                $separator = '/';
+                break;
+
+            case 'auto':
+                if ($list1[1] !== '' || count($list1[2]) > 1 || !empty($list1['enclosing']) && $list1['enclosing'] !== 'parent') {
+                    $separator = $list1[1] ?: ' ';
+                } elseif ($list2[1] !== '' || count($list2[2]) > 1 || !empty($list2['enclosing']) && $list2['enclosing'] !== 'parent') {
+                    $separator = $list2[1] ?: ' ';
+                } else {
+                    $separator = ' ';
+                }
+                break;
+
+            default:
+                throw SassScriptException::forArgument('Must be "space", "comma", "slash", or "auto".', 'separator');
+        }
 
         if ($bracketed === static::$true) {
             $bracketed = true;
@@ -8829,11 +9160,7 @@ will be an error in future versions of Sass.\n         on line $line of $fname";
             }
         }
 
-        $res = [Type::T_LIST, $sep, array_merge($list1[2], $list2[2])];
-
-        if (isset($list1['enclosing'])) {
-            $res['enlcosing'] = $list1['enclosing'];
-        }
+        $res = [Type::T_LIST, $separator, array_merge($list1[2], $list2[2])];
 
         if ($bracketed) {
             $res['enclosing'] = 'bracket';
@@ -8842,14 +9169,35 @@ will be an error in future versions of Sass.\n         on line $line of $fname";
         return $res;
     }
 
-    protected static $libAppend = ['list', 'val', 'separator:null'];
+    protected static $libAppend = ['list', 'val', 'separator:auto'];
     protected function libAppend($args)
     {
         list($list1, $value, $sep) = $args;
 
         $list1 = $this->coerceList($list1, ' ', true);
-        $sep   = $this->listSeparatorForJoin($list1, $sep);
-        $res   = [Type::T_LIST, $sep, array_merge($list1[2], [$value])];
+
+        switch ($this->compileStringContent($this->assertString($sep, 'separator'))) {
+            case 'comma':
+                $separator = ',';
+                break;
+
+            case 'space':
+                $separator = ' ';
+                break;
+
+            case 'slash':
+                $separator = '/';
+                break;
+
+            case 'auto':
+                $separator = $list1[1] === '' && \count($list1[2]) <= 1 && (empty($list1['enclosing']) || $list1['enclosing'] === 'parent') ? ' ' : $list1[1];
+                break;
+
+            default:
+                throw SassScriptException::forArgument('Must be "space", "comma", "slash", or "auto".', 'separator');
+        }
+
+        $res = [Type::T_LIST, $separator, array_merge($list1[2], [$value])];
 
         if (isset($list1['enclosing'])) {
             $res['enclosing'] = $list1['enclosing'];
@@ -8872,7 +9220,7 @@ will be an error in future versions of Sass.\n         on line $line of $fname";
         $result = [Type::T_LIST, ',', $lists];
         if (! \is_null($firstList)) {
             foreach ($firstList[2] as $key => $item) {
-                $list = [Type::T_LIST, '', [$item]];
+                $list = [Type::T_LIST, ' ', [$item]];
 
                 foreach ($argLists as $arg) {
                     if (isset($arg[2][$key])) {
@@ -9252,6 +9600,8 @@ will be an error in future versions of Sass.\n         on line $line of $fname";
             ) {
                 $value['enclosing'] = 'forced_' . $value['enclosing'];
                 $force_enclosing_display = true;
+            } elseif (! \count($value[2])) {
+                $value['enclosing'] = 'forced_parent';
             }
 
             foreach ($value[2] as $k => $listelement) {
@@ -9375,7 +9725,7 @@ will be an error in future versions of Sass.\n         on line $line of $fname";
      * @param array $super
      * @param array $sub
      *
-     * @return boolean
+     * @return bool
      */
     protected function isSuperSelector($super, $sub)
     {
@@ -9456,7 +9806,7 @@ will be an error in future versions of Sass.\n         on line $line of $fname";
      * @param array $superParts
      * @param array $subParts
      *
-     * @return boolean
+     * @return bool
      */
     protected function isSuperPart($superParts, $subParts)
     {
@@ -9523,21 +9873,18 @@ will be an error in future versions of Sass.\n         on line $line of $fname";
             // do the trick, happening $lastSelector to $previousSelector
             $appended = [];
 
-            foreach ($lastSelectors as $lastSelector) {
-                $previous = $previousSelectors;
-
-                foreach ($lastSelector as $lastSelectorParts) {
-                    foreach ($lastSelectorParts as $lastSelectorPart) {
-                        foreach ($previous as $i => $previousSelector) {
-                            foreach ($previousSelector as $j => $previousSelectorParts) {
-                                $previous[$i][$j][] = $lastSelectorPart;
+            foreach ($previousSelectors as $previousSelector) {
+                foreach ($lastSelectors as $lastSelector) {
+                    $previous = $previousSelector;
+                    foreach ($previousSelector as $j => $previousSelectorParts) {
+                        foreach ($lastSelector as $lastSelectorParts) {
+                            foreach ($lastSelectorParts as $lastSelectorPart) {
+                                $previous[$j][] = $lastSelectorPart;
                             }
                         }
                     }
-                }
 
-                foreach ($previous as $ps) {
-                    $appended[] = $ps;
+                    $appended[] = $previous;
                 }
             }
 
@@ -9593,10 +9940,10 @@ will be an error in future versions of Sass.\n         on line $line of $fname";
      * Extend/replace in selectors
      * used by selector-extend and selector-replace that use the same logic
      *
-     * @param array   $selectors
-     * @param array   $extendee
-     * @param array   $extender
-     * @param boolean $replace
+     * @param array $selectors
+     * @param array $extendee
+     * @param array $extender
+     * @param bool  $replace
      *
      * @return array
      */
