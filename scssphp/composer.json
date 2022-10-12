@@ -40,8 +40,9 @@
         "sass/sass-spec": "*",
         "squizlabs/php_codesniffer": "~3.5",
         "symfony/phpunit-bridge": "^5.1",
+        "thoughtbot/bourbon": "^7.0",
         "twbs/bootstrap": "~5.0",
-        "twbs/bootstrap4": "4.6.0",
+        "twbs/bootstrap4": "4.6.1",
         "zurb/foundation": "~6.5"
     },
     "repositories": [
@@ -49,16 +50,34 @@
             "type": "package",
             "package": {
                 "name": "sass/sass-spec",
-                "version": "2021.05.10",
+                "version": "2021.11.30",
                 "source": {
                     "type": "git",
                     "url": "https://github.com/sass/sass-spec.git",
-                    "reference": "b9bf24a936528f333fb30ee59ca550c6da551c11"
+                    "reference": "ee5b460ac84b1ce27b86e22c0252b4296444cf3a"
                 },
                 "dist": {
                     "type": "zip",
-                    "url": "https://api.github.com/repos/sass/sass-spec/zipball/b9bf24a936528f333fb30ee59ca550c6da551c11",
-                    "reference": "b9bf24a936528f333fb30ee59ca550c6da551c11",
+                    "url": "https://api.github.com/repos/sass/sass-spec/zipball/ee5b460ac84b1ce27b86e22c0252b4296444cf3a",
+                    "reference": "ee5b460ac84b1ce27b86e22c0252b4296444cf3a",
+                    "shasum": ""
+                }
+            }
+        },
+        {
+            "type": "package",
+            "package": {
+                "name": "thoughtbot/bourbon",
+                "version": "v7.0.0",
+                "source": {
+                    "type": "git",
+                    "url": "https://github.com/thoughtbot/bourbon.git",
+                    "reference": "fbe338ee6807e7f7aa996d82c8a16f248bb149b3"
+                },
+                "dist": {
+                    "type": "zip",
+                    "url": "https://api.github.com/repos/thoughtbot/bourbon/zipball/fbe338ee6807e7f7aa996d82c8a16f248bb149b3",
+                    "reference": "fbe338ee6807e7f7aa996d82c8a16f248bb149b3",
                     "shasum": ""
                 }
             }
@@ -67,16 +86,16 @@
             "type": "package",
             "package": {
                 "name": "twbs/bootstrap4",
-                "version": "v4.6.0",
+                "version": "v4.6.1",
                 "source": {
                     "type": "git",
                     "url": "https://github.com/twbs/bootstrap.git",
-                    "reference": "6ffb0b48e455430f8a5359ed689ad64c1143fac2"
+                    "reference": "043a03c95a2ad6738f85b65e53b9dbdfb03b8d10"
                 },
                 "dist": {
                     "type": "zip",
-                    "url": "https://api.github.com/repos/twbs/bootstrap/zipball/6ffb0b48e455430f8a5359ed689ad64c1143fac2",
-                    "reference": "6ffb0b48e455430f8a5359ed689ad64c1143fac2",
+                    "url": "https://api.github.com/repos/twbs/bootstrap/zipball/043a03c95a2ad6738f85b65e53b9dbdfb03b8d10",
+                    "reference": "043a03c95a2ad6738f85b65e53b9dbdfb03b8d10",
                     "shasum": ""
                 }
             }
@@ -84,6 +103,9 @@
     ],
     "bin": ["bin/pscss"],
     "config": {
-        "sort-packages": true
+        "sort-packages": true,
+        "allow-plugins": {
+            "bamarni/composer-bin-plugin": true
+        }
     }
 }
