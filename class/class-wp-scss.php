@@ -17,14 +17,13 @@ class Wp_Scss {
    *
    * @var array compile_errors - catches errors from compile
    */
-  public function __construct ($scss_dir, $css_dir, $compile_method, $sourcemaps) {
+  public function __construct ($scss_dir, $css_dir, $cache_dir, $compile_method, $sourcemaps) {
 
     $this->scss_dir         = $scss_dir;
     $this->css_dir          = $css_dir;
+    $this->cache            = $cache_dir;
     $this->compile_errors   = array();
     $this->scssc            = new Compiler();
-
-    $this->cache = WPSCSS_PLUGIN_DIR . '/cache/';
 
     $this->scssc->setOutputStyle( $compile_method );
     $this->scssc->setImportPaths( $this->scss_dir );
