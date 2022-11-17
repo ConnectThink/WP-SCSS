@@ -3,7 +3,7 @@
  * Plugin Name: WP-SCSS
  * Plugin URI: https://github.com/ConnectThink/WP-SCSS
  * Description: Compiles scss files live on WordPress.
- * Version: 2.4.0
+ * Version: 3.0.0
  * Author: Connect Think
  * Author URI: http://connectthink.com
  * License: GPLv3
@@ -44,7 +44,7 @@ if (!defined('WPSCSS_VERSION_KEY'))
   define('WPSCSS_VERSION_KEY', 'wpscss_version');
 
 if (!defined('WPSCSS_VERSION_NUM'))
-  define('WPSCSS_VERSION_NUM', '2.4.0');
+  define('WPSCSS_VERSION_NUM', '3.0.0');
 
 // Add version to options table
 if ( get_option( WPSCSS_VERSION_KEY ) !== false ) {
