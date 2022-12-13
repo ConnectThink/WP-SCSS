@@ -19,10 +19,10 @@ namespace ScssPhp\ScssPhp\Formatter;
  *
  * @internal
  */
-class OutputBlock
+final class OutputBlock
 {
     /**
-     * @var string
+     * @var string|null
      */
     public $type;
 

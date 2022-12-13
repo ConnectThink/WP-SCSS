@@ -18,7 +18,7 @@ use ScssPhp\ScssPhp\Compiler\Environment;
 /**
  * @internal
  */
-class CallableBlock extends Block
+final class CallableBlock extends Block
 {
     /**
      * @var string
