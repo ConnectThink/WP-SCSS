@@ -33,15 +33,9 @@ use ScssPhp\ScssPhp\Util;
  *
  * @template-implements \ArrayAccess<int, mixed>
  */
-class Number extends Node implements \ArrayAccess
+final class Number extends Node implements \ArrayAccess
 {
     const PRECISION = 10;
-
-    /**
-     * @var int
-     * @deprecated use {Number::PRECISION} instead to read the precision. Configuring it is not supported anymore.
-     */
-    public static $precision = self::PRECISION;
 
     /**
      * @see http://www.w3.org/TR/2012/WD-css3-values-20120308/
@@ -49,7 +43,7 @@ class Number extends Node implements \ArrayAccess
      * @var array
      * @phpstan-var array<string, array<string, float|int>>
      */
-    protected static $unitTable = [
+    private static $unitTable = [
         'in' => [
             'in' => 1,
             'pc' => 6,
@@ -228,6 +222,16 @@ class Number extends Node implements \ArrayAccess
     }
 
     /**
+     * Returns true if the number has any units
+     *
+     * @return bool
+     */
+    public function hasUnits()
+    {
+        return !$this->unitless();
+    }
+
+    /**
      * Checks whether the number has exactly this unit
      *
      * @param string $unit
@@ -266,7 +270,27 @@ class Number extends Node implements \ArrayAccess
         try {
             return Util::checkRange('', new Range($min, $max), $this);
         } catch (RangeException $e) {
-            throw SassScriptException::forArgument(sprintf('Expected %s to be within %s%s and %s%3$s', $this, $min, $this->unitStr(), $max), $name);
+            throw SassScriptException::forArgument(sprintf('Expected %s to be within %s%s and %s%3$s.', $this, $min, $this->unitStr(), $max), $name);
+        }
+    }
+
+    /**
+     * @param float|int $min
+     * @param float|int $max
+     * @param string    $name
+     * @param string    $unit
+     *
+     * @return float|int
+     * @throws SassScriptException
+     *
+     * @internal
+     */
+    public function valueInRangeWithUnit($min, $max, $name, $unit)
+    {
+        try {
+            return Util::checkRange('', new Range($min, $max), $this);
+        } catch (RangeException $e) {
+            throw SassScriptException::forArgument(sprintf('Expected %s to be within %s%s and %s%3$s.', $this, $min, $unit, $max), $name);
         }
     }
 
@@ -765,7 +789,7 @@ class Number extends Node implements \ArrayAccess
             return 1;
         }
 
-        foreach (static::$unitTable as $unitVariants) {
+        foreach (self::$unitTable as $unitVariants) {
             if (isset($unitVariants[$unit1]) && isset($unitVariants[$unit2])) {
                 return $unitVariants[$unit1] / $unitVariants[$unit2];
             }

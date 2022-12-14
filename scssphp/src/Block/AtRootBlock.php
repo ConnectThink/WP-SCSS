@@ -18,7 +18,7 @@ use ScssPhp\ScssPhp\Type;
 /**
  * @internal
  */
-class AtRootBlock extends Block
+final class AtRootBlock extends Block
 {
     /**
      * @var array|null

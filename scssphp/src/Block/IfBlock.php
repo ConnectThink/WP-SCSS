@@ -18,7 +18,7 @@ use ScssPhp\ScssPhp\Type;
 /**
  * @internal
  */
-class IfBlock extends Block
+final class IfBlock extends Block
 {
     /**
      * @var array

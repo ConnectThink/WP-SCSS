@@ -18,7 +18,7 @@ use ScssPhp\ScssPhp\Type;
 /**
  * @internal
  */
-class NestedPropertyBlock extends Block
+final class NestedPropertyBlock extends Block
 {
     /**
      * @var bool

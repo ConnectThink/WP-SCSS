@@ -18,7 +18,7 @@ use ScssPhp\ScssPhp\Type;
 /**
  * @internal
  */
-class EachBlock extends Block
+final class EachBlock extends Block
 {
     /**
      * @var string[]

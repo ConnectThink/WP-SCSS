@@ -65,34 +65,32 @@ abstract class Formatter
     public $keepSemicolons;
 
     /**
-     * @var \ScssPhp\ScssPhp\Formatter\OutputBlock
+     * @var OutputBlock
      */
-    protected $currentBlock;
+    private $currentBlock;
 
     /**
      * @var int
      */
-    protected $currentLine;
+    private $currentLine;
 
     /**
      * @var int
      */
-    protected $currentColumn;
+    private $currentColumn;
 
     /**
-     * @var \ScssPhp\ScssPhp\SourceMap\SourceMapGenerator|null
+     * @var SourceMapGenerator|null
      */
-    protected $sourceMapGenerator;
+    private $sourceMapGenerator;
 
     /**
      * @var string
      */
-    protected $strippedSemicolon;
+    private $strippedSemicolon;
 
     /**
      * Initialize formatter
-     *
-     * @api
      */
     abstract public function __construct();
 
@@ -101,7 +99,7 @@ abstract class Formatter
      *
      * @return string
      */
-    protected function indentStr()
+    protected function indentStr(): string
     {
         return '';
     }
@@ -109,14 +107,12 @@ abstract class Formatter
     /**
      * Return property assignment
      *
-     * @api
-     *
      * @param string $name
-     * @param mixed  $value
+     * @param string  $value
      *
      * @return string
      */
-    public function property($name, $value)
+    public function property(string $name, string $value): string
     {
         return rtrim($name) . $this->assignSeparator . $value . ';';
     }
@@ -125,14 +121,12 @@ abstract class Formatter
      * Return custom property assignment
      * differs in that you have to keep spaces in the value as is
      *
-     * @api
-     *
      * @param string $name
-     * @param mixed  $value
+     * @param string  $value
      *
      * @return string
      */
-    public function customProperty($name, $value)
+    public function customProperty(string $name, string $value): string
     {
         return rtrim($name) . trim($this->assignSeparator) . $value . ';';
     }
@@ -140,11 +134,11 @@ abstract class Formatter
     /**
      * Output lines inside a block
      *
-     * @param \ScssPhp\ScssPhp\Formatter\OutputBlock $block
+     * @param OutputBlock $block
      *
      * @return void
      */
-    protected function blockLines(OutputBlock $block)
+    protected function blockLines(OutputBlock $block): void
     {
         $inner = $this->indentStr();
         $glue  = $this->break . $inner;
@@ -159,11 +153,11 @@ abstract class Formatter
     /**
      * Output block selectors
      *
-     * @param \ScssPhp\ScssPhp\Formatter\OutputBlock $block
+     * @param OutputBlock $block
      *
      * @return void
      */
-    protected function blockSelectors(OutputBlock $block)
+    protected function blockSelectors(OutputBlock $block): void
     {
         assert(! empty($block->selectors));
 
@@ -177,11 +171,11 @@ abstract class Formatter
     /**
      * Output block children
      *
-     * @param \ScssPhp\ScssPhp\Formatter\OutputBlock $block
+     * @param OutputBlock $block
      *
      * @return void
      */
-    protected function blockChildren(OutputBlock $block)
+    private function blockChildren(OutputBlock $block)
     {
         foreach ($block->children as $child) {
             $this->block($child);
@@ -191,11 +185,11 @@ abstract class Formatter
     /**
      * Output non-empty block
      *
-     * @param \ScssPhp\ScssPhp\Formatter\OutputBlock $block
+     * @param OutputBlock $block
      *
      * @return void
      */
-    protected function block(OutputBlock $block)
+    private function block(OutputBlock $block)
     {
         if (empty($block->lines) && empty($block->children)) {
             return;
@@ -237,11 +231,11 @@ abstract class Formatter
     /**
      * Test and clean safely empty children
      *
-     * @param \ScssPhp\ScssPhp\Formatter\OutputBlock $block
+     * @param OutputBlock $block
      *
      * @return bool
      */
-    protected function testEmptyChildren($block)
+    private function testEmptyChildren(OutputBlock $block): bool
     {
         $isEmpty = empty($block->lines);
 
@@ -265,14 +259,12 @@ abstract class Formatter
     /**
      * Entry point to formatting a block
      *
-     * @api
-     *
-     * @param \ScssPhp\ScssPhp\Formatter\OutputBlock             $block              An abstract syntax tree
-     * @param \ScssPhp\ScssPhp\SourceMap\SourceMapGenerator|null $sourceMapGenerator Optional source map generator
+     * @param OutputBlock             $block              An abstract syntax tree
+     * @param SourceMapGenerator|null $sourceMapGenerator Optional source map generator
      *
      * @return string
      */
-    public function format(OutputBlock $block, SourceMapGenerator $sourceMapGenerator = null)
+    public function format(OutputBlock $block, SourceMapGenerator $sourceMapGenerator = null): string
     {
         $this->sourceMapGenerator = null;
 
@@ -286,9 +278,18 @@ abstract class Formatter
 
         ob_start();
 
-        $this->block($block);
+        try {
+            $this->block($block);
+        } catch (\Exception $e) {
+            ob_end_clean();
+            throw $e;
+        } catch (\Throwable $e) {
+            ob_end_clean();
+            throw $e;
+        }
 
         $out = ob_get_clean();
+        assert($out !== false);
 
         return $out;
     }
@@ -300,7 +301,7 @@ abstract class Formatter
      *
      * @return void
      */
-    protected function write($str)
+    protected function write(string $str): void
     {
         if (! empty($this->strippedSemicolon)) {
             echo $this->strippedSemicolon;
@@ -331,6 +332,8 @@ abstract class Formatter
                 // If the written line starts is empty, adding a mapping would add it for
                 // a non-existent column as we are at the end of the line
                 if ($line !== '') {
+                    assert($this->currentBlock->sourceLine !== null);
+                    assert($this->currentBlock->sourceName !== null);
                     $this->sourceMapGenerator->addMapping(
                         $this->currentLine,
                         $this->currentColumn,
@@ -346,6 +349,8 @@ abstract class Formatter
             }
 
             if ($lastLine !== '') {
+                assert($this->currentBlock->sourceLine !== null);
+                assert($this->currentBlock->sourceName !== null);
                 $this->sourceMapGenerator->addMapping(
                     $this->currentLine,
                     $this->currentColumn,

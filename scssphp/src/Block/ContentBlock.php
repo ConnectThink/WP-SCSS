@@ -19,7 +19,7 @@ use ScssPhp\ScssPhp\Type;
 /**
  * @internal
  */
-class ContentBlock extends Block
+final class ContentBlock extends Block
 {
     /**
      * @var array|null
