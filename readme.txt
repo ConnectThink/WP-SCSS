@@ -4,8 +4,8 @@ Tags: sass, scss, css, ScssPhp
 Plugin URI: https://github.com/ConnectThink/WP-SCSS
 Requires at least: 3.0.1
 Tested up to: 6.0
-Requires PHP: 5.6
-Stable tag: 3.0.0
+Requires PHP: 7.2
+Stable tag: 4.0.0
 License: GPLv3 or later
 License URI: http://www.gnu.org/copyleft/gpl.html
 
@@ -34,7 +34,7 @@ Yes, absolutely. Make sure you define your directories relative to your child th
 
 = What version of PHP is required? =
 
-PHP 5.6 is required to run WP-SCSS
+PHP 7.2 is required to run WP-SCSS
 
 
 = How do I @import subfiles =
@@ -75,6 +75,9 @@ If you are having issues with the plugin, create an issue on [github](https://gi
 
 
 == Changelog ==
+
+= 4.0.0 =
+  - Updates ScssPHP to version [1.11.0](https://github.com/scssphp/scssphp/releases/tag/v1.11.0) thanks to [fabarea](https://github.com/ConnectThink/WP-SCSS/issues/240)
 
 = 3.0.0 =
   - Updates ScssPHP to version [1.10.0](https://github.com/scssphp/scssphp/releases/tag/v1.10.0) thanks to [fabarea](https://github.com/ConnectThink/WP-SCSS/issues/228)

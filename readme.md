@@ -112,6 +112,8 @@ This plugin will only work with .scss format.
 
 ## Changelog
 
+- 4.0.0
+  - Updates ScssPHP to version [1.11.0](https://github.com/scssphp/scssphp/releases/tag/v1.11.0) thanks to [fabarea](https://github.com/ConnectThink/WP-SCSS/issues/240)
 - 3.0.0
   - Updates ScssPHP to version [1.10.0](https://github.com/scssphp/scssphp/releases/tag/v1.10.0) thanks to [fabarea](https://github.com/ConnectThink/WP-SCSS/issues/228)
 - 2.4.0
