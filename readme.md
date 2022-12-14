@@ -37,7 +37,7 @@ Compiling comes in two modes:
 
 See examples of each in [ScssPHP's documentation](http://scssphp.github.io/scssphp)
 
-- Current version of ScssPHP is 1.10.0
+- Current version of ScssPHP is 1.11.0
 
 #### Source Map Mode
 
