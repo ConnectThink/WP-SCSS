@@ -6,6 +6,10 @@ Compiles .scss files on your wordpress install using [scssphp](https://github.co
 
 The plugin only compiles when changes have been made to the scss files. Compiles are made to the matching css file, so disabling this plugin will not take down your stylesheets. In the instance where a matching css file does not exist yet, the plugin will create the appropriate css file in the css directory.
 
+## Looking for new maintainer
+
+If you are interested in giving back to the open source plugin respond [here](https://github.com/ConnectThink/WP-SCSS/issues/242) with your interest
+
 ## Settings
 
 #### Directories
@@ -28,12 +32,6 @@ Compiling comes in two modes:
 
 - Compressed - More compressed css. Entire rule block on one line. No indentation.
 - Expanded - Full open css. One line per property. Brackets close on their own line.
-
-**Removed** compiling modes. If you used these in the past you will need to update your settings.
-
-- Nested - Lightly compressed css. Brackets close with css block. Indents to match scss nesting.
-- Compact - Removes all line breaks, unnecessary whitespace, and single-line comments.
-- Crunched - Same as Compressed, but also removes multi-line comments.
 
 See examples of each in [ScssPHP's documentation](http://scssphp.github.io/scssphp)
 
@@ -112,8 +110,9 @@ This plugin will only work with .scss format.
 
 ## Changelog
 
-- 4.0.1
+- 4.0.2
   - Full SVN commit to Wordpress
+  - With version bump
 - 4.0.0
   - Updates ScssPHP to version [1.11.0](https://github.com/scssphp/scssphp/releases/tag/v1.11.0) thanks to [fabarea](https://github.com/ConnectThink/WP-SCSS/issues/240)
 - 3.0.0

@@ -5,7 +5,7 @@ Plugin URI: https://github.com/ConnectThink/WP-SCSS
 Requires at least: 3.0.1
 Tested up to: 6.0
 Requires PHP: 7.2
-Stable tag: 4.0.0
+Stable tag: 4.0.2
 License: GPLv3 or later
 License URI: http://www.gnu.org/copyleft/gpl.html
 
@@ -18,6 +18,10 @@ Compiles .scss files on your wordpress install using [ScssPhp](https://github.co
 The plugin only compiles when changes have been made to the scss files. Compiles are made to the matching css file, so disabling this plugin will not take down your stylesheets. In the instance where a matching css file does not exist yet, the plugin will create the appropriate css file in the css directory.
 
 [Get detailed instructions on github](https://github.com/ConnectThink/WP-SCSS)
+
+== Looking for a new maintainer == 
+
+If you are interested in giving back to the open source plugin respond [here](https://github.com/ConnectThink/WP-SCSS/issues/242) with your interest
 
 == Installation ==
 
@@ -76,16 +80,19 @@ If you are having issues with the plugin, create an issue on [github](https://gi
 
 == Changelog ==
 
-= 4.0.1 =
+= 4.0.2 =
   - Full SVN commit to Wordpress
+  - With version bump
 
-= 4.0.0 =
+= 4.0.0 = 
+  - DO NOT USE, missing commited files on WP SVN
   - Updates ScssPHP to version [1.11.0](https://github.com/scssphp/scssphp/releases/tag/v1.11.0) thanks to [fabarea](https://github.com/ConnectThink/WP-SCSS/issues/240)
 
 = 3.0.1 =
   - Full SVN commit to Wordpress
 
 = 3.0.0 =
+  - DO NOT USE, missing commited files on WP SVN
   - Updates ScssPHP to version [1.10.0](https://github.com/scssphp/scssphp/releases/tag/v1.10.0) thanks to [fabarea](https://github.com/ConnectThink/WP-SCSS/issues/228)
 
 = 2.4.0 = 
