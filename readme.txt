@@ -76,8 +76,14 @@ If you are having issues with the plugin, create an issue on [github](https://gi
 
 == Changelog ==
 
+= 4.0.1 =
+  - Full SVN commit to Wordpress
+
 = 4.0.0 =
   - Updates ScssPHP to version [1.11.0](https://github.com/scssphp/scssphp/releases/tag/v1.11.0) thanks to [fabarea](https://github.com/ConnectThink/WP-SCSS/issues/240)
+
+= 3.0.1 =
+  - Full SVN commit to Wordpress
 
 = 3.0.0 =
   - Updates ScssPHP to version [1.10.0](https://github.com/scssphp/scssphp/releases/tag/v1.10.0) thanks to [fabarea](https://github.com/ConnectThink/WP-SCSS/issues/228)

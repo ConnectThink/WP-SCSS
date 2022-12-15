@@ -61,7 +61,7 @@ Also keep in mind, that if you disable this plugin it can no longer enqueue file
 
 ## Directions
 
-_This plugin requires at least php 5.6 to work._ . Tested up to php 7.4
+_This plugin requires at least php 7.2 to work._ . Tested up to php 7.4
 
 #### Importing Subfiles
 
@@ -112,6 +112,8 @@ This plugin will only work with .scss format.
 
 ## Changelog
 
+- 4.0.1
+  - Full SVN commit to Wordpress
 - 4.0.0
   - Updates ScssPHP to version [1.11.0](https://github.com/scssphp/scssphp/releases/tag/v1.11.0) thanks to [fabarea](https://github.com/ConnectThink/WP-SCSS/issues/240)
 - 3.0.0
