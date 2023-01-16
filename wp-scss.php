@@ -164,6 +164,7 @@ $wpscss_options = get_option( 'wpscss_options' );
 $base_compiling_folder = isset($wpscss_options['base_compiling_folder']) ? get_base_dir_from_name($wpscss_options['base_compiling_folder']) : get_stylesheet_directory();
 $scss_dir_setting = isset($wpscss_options['scss_dir']) ? $wpscss_options['scss_dir'] : '';
 $css_dir_setting = isset($wpscss_options['css_dir']) ? $wpscss_options['css_dir'] : '';
+$cache_dir_setting = isset($wpscss_options['cache_dir']) ? $wpscss_options['cache_dir'] : WPSCSS_PLUGIN_DIR . '/cache/';
 
 // Checks if directories are not yet defined
 if( $scss_dir_setting == false || $css_dir_setting == false ) {
@@ -198,6 +199,7 @@ if( $scss_dir_setting == false || $css_dir_setting == false ) {
 $wpscss_settings = array(
   'scss_dir'         => $base_compiling_folder . $scss_dir_setting,
   'css_dir'          => $base_compiling_folder . $css_dir_setting,
+  'cache_dir'        => $base_compiling_folder . $cache_dir_setting,
   'compiling'        => isset($wpscss_options['compiling_options']) ? $wpscss_options['compiling_options'] : 'compressed',
   'always_recompile' => isset($wpscss_options['always_recompile'])  ? $wpscss_options['always_recompile']  : false,
   'errors'           => isset($wpscss_options['errors'])            ? $wpscss_options['errors']            : 'show',
@@ -217,6 +219,7 @@ global $wpscss_compiler;
 $wpscss_compiler = new Wp_Scss(
   $wpscss_settings['scss_dir'],
   $wpscss_settings['css_dir'],
+  $wpscss_settings['cache_dir'],
   $wpscss_settings['compiling'],
   $wpscss_settings['sourcemaps']
 );
