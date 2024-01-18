@@ -6,16 +6,32 @@ use ScssPhp\ScssPhp\Compiler;
 
 class Wp_Scss {
 
+  /** @var string - path to source directory for scss files */
+  private $scss_dir;
+
+  /** @var string - path to output directory for css files */
+  private $css_dir;
+
+  /** @var string - path to cache directory for css files */
+  private $cache;
+
+  /** @var array - catches errors from compile */
+  private $compile_errors;
+
+  /** @var object - instantiate the compiling object. */
+  private $scssc;
+
+  /** @var string - type of sourcemaps to generate */
+  private $sourcemaps;
+  
   /**
    * Set values for Wp_Scss::properties
    *
    * @param string scss_dir - path to source directory for scss files
    * @param string css_dir - path to output directory for css files
+   * @param string cache_dir - path to cache directory for css files
    * @param string compile_method - type of compile (compressed or expanded)
-   *
-   * @var object scssc - instantiate the compiling object.
-   *
-   * @var array compile_errors - catches errors from compile
+   * @param string sourcemaps - type of sourcemaps to generate
    */
   public function __construct ($scss_dir, $css_dir, $cache_dir, $compile_method, $sourcemaps) {
 
