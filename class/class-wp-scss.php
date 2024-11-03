@@ -7,22 +7,22 @@ use ScssPhp\ScssPhp\Compiler;
 class Wp_Scss {
 
   /** @var string - path to source directory for scss files */
-  private $scss_dir;
+  private $scss_dir = '';
 
   /** @var string - path to output directory for css files */
-  private $css_dir;
+  private $css_dir = '';
 
   /** @var string - path to cache directory for css files */
-  private $cache;
+  private $cache = '';
 
   /** @var array - catches errors from compile */
-  private $compile_errors;
+  private $compile_errors = [];
 
   /** @var object - instantiate the compiling object. */
-  private $scssc;
+  private $scssc = {};
 
   /** @var string - type of sourcemaps to generate */
-  private $sourcemaps;
+  private $sourcemaps = '';
   
   /**
    * Set values for Wp_Scss::properties
