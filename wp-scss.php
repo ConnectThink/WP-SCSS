@@ -162,9 +162,9 @@ function get_base_dir_from_name($name_or_old_path){
 
 $wpscss_options = get_option( 'wpscss_options' );
 $base_compiling_folder = isset($wpscss_options['base_compiling_folder']) ? get_base_dir_from_name($wpscss_options['base_compiling_folder']) : get_stylesheet_directory();
-$scss_dir_setting = isset($wpscss_options['scss_dir']) ? $wpscss_options['scss_dir'] : '';
-$css_dir_setting = isset($wpscss_options['css_dir']) ? $wpscss_options['css_dir'] : '';
-$cache_dir_setting = isset($wpscss_options['cache_dir']) ? $wpscss_options['cache_dir'] : WPSCSS_PLUGIN_DIR . '/cache/';
+$scss_dir_setting = !empty($wpscss_options['scss_dir']) ? $wpscss_options['scss_dir'] : '';
+$css_dir_setting = !empty($wpscss_options['css_dir']) ? $wpscss_options['css_dir'] : '';
+$cache_dir_setting = !empty($wpscss_options['cache_dir']) ? $wpscss_options['cache_dir'] : WPSCSS_PLUGIN_DIR . '/cache/';
 
 // Checks if directories are not yet defined
 if( $scss_dir_setting == false || $css_dir_setting == false ) {
