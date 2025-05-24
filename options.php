@@ -253,18 +253,42 @@ class Wp_Scss_Settings {
    * @param array $input Contains all settings fields as array keys
    */
   public function sanitize( $input ) {
-    foreach( ['scss_dir', 'css_dir'] as $dir ){
+    $new_input = array();
+
+    // Sanitize directory paths
+    foreach( ['scss_dir', 'css_dir', 'cache_dir'] as $dir ){
       if( !empty( $input[$dir] ) ) {
-        $input[$dir] = sanitize_text_field( $input[$dir] );
+        $new_input[$dir] = sanitize_text_field( $input[$dir] );
 
         // Add a trailing slash if not already present
-        if(substr($input[$dir], -1) != '/'){
-          $input[$dir] .= '/';
+        if(substr($new_input[$dir], -1) != '/'){
+          $new_input[$dir] .= '/';
         }
       }
     }
 
-    return $input;
+    // Sanitize other text fields
+    if( !empty( $input['base_compiling_folder'] ) ) {
+      $new_input['base_compiling_folder'] = sanitize_text_field( $input['base_compiling_folder'] );
+    }
+
+    if( !empty( $input['compiling_options'] ) ) {
+      $new_input['compiling_options'] = sanitize_text_field( $input['compiling_options'] );
+    }
+
+    if( !empty( $input['sourcemap_options'] ) ) {
+      $new_input['sourcemap_options'] = sanitize_text_field( $input['sourcemap_options'] );
+    }
+
+    if( !empty( $input['errors'] ) ) {
+      $new_input['errors'] = sanitize_text_field( $input['errors'] );
+    }
+
+    // Sanitize checkbox fields
+    $new_input['enqueue'] = !empty( $input['enqueue'] ) ? '1' : '0';
+    $new_input['always_recompile'] = !empty( $input['always_recompile'] ) ? '1' : '0';
+
+    return $new_input;
   }
 
   /**
