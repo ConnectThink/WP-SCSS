@@ -1,0 +1,10 @@
+/.wordpress-org
+/.github
+/tests
+/node_modules
+/composer.json
+/composer.lock
+/phpunit.xml.dist
+/.git
+/.gitignore
+/.gitattributes
