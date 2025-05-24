@@ -48,8 +48,8 @@ Ensure these files have matching version numbers:
 1. **Update Version Numbers**
 
    ```bash
-   # Update version in wp-scss.php (line 6 and line 47)
-   # Update stable tag in readme.txt (line 8)
+   # Update version in wp-scss.php (plugin header and `WPSCSS_VERSION_NUM` constant)
+   # Update stable tag in readme.txt (under "Stable tag" in the file header)
    ```
 
 2. **Commit Changes**

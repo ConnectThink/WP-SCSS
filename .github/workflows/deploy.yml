@@ -22,7 +22,7 @@ jobs:
       - name: WordPress Plugin Deploy
         uses: 10up/action-wordpress-plugin-deploy@v2
         with:
-          dry-run: ${{ inputs.dry-run }}
+          dry-run: ${{ inputs['dry-run'] == 'true' }}
         env:
           SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
           SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
