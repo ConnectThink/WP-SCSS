@@ -29,6 +29,7 @@ WP-SCSS is a WordPress plugin that compiles SCSS files to CSS using the ScssPhp 
 ### Dynamic Base Directory System
 
 Supports 5 configurable base locations:
+
 - **Current Theme**: `get_stylesheet_directory()` (child theme if active)
 - **Parent Theme**: `get_template_directory()` (when child theme exists)
 - **Uploads Directory**: `wp_get_upload_dir()['basedir']`
@@ -50,6 +51,7 @@ No build tools required - direct PHP development with WordPress coding standards
 ## WordPress Integration
 
 ### Core Hooks
+
 - `wp_loaded`: Triggers compilation check (allows theme variable injection)
 - `admin_menu`: Registers settings page under Settings menu
 - `admin_init`: Initializes settings fields with validation
@@ -57,6 +59,7 @@ No build tools required - direct PHP development with WordPress coding standards
 - `plugin_action_links`: Adds Settings link to plugins page
 
 ### Extensibility Filters
+
 - `wp_scss_variables`: Inject PHP variables into SCSS compilation
 - `wp_scss_needs_compiling`: Override compilation necessity logic
 - `wp_scss_base_compiling_modes`: Modify available base directories
@@ -65,6 +68,7 @@ No build tools required - direct PHP development with WordPress coding standards
 - `option_wpscss_options`: Database cleanup for legacy values
 
 ### Performance Features
+
 - Smart compilation only when SCSS newer than CSS
 - RecursiveDirectoryIterator for efficient file system scanning
 - Cache-based atomic file operations
@@ -74,12 +78,14 @@ No build tools required - direct PHP development with WordPress coding standards
 ## Security Implementation
 
 ### Input Sanitization
+
 - `sanitize_text_field()` for all directory paths
 - `wp_kses()` with allowed HTML for user-facing output
 - `esc_attr()` for form field attributes
 - WordPress nonce handling via `settings_fields()`
 
 ### File Operations Security
+
 - Directory existence and writability validation
 - File permission checks before cache/CSS operations
 - Path traversal protection through base path validation
@@ -88,11 +94,13 @@ No build tools required - direct PHP development with WordPress coding standards
 ## Error Handling System
 
 ### Three-Tier Error Display
+
 - **show**: Display compilation errors in header for all users
 - **show-logged-in**: Display only to authenticated users (LOGGED_IN_COOKIE check)
 - **hide**: Log errors to file with automatic rotation
 
 ### Advanced Logging
+
 - Error log in SCSS directory (`error_log.log`)
 - Automatic log rotation when file exceeds 1MB
 - Timestamped entries with file and message details
@@ -101,6 +109,7 @@ No build tools required - direct PHP development with WordPress coding standards
 ## Configuration
 
 Settings stored in `wpscss_options` WordPress option:
+
 - Base compiling folder selection (5 directory types)
 - SCSS and CSS directory relative paths
 - Compilation mode (compressed/expanded)
@@ -112,6 +121,7 @@ Settings stored in `wpscss_options` WordPress option:
 ## Variable Injection System
 
 PHP-to-SCSS variable passing:
+
 ```php
 function set_scss_variables() {
     return array(
