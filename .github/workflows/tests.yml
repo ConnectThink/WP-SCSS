@@ -1,0 +1,68 @@
+name: Tests
+
+on:
+  push:
+    branches: [ master, develop ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        php: ['7.2', '7.3', '7.4', '8.0', '8.1', '8.2']
+        wordpress: ['latest', '6.0', '5.9']
+        exclude:
+          # Exclude PHP 8.2 with older WordPress versions that don't support it
+          - php: '8.2'
+            wordpress: '5.9'
+          - php: '8.2'
+            wordpress: '6.0'
+
+    name: PHP ${{ matrix.php }} / WordPress ${{ matrix.wordpress }}
+
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: password
+          MYSQL_DATABASE: wp_scss_test
+        ports:
+          - 3306:3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: ${{ matrix.php }}
+        extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite, mysql, mysqli, pdo_mysql, bcmath, soap, intl, gd, exif, iconv, imagick
+        coverage: none
+
+    - name: Install WordPress test suite
+      run: |
+        bash bin/install-wp-tests.sh wp_scss_test root password 127.0.0.1:3306 ${{ matrix.wordpress }}
+
+    - name: Run tests
+      run: |
+        cd $GITHUB_WORKSPACE
+        phpunit
+
+    - name: Run tests with coverage (PHP 8.1 only)
+      if: matrix.php == '8.1' && matrix.wordpress == 'latest'
+      run: |
+        cd $GITHUB_WORKSPACE
+        phpunit --coverage-clover=coverage.xml
+
+    - name: Upload coverage to Codecov
+      if: matrix.php == '8.1' && matrix.wordpress == 'latest'
+      uses: codecov/codecov-action@v3
+      with:
+        file: ./coverage.xml
+        flags: unittests
+        name: codecov-umbrella
