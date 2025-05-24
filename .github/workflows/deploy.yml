@@ -1,0 +1,28 @@
+name: Deploy to WordPress.org
+
+on:
+  push:
+    tags:
+      - '*'
+  workflow_dispatch:
+    inputs:
+      dry-run:
+        description: 'Run as dry-run (no changes will be pushed)'
+        required: false
+        default: 'false'
+
+jobs:
+  deploy:
+    name: WordPress Plugin Deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: WordPress Plugin Deploy
+        uses: 10up/action-wordpress-plugin-deploy@v2
+        with:
+          dry-run: ${{ inputs['dry-run'] == 'true' }}
+        env:
+          SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
+          SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
