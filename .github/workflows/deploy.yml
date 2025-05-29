@@ -9,7 +9,7 @@ on:
       dry-run:
         description: 'Run as dry-run (no changes will be pushed)'
         required: false
-        default: 'false'
+        default: 'true'
 
 jobs:
   deploy:
