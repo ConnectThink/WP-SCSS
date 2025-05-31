@@ -1,0 +1,76 @@
+name: Code Quality
+
+on:
+  push:
+    branches: [ master, develop ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  phpcs:
+    name: PHP CodeSniffer
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.1'
+        tools: cs2pr
+
+    - name: Install dependencies
+      run: |
+        composer global require "squizlabs/php_codesniffer=*"
+        composer global require "wp-coding-standards/wpcs=*"
+        composer global require "phpcompatibility/phpcompatibility-wp=*"
+
+    - name: Configure PHPCS
+      run: |
+        phpcs --config-set installed_paths ~/.composer/vendor/wp-coding-standards/wpcs,~/.composer/vendor/phpcompatibility/phpcompatibility-wp
+        phpcs --config-set default_standard WordPress
+
+    - name: Run PHPCS
+      run: |
+        phpcs --standard=WordPress --extensions=php --ignore=scssphp/,tests/,bin/ --report=checkstyle . | cs2pr
+
+  phpstan:
+    name: PHPStan Analysis
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.1'
+
+    - name: Install dependencies
+      run: |
+        composer global require phpstan/phpstan
+
+    - name: Create PHPStan config
+      run: |
+        cat > phpstan.neon << EOF
+        parameters:
+            level: 5
+            paths:
+                - wp-scss.php
+                - options.php
+                - class/
+            excludePaths:
+                - scssphp/
+                - tests/
+            ignoreErrors:
+                # WordPress functions might not be recognized
+                - '#Function (get_option|update_option|add_option|wp_kses|sanitize_text_field) not found#'
+                - '#Function (get_stylesheet_directory|get_template_directory|wp_get_upload_dir) not found#'
+                - '#Function (add_action|add_filter|apply_filters) not found#'
+        EOF
+
+    - name: Run PHPStan
+      run: phpstan analyse --no-progress --error-format=github
