@@ -82,7 +82,7 @@ If you are having issues with the plugin, create an issue on [github](https://gi
 
 = 4.0.4 =
   - Fix: Avoid usage of dynamic property for cache_file. Thanks to [FreddyFY](https://github.com/ConnectThink/WP-SCSS/pull/256)
-  - Actually update PHP deprecated notices. Missed files in early version bump.
+  - Actually update PHP deprecated notices. Missed files in early version bump, svn to wp fail (not a fan of SVN)
   - Add Github Actions deploy script, because dealing with SVN is not fun. [#260](https://github.com/ConnectThink/WP-SCSS/pull/260)
   - Add Claude init files, because it knows PHP better than I do. [#258](https://github.com/ConnectThink/WP-SCSS/pull/258)
 
