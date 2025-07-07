@@ -110,6 +110,10 @@ This plugin will only work with .scss format.
 
 ## Changelog
 
+- 4.0.6
+  - Fix: Cache directory now correctly respects base_compiling_folder setting instead of always defaulting to plugin directory. Thanks to [MarcGuay](https://github.com/ConnectThink/WP-SCSS/pull/254)
+  - Improved settings page text to clarify cache directory behavior
+  - Updated GitHub Actions deploy workflow default to dry-run for safety
 - 4.0.4
   - Fix: Avoid usage of dynamic property for cache_file. Thanks to [FreddyFY](https://github.com/ConnectThink/WP-SCSS/pull/256)
   - Actually update PHP deprecated notices. Missed files in early version bump, svn to wp fail (not a fan of SVN)
