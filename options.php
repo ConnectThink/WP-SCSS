@@ -253,7 +253,7 @@ class Wp_Scss_Settings {
    * @param array $input Contains all settings fields as array keys
    */
   public function sanitize( $input ) {
-    foreach( ['scss_dir', 'css_dir'] as $dir ){
+    foreach( ['scss_dir', 'css_dir', 'cache_dir'] as $dir ){
       if( !empty( $input[$dir] ) ) {
         $input[$dir] = sanitize_text_field( $input[$dir] );
 
