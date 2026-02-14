@@ -3,13 +3,14 @@ name: Deploy to WordPress.org
 on:
   push:
     tags:
-      - '*'
+      - '[0-9]+.[0-9]+.[0-9]+'
   workflow_dispatch:
     inputs:
       dry-run:
         description: 'Run as dry-run (no changes will be pushed)'
         required: false
-        default: 'true'
+        type: boolean
+        default: true
 
 jobs:
   deploy:
@@ -22,7 +23,7 @@ jobs:
       - name: WordPress Plugin Deploy
         uses: 10up/action-wordpress-plugin-deploy@stable
         with:
-          dry-run: ${{ inputs['dry-run'] == 'true' }}
+          dry-run: ${{ inputs.dry-run }}
         env:
           SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
           SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
