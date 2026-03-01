@@ -151,7 +151,7 @@ class Wp_Scss {
   private function compiler($in, $out) {
 
     if (!file_exists($this->cache)) {
-      mkdir($this->cache, 0644);
+      wp_mkdir_p($this->cache);
     }
     if (is_writable($this->cache)) {
       try {
@@ -176,9 +176,12 @@ class Wp_Scss {
         array_push($this->compile_errors, $errors);
       }
     } else {
+      $message = !file_exists($this->cache)
+        ? "File Permission Error, unable to create the cache directory. Please manually create: " . $this->cache
+        : "File Permission Error, permission denied. Please make the cache directory writable.";
       $errors = array (
         'file' => $this->cache,
-        'message' => "File Permission Error, permission denied. Please make the cache directory writable."
+        'message' => $message
       );
       array_push($this->compile_errors, $errors);
     }
