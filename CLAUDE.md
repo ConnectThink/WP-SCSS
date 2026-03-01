@@ -4,138 +4,91 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-WP-SCSS is a WordPress plugin that compiles SCSS files to CSS using the ScssPhp library. It provides a WordPress admin interface for configuring compilation settings and automatically compiles SCSS files when changes are detected.
+WP-SCSS is a WordPress plugin that compiles SCSS files to CSS using the embedded ScssPhp library (v1.11.0). It provides a WordPress admin interface for configuring compilation settings and automatically compiles SCSS files when changes are detected.
+
+## Core Files
+
+- **wp-scss.php**: Main plugin file — orchestrates the 8-stage workflow (global vars → dependencies → settings registration → DB migration → settings resolution → compiler execution → error handling → enqueue)
+- **class/class-wp-scss.php**: `Wp_Scss` class — handles SCSS compilation, caching, needs-compiling checks, and CSS enqueuing
+- **options.php**: `Wp_Scss_Settings` class — WordPress admin settings page with field registration and sanitization
+- **scssphp/**: Embedded ScssPhp library (do not modify; vendor code)
+- **cache/**: Temporary directory for atomic compilation (gitignored except `.gitkeep`)
+
+## Development
+
+No build tools or test suite. Testing requires a live WordPress installation with the plugin active. PHP development only.
 
 ## Architecture
 
-### Core Components
+### Compilation Flow
 
-- **wp-scss.php**: Main plugin file with 8-stage workflow orchestration
-- **class/class-wp-scss.php**: Core Wp_Scss class handling SCSS compilation, caching, and file operations
-- **options.php**: Wp_Scss_Settings class creating WordPress admin interface with security validation
-- **scssphp/**: Embedded ScssPhp library (v1.11.0) with full AST parsing and compilation
+The compilation check runs on `wp_loaded` (allowing themes to inject variables first via `wp_scss_variables` filter before `compile()` is called).
 
-### 8-Stage Plugin Workflow
+**Important distinction:**
+- `needs_compiling()` scans the SCSS directory **recursively** (catches partial changes in subdirectories)
+- `compile()` only iterates the **top-level** SCSS directory for files to compile (partials in subdirectories are not directly compiled, only imported)
 
-1. Global variable definition and WordPress constants
-2. Dependency loading (scssphp compiler, classes, options)
-3. Settings registration and admin page setup
-4. Database value cleanup/migration for legacy installations
-5. Settings validation, path resolution, and directory checks
-6. Compiler instantiation with configuration and execution
-7. Multi-tier error handling (display/logging) system
-8. Optional CSS file auto-enqueuing with version management
+**Atomic write pattern:** Each SCSS file is compiled to `cache/` first. Only after all files compile with zero errors are the cached CSS files moved to the CSS directory. If any error occurs, the cache files remain and CSS files are not updated.
 
-### Dynamic Base Directory System
+### Base Directory System
 
-Supports 5 configurable base locations:
+The `base_compiling_folder` setting stores a **key name** (not a path) in the DB. `get_base_dir_from_name()` in `wp-scss.php` maps these names to real paths at runtime:
 
-- **Current Theme**: `get_stylesheet_directory()` (child theme if active)
-- **Parent Theme**: `get_template_directory()` (when child theme exists)
-- **Uploads Directory**: `wp_get_upload_dir()['basedir']`
-- **WP-SCSS Plugin**: Plugin's own directory
-- **Custom Path**: Legacy absolute path support with migration warnings
+| Key | Function |
+|-----|----------|
+| `Current Theme` | `get_stylesheet_directory()` (only shown when no child theme) |
+| `Parent Theme` | `get_template_directory()` |
+| `Child Theme` | `get_stylesheet_directory()` |
+| `Uploads Directory` | `wp_get_upload_dir()['basedir']` |
+| `WP-SCSS Plugin` | `WPSCSS_PLUGIN_DIR` |
 
-### File Processing Logic
+Legacy absolute paths stored in the DB trigger an admin notice asking users to re-save settings.
 
-- SCSS files without underscore prefix are compiled to matching CSS files
-- Underscore-prefixed files (partials) are import-only, not directly compiled
-- Recursive directory scanning with modification time comparison
-- Atomic compilation via cache directory prevents serving incomplete CSS
-- Source map generation with configurable modes (None/Inline/File)
+### DB Options (`wpscss_options`)
 
-## Development Commands
+Keys: `base_compiling_folder`, `scss_dir`, `css_dir`, `cache_dir`, `compiling_options` (`compressed`/`expanded`), `sourcemap_options` (`SOURCE_MAP_NONE`/`SOURCE_MAP_INLINE`/`SOURCE_MAP_FILE`), `errors` (`show`/`show-logged-in`/`hide`), `enqueue`, `always_recompile`
 
-No build tools required - direct PHP development with WordPress coding standards.
+The `option_wpscss_options` filter (step 4 in wp-scss.php) migrates legacy Leafo formatter class names to current ScssPhp names on every read.
 
-## WordPress Integration
+### WordPress Hooks
 
-### Core Hooks
-
-- `wp_loaded`: Triggers compilation check (allows theme variable injection)
-- `admin_menu`: Registers settings page under Settings menu
-- `admin_init`: Initializes settings fields with validation
-- `wp_enqueue_scripts`: Auto-enqueues compiled CSS with file modification timestamps
-- `plugin_action_links`: Adds Settings link to plugins page
+- `wp_loaded`: Triggers `needs_compiling()` → `compile()` → error handling
+- `admin_menu` / `admin_init`: Settings page registration
+- `wp_enqueue_scripts` (priority 50): Auto-enqueues compiled CSS using file mtime as version
+- `plugin_action_links`: Adds Settings link on plugins page
 
 ### Extensibility Filters
 
-- `wp_scss_variables`: Inject PHP variables into SCSS compilation
-- `wp_scss_needs_compiling`: Override compilation necessity logic
-- `wp_scss_base_compiling_modes`: Modify available base directories
-- `wp_scss_compiling_modes`: Add custom compilation modes
+- `wp_scss_variables`: Return `array('var-name' => 'value')` to inject SCSS variables
+- `wp_scss_needs_compiling`: Override the boolean result of `needs_compiling()`
+- `wp_scss_base_compiling_modes`: Modify the base directory dropdown options
+- `wp_scss_compiling_modes`: Add custom output style options
 - `wp_scss_sourcemap_modes`: Extend sourcemap options
-- `option_wpscss_options`: Database cleanup for legacy values
+- `wp_scss_error_diplay`: Modify error display options (note: key is misspelled in source as `diplay`)
+- `option_wpscss_options`: DB value cleanup (used internally for legacy migration)
 
-### Performance Features
+### Always-Recompile
 
-- Smart compilation only when SCSS newer than CSS
-- RecursiveDirectoryIterator for efficient file system scanning
-- Cache-based atomic file operations
-- Duplicate enqueue prevention
-- Always recompile mode: `WP_SCSS_ALWAYS_RECOMPILE` constant
+Two ways to force recompilation on every page load (useful for development):
+1. `WP_SCSS_ALWAYS_RECOMPILE` PHP constant (defined in `wp-config.php`)
+2. `always_recompile` setting in admin UI
 
-## Security Implementation
+The constant takes precedence and disables the checkbox in the UI.
 
-### Input Sanitization
+### Error Handling
 
-- `sanitize_text_field()` for all directory paths
-- `wp_kses()` with allowed HTML for user-facing output
-- `esc_attr()` for form field attributes
-- WordPress nonce handling via `settings_fields()`
+Errors are stored in `Wp_Scss::$compile_errors` as `['file' => ..., 'message' => ...]` arrays. Display is controlled by the `errors` setting:
 
-### File Operations Security
+- `show`: Renders a fixed overlay with error details for all visitors
+- `show-logged-in`: Same, but checks `LOGGED_IN_COOKIE` (not full WP auth stack)
+- `hide`: Appends to `error_log.log` in the SCSS directory; auto-rotates at 1MB by discarding the first half
 
-- Directory existence and writability validation
-- File permission checks before cache/CSS operations
-- Path traversal protection through base path validation
-- Capability checks (`manage_options`) for settings access
-
-## Error Handling System
-
-### Three-Tier Error Display
-
-- **show**: Display compilation errors in header for all users
-- **show-logged-in**: Display only to authenticated users (LOGGED_IN_COOKIE check)
-- **hide**: Log errors to file with automatic rotation
-
-### Advanced Logging
-
-- Error log in SCSS directory (`error_log.log`)
-- Automatic log rotation when file exceeds 1MB
-- Timestamped entries with file and message details
-- Graceful degradation for permission issues
-
-## Configuration
-
-Settings stored in `wpscss_options` WordPress option:
-
-- Base compiling folder selection (5 directory types)
-- SCSS and CSS directory relative paths
-- Compilation mode (compressed/expanded)
-- Source map generation (None/Inline/File)
-- Error display preferences (show/show-logged-in/hide)
-- Auto-enqueue option with intelligent URL generation
-- Always recompile flag for development
-
-## Variable Injection System
-
-PHP-to-SCSS variable passing:
+### Variable Injection
 
 ```php
-function set_scss_variables() {
-    return array(
-        'primary-color' => '#007cba',
-        'font-size' => '16px'
-    );
-}
-add_filter('wp_scss_variables', 'set_scss_variables');
+add_filter('wp_scss_variables', function() {
+    return ['primary-color' => '#007cba', 'font-size' => '16px'];
+});
 ```
 
-## Key Implementation Patterns
-
-- **Defensive Programming**: Extensive validation and graceful degradation
-- **WordPress Standards**: Proper API usage and coding standards compliance
-- **Separation of Concerns**: Clean architecture between compilation, settings, and WordPress integration
-- **Performance-First**: Intelligent compilation triggers and efficient file operations
-- **Extensibility**: Rich filter system for customization without core modifications
+Values are passed through `ScssPhp\ScssPhp\ValueConverter::parseValue()` before being injected into the compiler. Empty string values are silently dropped.
