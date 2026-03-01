@@ -8,3 +8,5 @@
 /.git
 /.gitignore
 /.gitattributes
+/.distignore
+/CLAUDE.md
