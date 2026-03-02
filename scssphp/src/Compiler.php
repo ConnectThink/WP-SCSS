@@ -4734,7 +4734,7 @@ EOL;
      *
      * @return array
      */
-    private function multiplyMedia(Environment $env = null, ?array $childQueries = null): array
+    private function multiplyMedia(?Environment $env = null, ?array $childQueries = null): array
     {
         if (
             ! isset($env) ||
@@ -4826,7 +4826,7 @@ EOL;
      *
      * @return Environment
      */
-    private function pushEnv(Block $block = null): Environment
+    private function pushEnv(?Block $block = null): Environment
     {
         $env = new Environment();
         $env->parent = $this->env;
@@ -4890,7 +4890,7 @@ EOL;
      *
      * @return void
      */
-    private function set(string $name, $value, bool $shadow = false, Environment $env = null, $valueUnreduced = null): void
+    private function set(string $name, $value, bool $shadow = false, ?Environment $env = null, $valueUnreduced = null): void
     {
         $name = $this->normalizeName($name);
 
@@ -5059,7 +5059,7 @@ EOL;
      *
      * @return bool
      */
-    private function has(string $name, Environment $env = null): bool
+    private function has(string $name, ?Environment $env = null): bool
     {
         return ! \is_null($this->get($name, false, $env));
     }
