@@ -5,7 +5,7 @@ Plugin URI: https://github.com/ConnectThink/WP-SCSS
 Requires at least: 3.0.1
 Tested up to: 6.4.2
 Requires PHP: 7.2
-Stable tag: 4.0.7
+Stable tag: 4.0.8
 License: GPLv3 or later
 License URI: http://www.gnu.org/copyleft/gpl.html
 
@@ -80,7 +80,7 @@ If you are having issues with the plugin, create an issue on [github](https://gi
 
 == Changelog ==
 
-= 4.0.7 =
+= 4.0.8 =
   - Fix: Cache directory now created with correct permissions (0755 instead of 0644). Thanks to [#272](https://github.com/ConnectThink/WP-SCSS/pull/272)
   - Fix: Cache directory path now always has a trailing slash. Thanks to [rushhee](https://github.com/ConnectThink/WP-SCSS/pull/269)
 
