@@ -110,6 +110,9 @@ This plugin will only work with .scss format.
 
 ## Changelog
 
+- 4.0.7
+  - Fix: Cache directory now created with correct permissions (0755 instead of 0644). Thanks to [#272](https://github.com/ConnectThink/WP-SCSS/pull/272)
+  - Fix: Cache directory path now always has a trailing slash. Thanks to [rushhee](https://github.com/ConnectThink/WP-SCSS/pull/269)
 - 4.0.6
   - Fix: Cache directory now correctly respects base_compiling_folder setting instead of always defaulting to plugin directory. Thanks to [MarcGuay](https://github.com/ConnectThink/WP-SCSS/pull/254)
   - Improved settings page text to clarify cache directory behavior
