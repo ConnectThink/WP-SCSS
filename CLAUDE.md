@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-WP-SCSS is a WordPress plugin that compiles SCSS files to CSS using the embedded ScssPhp library (v1.11.0). It provides a WordPress admin interface for configuring compilation settings and automatically compiles SCSS files when changes are detected.
+WP-SCSS is a WordPress plugin that compiles SCSS files to CSS using the embedded ScssPhp library (v1.13.0). It provides a WordPress admin interface for configuring compilation settings and automatically compiles SCSS files when changes are detected.
 
 ## Core Files
 
