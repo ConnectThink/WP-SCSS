@@ -904,7 +904,7 @@ abstract class SassNumber extends Value
      *
      * @throws SassScriptException if this number's units are not compatible with $newNumeratorUnits and $newDenominatorUnits
      */
-    private function convertOrCoerceValue(array $newNumeratorUnits, array $newDenominatorUnits, bool $coerceUnitless, ?string $name = null, SassNumber $other = null, ?string $otherName = null): float
+    private function convertOrCoerceValue(array $newNumeratorUnits, array $newDenominatorUnits, bool $coerceUnitless, ?string $name = null, ?SassNumber $other = null, ?string $otherName = null): float
     {
         assert($other === null || ($other->getNumeratorUnits() === $newNumeratorUnits && $other->getDenominatorUnits() === $newDenominatorUnits), sprintf("Expected %s to have units %s.", $other, self::buildUnitString($newNumeratorUnits, $newDenominatorUnits)));
 
@@ -972,7 +972,7 @@ abstract class SassNumber extends Value
      *
      * @return SassScriptException
      */
-    private function compatibilityException(bool $otherHasUnits, array $newNumeratorUnits, array $newDenominatorUnits, ?string $name, SassNumber $other = null, ?string $otherName = null): SassScriptException
+    private function compatibilityException(bool $otherHasUnits, array $newNumeratorUnits, array $newDenominatorUnits, ?string $name, ?SassNumber $other = null, ?string $otherName = null): SassScriptException
     {
         if ($other !== null) {
             $message = "$this and";
