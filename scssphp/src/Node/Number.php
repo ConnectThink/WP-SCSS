@@ -33,15 +33,9 @@ use ScssPhp\ScssPhp\Util;
  *
  * @template-implements \ArrayAccess<int, mixed>
  */
-class Number extends Node implements \ArrayAccess, \JsonSerializable
+final class Number extends Node implements \ArrayAccess
 {
     const PRECISION = 10;
-
-    /**
-     * @var int
-     * @deprecated use {Number::PRECISION} instead to read the precision. Configuring it is not supported anymore.
-     */
-    public static $precision = self::PRECISION;
 
     /**
      * @see http://www.w3.org/TR/2012/WD-css3-values-20120308/
@@ -49,7 +43,7 @@ class Number extends Node implements \ArrayAccess, \JsonSerializable
      * @var array
      * @phpstan-var array<string, array<string, float|int>>
      */
-    protected static $unitTable = [
+    private static $unitTable = [
         'in' => [
             'in' => 1,
             'pc' => 6,
@@ -131,7 +125,7 @@ class Number extends Node implements \ArrayAccess, \JsonSerializable
     }
 
     /**
-     * @return list<string>
+     * @return string[]
      */
     public function getNumeratorUnits()
     {
@@ -139,21 +133,11 @@ class Number extends Node implements \ArrayAccess, \JsonSerializable
     }
 
     /**
-     * @return list<string>
+     * @return string[]
      */
     public function getDenominatorUnits()
     {
         return $this->denominatorUnits;
-    }
-
-    /**
-     * @return mixed
-     */
-    #[\ReturnTypeWillChange]
-    public function jsonSerialize()
-    {
-        // Passing a compiler instance makes the method output a Sass representation instead of a CSS one, supporting full units.
-        return $this->output(new Compiler());
     }
 
     /**
@@ -564,7 +548,7 @@ class Number extends Node implements \ArrayAccess, \JsonSerializable
 
         try {
             return $this->coerceUnits($other, function ($num1, $num2) {
-                return round($num1, self::PRECISION) == round($num2, self::PRECISION);
+                return round($num1,self::PRECISION) == round($num2, self::PRECISION);
             });
         } catch (SassScriptException $e) {
             return false;
@@ -805,7 +789,7 @@ class Number extends Node implements \ArrayAccess, \JsonSerializable
             return 1;
         }
 
-        foreach (static::$unitTable as $unitVariants) {
+        foreach (self::$unitTable as $unitVariants) {
             if (isset($unitVariants[$unit1]) && isset($unitVariants[$unit2])) {
                 return $unitVariants[$unit1] / $unitVariants[$unit2];
             }

@@ -12,8 +12,6 @@
 
 namespace ScssPhp\ScssPhp\SourceMap;
 
-use ScssPhp\ScssPhp\Exception\CompilerException;
-
 /**
  * Source Map Generator
  *
@@ -24,7 +22,7 @@ use ScssPhp\ScssPhp\Exception\CompilerException;
  *
  * @internal
  */
-class SourceMapGenerator
+final class SourceMapGenerator
 {
     /**
      * What version of source map does the generator generate?
@@ -37,7 +35,7 @@ class SourceMapGenerator
      * @var array
      * @phpstan-var array{sourceRoot: string, sourceMapFilename: string|null, sourceMapURL: string|null, sourceMapWriteTo: string|null, outputSourceFiles: bool, sourceMapRootpath: string, sourceMapBasepath: string}
      */
-    protected $defaultOptions = [
+    private $defaultOptions = [
         // an optional source root, useful for relocating source files
         // on a server or removing repeated values in the 'sources' entry.
         // This value is prepended to the individual entries in the 'source' field.
@@ -67,7 +65,7 @@ class SourceMapGenerator
      *
      * @var \ScssPhp\ScssPhp\SourceMap\Base64VLQ
      */
-    protected $encoder;
+    private $encoder;
 
     /**
      * Array of mappings
@@ -75,26 +73,19 @@ class SourceMapGenerator
      * @var array
      * @phpstan-var list<array{generated_line: int, generated_column: int, original_line: int, original_column: int, source_file: string}>
      */
-    protected $mappings = [];
-
-    /**
-     * Array of contents map
-     *
-     * @var array
-     */
-    protected $contentsMap = [];
+    private $mappings = [];
 
     /**
      * File to content map
      *
      * @var array<string, string>
      */
-    protected $sources = [];
+    private $sources = [];
 
     /**
      * @var array<string, int>
      */
-    protected $sourceKeys = [];
+    private $sourceKeys = [];
 
     /**
      * @var array
@@ -136,38 +127,6 @@ class SourceMapGenerator
     }
 
     /**
-     * Saves the source map to a file
-     *
-     * @param string $content The content to write
-     *
-     * @return string|null
-     *
-     * @throws \ScssPhp\ScssPhp\Exception\CompilerException If the file could not be saved
-     * @deprecated
-     */
-    public function saveMap($content)
-    {
-        $file = $this->options['sourceMapWriteTo'];
-        assert($file !== null);
-        $dir  = \dirname($file);
-
-        // directory does not exist
-        if (! is_dir($dir)) {
-            // FIXME: create the dir automatically?
-            throw new CompilerException(
-                sprintf('The directory "%s" does not exist. Cannot save the source map.', $dir)
-            );
-        }
-
-        // FIXME: proper saving, with dir write check!
-        if (file_put_contents($file, $content) === false) {
-            throw new CompilerException(sprintf('Cannot save the source map to "%s"', $file));
-        }
-
-        return $this->options['sourceMapURL'];
-    }
-
-    /**
      * Generates the JSON source map
      *
      * @param string $prefix A prefix added in the output file, which needs to shift mappings
@@ -176,7 +135,7 @@ class SourceMapGenerator
      *
      * @see https://docs.google.com/document/d/1U1RGAehQwRypUTovF1KRlpiOFze0b-_2gc6fAH0KY0k/edit#
      */
-    public function generateJson($prefix = '')
+    public function generateJson(string $prefix = ''): string
     {
         $sourceMap = [];
         $mappings  = $this->generateMappings($prefix);
@@ -240,7 +199,7 @@ class SourceMapGenerator
      *
      * @return string[]|null
      */
-    protected function getSourcesContent()
+    private function getSourcesContent(): ?array
     {
         if (empty($this->sources)) {
             return null;
@@ -262,7 +221,7 @@ class SourceMapGenerator
      *
      * @return string
      */
-    public function generateMappings($prefix = '')
+    public function generateMappings(string $prefix = ''): string
     {
         if (! \count($this->mappings)) {
             return '';
@@ -337,9 +296,9 @@ class SourceMapGenerator
      *
      * @return int|false
      */
-    protected function findFileIndex($filename)
+    private function findFileIndex(string $filename)
     {
-        return $this->sourceKeys[$filename];
+        return $this->sourceKeys[$filename] ?? false;
     }
 
     /**
@@ -349,7 +308,7 @@ class SourceMapGenerator
      *
      * @return string
      */
-    protected function normalizeFilename($filename)
+    private function normalizeFilename(string $filename): string
     {
         $filename = $this->fixWindowsPath($filename);
         $rootpath = $this->options['sourceMapRootpath'];
@@ -376,7 +335,7 @@ class SourceMapGenerator
      *
      * @return string
      */
-    public function fixWindowsPath($path, $addEndSlash = false)
+    public function fixWindowsPath(string $path, bool $addEndSlash = false): string
     {
         $slash = ($addEndSlash) ? '/' : '';
 

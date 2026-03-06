@@ -18,7 +18,7 @@ use ScssPhp\ScssPhp\Type;
 /**
  * @internal
  */
-class ElseBlock extends Block
+final class ElseBlock extends Block
 {
     public function __construct()
     {

@@ -21,7 +21,7 @@ use ScssPhp\ScssPhp\Formatter;
  *
  * @internal
  */
-class Expanded extends Formatter
+final class Expanded extends Formatter
 {
     /**
      * {@inheritdoc}
@@ -41,7 +41,7 @@ class Expanded extends Formatter
     /**
      * {@inheritdoc}
      */
-    protected function indentStr()
+    protected function indentStr(): string
     {
         return str_repeat($this->indentChar, $this->indentLevel);
     }
@@ -49,7 +49,7 @@ class Expanded extends Formatter
     /**
      * {@inheritdoc}
      */
-    protected function blockLines(OutputBlock $block)
+    protected function blockLines(OutputBlock $block): void
     {
         $inner = $this->indentStr();
 

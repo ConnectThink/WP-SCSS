@@ -18,7 +18,7 @@ use ScssPhp\ScssPhp\Type;
 /**
  * @internal
  */
-class WhileBlock extends Block
+final class WhileBlock extends Block
 {
     /**
      * @var array
