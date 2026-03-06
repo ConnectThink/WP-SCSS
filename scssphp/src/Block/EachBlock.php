@@ -13,12 +13,13 @@
 namespace ScssPhp\ScssPhp\Block;
 
 use ScssPhp\ScssPhp\Block;
+use ScssPhp\ScssPhp\Node\Number;
 use ScssPhp\ScssPhp\Type;
 
 /**
  * @internal
  */
-final class EachBlock extends Block
+class EachBlock extends Block
 {
     /**
      * @var string[]
@@ -26,7 +27,7 @@ final class EachBlock extends Block
     public $vars = [];
 
     /**
-     * @var array
+     * @var array|Number
      */
     public $list;
 

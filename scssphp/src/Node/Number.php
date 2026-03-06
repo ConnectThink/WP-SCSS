@@ -33,9 +33,15 @@ use ScssPhp\ScssPhp\Util;
  *
  * @template-implements \ArrayAccess<int, mixed>
  */
-final class Number extends Node implements \ArrayAccess
+class Number extends Node implements \ArrayAccess, \JsonSerializable
 {
     const PRECISION = 10;
+
+    /**
+     * @var int
+     * @deprecated use {Number::PRECISION} instead to read the precision. Configuring it is not supported anymore.
+     */
+    public static $precision = self::PRECISION;
 
     /**
      * @see http://www.w3.org/TR/2012/WD-css3-values-20120308/
@@ -43,7 +49,7 @@ final class Number extends Node implements \ArrayAccess
      * @var array
      * @phpstan-var array<string, array<string, float|int>>
      */
-    private static $unitTable = [
+    protected static $unitTable = [
         'in' => [
             'in' => 1,
             'pc' => 6,
@@ -125,7 +131,7 @@ final class Number extends Node implements \ArrayAccess
     }
 
     /**
-     * @return string[]
+     * @return list<string>
      */
     public function getNumeratorUnits()
     {
@@ -133,11 +139,21 @@ final class Number extends Node implements \ArrayAccess
     }
 
     /**
-     * @return string[]
+     * @return list<string>
      */
     public function getDenominatorUnits()
     {
         return $this->denominatorUnits;
+    }
+
+    /**
+     * @return mixed
+     */
+    #[\ReturnTypeWillChange]
+    public function jsonSerialize()
+    {
+        // Passing a compiler instance makes the method output a Sass representation instead of a CSS one, supporting full units.
+        return $this->output(new Compiler());
     }
 
     /**
@@ -548,7 +564,7 @@ final class Number extends Node implements \ArrayAccess
 
         try {
             return $this->coerceUnits($other, function ($num1, $num2) {
-                return round($num1,self::PRECISION) == round($num2, self::PRECISION);
+                return round($num1, self::PRECISION) == round($num2, self::PRECISION);
             });
         } catch (SassScriptException $e) {
             return false;
@@ -562,7 +578,7 @@ final class Number extends Node implements \ArrayAccess
      *
      * @return string
      */
-    public function output(Compiler $compiler = null)
+    public function output(?Compiler $compiler = null)
     {
         $dimension = round($this->dimension, self::PRECISION);
 
@@ -789,7 +805,7 @@ final class Number extends Node implements \ArrayAccess
             return 1;
         }
 
-        foreach (self::$unitTable as $unitVariants) {
+        foreach (static::$unitTable as $unitVariants) {
             if (isset($unitVariants[$unit1]) && isset($unitVariants[$unit2])) {
                 return $unitVariants[$unit1] / $unitVariants[$unit2];
             }
