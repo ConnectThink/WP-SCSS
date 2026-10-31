@@ -86,7 +86,7 @@ final class StringExpression implements Expression
         return $visitor->visitStringExpression($this);
     }
 
-    public function asInterpolation(bool $static = false, string $quote = null): Interpolation
+    public function asInterpolation(bool $static = false, ?string $quote = null): Interpolation
     {
         if (!$this->quotes) {
             return $this->text;

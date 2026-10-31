@@ -117,7 +117,7 @@ abstract class SassNumber extends Value
      * @param float                              $value
      * @param array{SassNumber, SassNumber}|null $asSlash
      */
-    protected function __construct(float $value, array $asSlash = null)
+    protected function __construct(float $value, ?array $asSlash = null)
     {
         $this->value = $value;
         $this->asSlash = $asSlash;

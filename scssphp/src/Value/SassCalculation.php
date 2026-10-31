@@ -212,7 +212,7 @@ final class SassCalculation extends Value
      *
      * @throws SassScriptException
      */
-    public static function clamp(object $min, object $value = null, object $max = null): Value
+    public static function clamp(object $min, ?object $value = null, ?object $max = null): Value
     {
         if ($value === null && $max !== null) {
             throw new \InvalidArgumentException('If value is null, max must also be null.');

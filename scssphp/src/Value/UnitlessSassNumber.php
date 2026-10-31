@@ -25,7 +25,7 @@ final class UnitlessSassNumber extends SassNumber
      * @param float                              $value
      * @param array{SassNumber, SassNumber}|null $asSlash
      */
-    public function __construct(float $value, array $asSlash = null)
+    public function __construct(float $value, ?array $asSlash = null)
     {
         parent::__construct($value, $asSlash);
     }
