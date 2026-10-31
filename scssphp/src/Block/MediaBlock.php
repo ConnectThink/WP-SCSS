@@ -13,15 +13,16 @@
 namespace ScssPhp\ScssPhp\Block;
 
 use ScssPhp\ScssPhp\Block;
+use ScssPhp\ScssPhp\Node\Number;
 use ScssPhp\ScssPhp\Type;
 
 /**
  * @internal
  */
-final class MediaBlock extends Block
+class MediaBlock extends Block
 {
     /**
-     * @var string|array|null
+     * @var string|array|Number|null
      */
     public $value;
 

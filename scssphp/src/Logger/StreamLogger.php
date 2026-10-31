@@ -15,9 +15,9 @@ namespace ScssPhp\ScssPhp\Logger;
 /**
  * A logger that prints to a PHP stream (for instance stderr)
  *
- * TODO implement LocationAwareLoggerInterface once the compiler is migrated to actually provide the location
+ * @final
  */
-final class StreamLogger implements LoggerInterface
+class StreamLogger implements LoggerInterface
 {
     private $stream;
     private $closeOnDestruct;
@@ -26,7 +26,7 @@ final class StreamLogger implements LoggerInterface
      * @param resource $stream          A stream resource
      * @param bool     $closeOnDestruct If true, takes ownership of the stream and close it on destruct to avoid leaks.
      */
-    public function __construct($stream, bool $closeOnDestruct = false)
+    public function __construct($stream, $closeOnDestruct = false)
     {
         $this->stream = $stream;
         $this->closeOnDestruct = $closeOnDestruct;
@@ -45,7 +45,7 @@ final class StreamLogger implements LoggerInterface
     /**
      * @inheritDoc
      */
-    public function warn(string $message, bool $deprecation = false)
+    public function warn($message, $deprecation = false)
     {
         $prefix = ($deprecation ? 'DEPRECATION ' : '') . 'WARNING: ';
 
@@ -55,7 +55,7 @@ final class StreamLogger implements LoggerInterface
     /**
      * @inheritDoc
      */
-    public function debug(string $message)
+    public function debug($message)
     {
         fwrite($this->stream, $message . "\n");
     }
