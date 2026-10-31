@@ -3,9 +3,9 @@ Contributors: connectthink, sky-bolt
 Tags: sass, scss, css, ScssPhp
 Plugin URI: https://github.com/ConnectThink/WP-SCSS
 Requires at least: 3.0.1
-Tested up to: 6.8
+Tested up to: 7.1
 Requires PHP: 7.2
-Stable tag: 4.0.8
+Stable tag: 5.0.0
 License: GPLv3 or later
 License URI: http://www.gnu.org/copyleft/gpl.html
 
@@ -79,6 +79,17 @@ If you are having issues with the plugin, create an issue on [github](https://gi
 
 
 == Changelog ==
+
+= 5.0.0 =
+  - Updates ScssPHP to version [1.13.0](https://github.com/scssphp/scssphp/releases/tag/v1.13.0), the final 1.x release, and removes stray ScssPHP 2.x development files that had been bundled by mistake. [#275](https://github.com/ConnectThink/WP-SCSS/pull/275)
+  - Fix: PHP 8.4 "implicitly marking parameter as nullable" deprecation notices. Thanks to [FreddyFY](https://github.com/ConnectThink/WP-SCSS/pull/276) and [#273](https://github.com/ConnectThink/WP-SCSS/issues/273)
+  - Security: "Show to Logged In Users" now uses the real WordPress login check instead of only testing that a login cookie exists, which any visitor could forge. [#277](https://github.com/ConnectThink/WP-SCSS/pull/277)
+  - Security: SCSS, CSS and Cache locations can no longer contain `..`, so they always stay inside the chosen Base Location.
+  - Security: an unknown Compiling Mode or Source Map Mode value no longer causes a fatal error on every page load.
+  - Changed: "Print to Log" now sends compile errors to the PHP error log (wp-content/debug.log when WP_DEBUG_LOG is on) instead of an error_log.log file inside the SCSS directory, which was readable from the web. Delete any existing error_log.log from your SCSS directory.
+  - Changed: when the Error Display setting has never been saved, errors are shown to logged in users only instead of to every visitor.
+  - Compiled CSS is now moved into place atomically, so visitors never see a half-written stylesheet.
+  - Tested up to WordPress 7.1 and PHP 8.4.
 
 = 4.0.8 =
   - Fix: Cache directory now created with correct permissions (0755 instead of 0644). Thanks to [#272](https://github.com/ConnectThink/WP-SCSS/pull/272)
