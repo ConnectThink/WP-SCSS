@@ -80,8 +80,8 @@ The constant takes precedence and disables the checkbox in the UI.
 Errors are stored in `Wp_Scss::$compile_errors` as `['file' => ..., 'message' => ...]` arrays. Display is controlled by the `errors` setting:
 
 - `show`: Renders a fixed overlay with error details for all visitors
-- `show-logged-in`: Same, but checks `LOGGED_IN_COOKIE` (not full WP auth stack)
-- `hide`: Appends to `error_log.log` in the SCSS directory; auto-rotates at 1MB by discarding the first half
+- `show-logged-in`: Same, but only when `is_user_logged_in()` (default when the setting is unset)
+- `hide`: Sends each error to the PHP error log via `error_log()`
 
 ### Variable Injection
 

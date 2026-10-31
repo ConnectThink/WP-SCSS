@@ -180,7 +180,7 @@ if( $scss_dir_setting == false || $css_dir_setting == false ) {
 } elseif ( !is_dir($base_compiling_folder . $scss_dir_setting) ) {
   add_action('admin_notices', function() use ($base_compiling_folder, $scss_dir_setting){
     echo '<div class="notice notice-error">
-      <p><strong>WP-SCSS:</strong> The SCSS directory does not exist (' . $base_compiling_folder . $scss_dir_setting . '). Please create the directory or <a href="' . get_bloginfo('wpurl') . '/wp-admin/admin.php?page=wpscss_options">update your settings.</a></p>
+      <p><strong>WP-SCSS:</strong> The SCSS directory does not exist (' . esc_html($base_compiling_folder . $scss_dir_setting) . '). Please create the directory or <a href="' . get_bloginfo('wpurl') . '/wp-admin/admin.php?page=wpscss_options">update your settings.</a></p>
       </div>';
   });
   return 0; //exits
@@ -189,7 +189,7 @@ if( $scss_dir_setting == false || $css_dir_setting == false ) {
 } elseif ( !is_dir($base_compiling_folder . $css_dir_setting) ) {
   add_action('admin_notices', function() use ($base_compiling_folder, $css_dir_setting){
     echo '<div class="notice notice-error">
-      <p><strong>WP-SCSS:</strong> The CSS directory does not exist (' . $base_compiling_folder . $css_dir_setting . '). Please create the directory or <a href="' . get_bloginfo('wpurl') . '/wp-admin/admin.php?page=wpscss_options">update your settings.</a></p>
+      <p><strong>WP-SCSS:</strong> The CSS directory does not exist (' . esc_html($base_compiling_folder . $css_dir_setting) . '). Please create the directory or <a href="' . get_bloginfo('wpurl') . '/wp-admin/admin.php?page=wpscss_options">update your settings.</a></p>
       </div>';
   });
   return 0; //exits
@@ -202,7 +202,7 @@ $wpscss_settings = array(
   'cache_dir'        => $cache_dir_setting,
   'compiling'        => isset($wpscss_options['compiling_options']) ? $wpscss_options['compiling_options'] : 'compressed',
   'always_recompile' => isset($wpscss_options['always_recompile'])  ? $wpscss_options['always_recompile']  : false,
-  'errors'           => isset($wpscss_options['errors'])            ? $wpscss_options['errors']            : 'show',
+  'errors'           => isset($wpscss_options['errors'])            ? $wpscss_options['errors']            : 'show-logged-in',
   'sourcemaps'       => isset($wpscss_options['sourcemap_options']) ? $wpscss_options['sourcemap_options'] : 'SOURCE_MAP_NONE',
   'enqueue'          => isset($wpscss_options['enqueue'])           ? $wpscss_options['enqueue']           : 0
 );
@@ -254,12 +254,9 @@ function wp_scss_compile() {
  * First block handles print errors to front end.
  * This adds a small style block the header to help errors get noticed
  *
- * Second block handles print errors to log file.
- * After the file gets over 1MB it does a purge and deletes the first
- * half of entries in the file.
+ * Second block sends errors to the PHP error log, which is never web-readable
+ * (unlike a file inside the theme or uploads directory).
  */
-
-$log_file = $wpscss_compiler->get_scss_dir() . 'error_log.log';
 
 function wpscss_error_styles() {
   echo
@@ -288,13 +285,13 @@ function wpscss_error_styles() {
 }
 
 function wpscss_settings_show_errors($errors) {
-  $allowed_html = array( 'string' => array(), 'br' => array(), 'em' => array() );
+  $allowed_html = array( 'strong' => array(), 'br' => array(), 'em' => array() );
   echo '<div class="scss_errors"><pre>';
   echo '<h6 style="margin: 15px 0;">Sass Compiling Error</h6>';
 
   foreach( $errors as $error) {
     echo '<p class="sass_error">';
-    echo wp_kses('<strong>'. $error['file'] .'</strong> <br/><em>"'. $error['message'] .'"</em>', $allowed_html);
+    echo wp_kses('<strong>'. esc_html($error['file']) .'</strong> <br/><em>"'. esc_html($error['message']) .'"</em>', $allowed_html);
     echo '<p class="sass_error">';
   }
 
@@ -304,32 +301,18 @@ function wpscss_settings_show_errors($errors) {
 }
 
 function wpscss_handle_errors() {
-  global $wpscss_settings, $log_file, $wpscss_compiler;
-  // Show to logged in users: All the methods for checking user login are set up later in the WP flow, so this only checks that there is a cookie
+  global $wpscss_settings, $wpscss_compiler;
 
   $compile_errors = $wpscss_compiler->get_compile_errors();
-  if ( !is_admin() && $wpscss_settings['errors'] === 'show-logged-in' && !empty($_COOKIE[LOGGED_IN_COOKIE]) && count($compile_errors) > 0) {
+  // Show to logged in users: we run on wp_loaded (after init), so the real auth check is available
+  if ( !is_admin() && $wpscss_settings['errors'] === 'show-logged-in' && is_user_logged_in() && count($compile_errors) > 0) {
     wpscss_settings_show_errors($compile_errors);
     // Show in the header to anyone
   } else if ( !is_admin() && $wpscss_settings['errors'] === 'show' && count($compile_errors) > 0) {
     wpscss_settings_show_errors($compile_errors);
-  } else { // Hide errors and print them to a log file.
+  } else { // Hide errors and send them to the PHP error log.
     foreach ($compile_errors as $error) {
-      $error_string = date('m/d/y g:i:s', time()) .': ';
-      $error_string .= $error['file'] . ' - ' . $error['message'] . PHP_EOL;
-      file_put_contents($log_file, $error_string, FILE_APPEND);
-      $error_string = "";
-    }
-  }
-
-  // Clean out log file if it get's too large
-  if ( file_exists($log_file) ) {
-    if ( filesize($log_file) > 1000000) {
-      $log_contents = file_get_contents($log_file);
-      $log_arr = explode("\n", $log_contents);
-      $new_contents_arr = array_slice($log_arr, count($log_arr)/2);
-      $new_contents = implode(PHP_EOL, $new_contents_arr) . 'LOG FILE CLEANED ' . date('n/j/y g:i:s', time());
-      file_put_contents($log_file, $new_contents);
+      error_log('WP-SCSS: ' . $error['file'] . ' - ' . $error['message']);
     }
   }
 }

@@ -49,7 +49,7 @@ Source maps come in three modes:
 
 'Show in Header' will post a message on the front end when errors have occured. This helps debug as you write your scss.
 
-If you're working on a live/production site, you can send errors to a log. This will create a log file in your scss directory and print errors there as they occur. Just keep an eye on it, because the css will not be updated until errors have been resolved.
+If you're working on a live/production site, you can send errors to a log. Errors are written to the PHP error log (`wp-content/debug.log` when `WP_DEBUG_LOG` is enabled) as they occur. Just keep an eye on it, because the css will not be updated until errors have been resolved.
 
 #### Enqueuing
 

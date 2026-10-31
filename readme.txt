@@ -68,7 +68,7 @@ This plugin will only work with .scss format.
 
 = It's not updating my css, what's happening? =
 
-Do you have errors printing to the front end? If not, check your log file in your scss directory. The css will not be updated if there are errors in your sass file(s).
+Do you have errors printing to the front end? If not, check the PHP error log (wp-content/debug.log when WP_DEBUG_LOG is enabled). The css will not be updated if there are errors in your sass file(s).
 
 Make sure your directories are properly defined in the settings. Paths are defined from the root of the theme.
 

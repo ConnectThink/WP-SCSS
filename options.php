@@ -253,9 +253,17 @@ class Wp_Scss_Settings {
    * @param array $input Contains all settings fields as array keys
    */
   public function sanitize( $input ) {
+    $previous = get_option( 'wpscss_options' );
     foreach( ['scss_dir', 'css_dir', 'cache_dir'] as $dir ){
       if( !empty( $input[$dir] ) ) {
         $input[$dir] = sanitize_text_field( $input[$dir] );
+
+        // Keep every path inside the chosen Base Location
+        if( preg_match( '#(^|/)\.\.(/|$)#', wp_normalize_path( $input[$dir] ) ) ) {
+          add_settings_error( 'wpscss_options', $dir, 'WP-SCSS: "' . esc_html( $input[$dir] ) . '" was not saved: paths cannot contain "..".' );
+          $input[$dir] = isset( $previous[$dir] ) ? $previous[$dir] : '';
+          continue;
+        }
 
         // Add a trailing slash if not already present
         if(substr($input[$dir], -1) != '/'){
