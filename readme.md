@@ -35,7 +35,7 @@ Compiling comes in two modes:
 
 See examples of each in [ScssPHP's documentation](http://scssphp.github.io/scssphp)
 
-- Current version of ScssPHP is 1.11.0
+- Current version of ScssPHP is 1.13.0
 
 #### Source Map Mode
 
@@ -59,7 +59,7 @@ Also keep in mind, that if you disable this plugin it can no longer enqueue file
 
 ## Directions
 
-_This plugin requires at least php 7.2 to work._ . Tested up to php 7.4
+_This plugin requires at least php 7.2 to work._ Tested up to php 8.4 and WordPress 7.1.
 
 #### Importing Subfiles
 
@@ -110,6 +110,16 @@ This plugin will only work with .scss format.
 
 ## Changelog
 
+- 5.0.0
+  - Updates ScssPHP to version [1.13.0](https://github.com/scssphp/scssphp/releases/tag/v1.13.0), the final 1.x release, and removes stray ScssPHP 2.x development files that had been bundled by mistake. [#275](https://github.com/ConnectThink/WP-SCSS/pull/275)
+  - Fix: PHP 8.4 "implicitly marking parameter as nullable" deprecation notices. Thanks to [FreddyFY](https://github.com/ConnectThink/WP-SCSS/pull/276) and [#273](https://github.com/ConnectThink/WP-SCSS/issues/273)
+  - Security: "Show to Logged In Users" now uses the real WordPress login check instead of only testing that a login cookie exists, which any visitor could forge. [#277](https://github.com/ConnectThink/WP-SCSS/pull/277)
+  - Security: SCSS, CSS and Cache locations can no longer contain `..`, so they always stay inside the chosen Base Location.
+  - Security: an unknown Compiling Mode or Source Map Mode value no longer causes a fatal error on every page load.
+  - Changed: "Print to Log" now sends compile errors to the PHP error log (wp-content/debug.log when WP_DEBUG_LOG is on) instead of an error_log.log file inside the SCSS directory, which was readable from the web. Delete any existing error_log.log from your SCSS directory.
+  - Changed: when the Error Display setting has never been saved, errors are shown to logged in users only instead of to every visitor.
+  - Compiled CSS is now moved into place atomically, so visitors never see a half-written stylesheet.
+  - Tested up to WordPress 7.1 and PHP 8.4.
 - 4.0.8
   - Fix: Cache directory now created with correct permissions (0755 instead of 0644). Thanks to [#272](https://github.com/ConnectThink/WP-SCSS/pull/272)
   - Fix: Cache directory path now always has a trailing slash. Thanks to [rushhee](https://github.com/ConnectThink/WP-SCSS/pull/269)
