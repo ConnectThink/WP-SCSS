@@ -3,6 +3,7 @@
 require_once(ABSPATH . 'wp-admin/includes/file.php');
 include_once(WPSCSS_PLUGIN_DIR . '/scssphp/scss.inc.php');
 use ScssPhp\ScssPhp\Compiler;
+use ScssPhp\ScssPhp\OutputStyle;
 
 class Wp_Scss {
 
@@ -41,7 +42,9 @@ class Wp_Scss {
     $this->compile_errors   = array();
     $this->scssc            = new Compiler();
 
-    $this->scssc->setOutputStyle( $compile_method );
+    // setOutputStyle() throws on unknown values, which would fatal every page load
+    $valid_styles = array(OutputStyle::COMPRESSED, OutputStyle::EXPANDED);
+    $this->scssc->setOutputStyle( in_array($compile_method, $valid_styles, true) ? $compile_method : OutputStyle::COMPRESSED );
     $this->scssc->setImportPaths( $this->scss_dir );
 
     $this->sourcemaps = $sourcemaps;
@@ -119,8 +122,18 @@ class Wp_Scss {
       if  ( is_writable($this->css_dir) ) {
         foreach (new DirectoryIterator($this->cache) as $cache_file) {
           if (pathinfo($cache_file->getFilename(), PATHINFO_EXTENSION) == 'css') {
-            file_put_contents($this->css_dir . $cache_file, file_get_contents($this->cache . $cache_file));
-            unlink($this->cache . $cache_file->getFilename()); // Delete file on successful write
+            // rename() is atomic, so a concurrent visitor never sees a half-written stylesheet;
+            // it fails across filesystems (e.g. uploads on its own mount), so fall back to copy
+            if (!@rename($this->cache . $cache_file, $this->css_dir . $cache_file)) {
+              if (copy($this->cache . $cache_file, $this->css_dir . $cache_file)) {
+                unlink($this->cache . $cache_file->getFilename());
+              } else {
+                array_push($this->compile_errors, array(
+                  'file' => $cache_file->getFilename(),
+                  'message' => "File Permissions Error, could not write to the CSS directory."
+                ));
+              }
+            }
           }
         }
       } else {
@@ -156,7 +169,9 @@ class Wp_Scss {
     if (is_writable($this->cache)) {
       try {
         $map = basename($out) . '.map';
-        $this->scssc->setSourceMap(constant('ScssPhp\ScssPhp\Compiler::' . $this->sourcemaps));
+        // constant() throws an Error (not Exception) on unknown names, which the catch below would miss
+        $sourcemap_constant = 'ScssPhp\ScssPhp\Compiler::' . $this->sourcemaps;
+        $this->scssc->setSourceMap(defined($sourcemap_constant) ? constant($sourcemap_constant) : Compiler::SOURCE_MAP_NONE);
         $this->scssc->setSourceMapOptions(array(
           'sourceMapWriteTo' => $this->css_dir . $map, // absolute path to a file to write the map to
           'sourceMapURL' => $map, // url of the map
