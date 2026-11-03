@@ -72,6 +72,8 @@ Do you have errors printing to the front end? If not, check the PHP error log (w
 
 Make sure your directories are properly defined in the settings. Paths are defined from the root of the theme.
 
+You can force a compile with the Compile Now button on the settings page. To compile from a deploy script, define WP_SCSS_COMPILE_KEY in wp-config.php and POST action=wpscss_compile&key=YOUR_KEY to wp-admin/admin-post.php.
+
 
 = I'm having other issues and need help =
 

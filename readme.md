@@ -90,6 +90,20 @@ You can tell the plugin to always recompile in the plugin options page or by add
 
     define('WP_SCSS_ALWAYS_RECOMPILE', true);
 
+#### Compile on Demand
+
+The settings page has a **Compile Now** button that recompiles every SCSS file, whether or not anything changed.
+
+To compile from a deploy script, define a secret key in wp-config.php:
+
+    define('WP_SCSS_COMPILE_KEY', 'a-long-random-string');
+
+then POST it to admin-post.php after each deploy:
+
+    curl -X POST -d 'action=wpscss_compile&key=a-long-random-string' https://example.com/wp-admin/admin-post.php
+
+It answers with JSON (`{"success":true,"errors":[]}`), and HTTP 500 with the compile errors when compiling fails. The webhook is off unless the constant is defined.
+
 #### Compass Support
 
 Currently there isn't a way to fully support [compass](https://github.com/chriseppstein/compass) with a php compiler. If you want limited support, you can manually import the compass framework. You'll need both the \_compass.scss and compass directory.

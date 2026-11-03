@@ -54,8 +54,44 @@ class Wp_Scss_Settings {
             submit_button();
         ?>
         </form>
+        <?php if ( isset( $GLOBALS['wpscss_compiler'] ) ) : ?>
+          <h2>Compile</h2>
+          <?php $this->print_compile_result(); ?>
+          <p>Compile every SCSS file now, whether or not anything changed.</p>
+          <form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
+            <input type="hidden" name="action" value="wpscss_compile" />
+            <?php
+              wp_nonce_field( 'wpscss_compile' );
+              submit_button( 'Compile Now', 'secondary', 'wpscss_compile_now', false );
+            ?>
+          </form>
+        <?php endif; ?>
     </div>
     <?php
+  }
+
+  /**
+   * Show the result of a "Compile Now" click, stored by wpscss_compile_request() before its redirect
+   */
+  private function print_compile_result() {
+    if ( !isset( $_GET['wpscss_compiled'] ) ) {
+      return;
+    }
+    $transient = 'wpscss_compile_result_' . get_current_user_id();
+    $errors = get_transient( $transient );
+    delete_transient( $transient );
+    if ( !is_array( $errors ) ) {
+      return;
+    }
+    if ( empty( $errors ) ) {
+      echo '<div class="notice notice-success inline"><p>SCSS compiled.</p></div>';
+      return;
+    }
+    echo '<div class="notice notice-error inline"><p><strong>SCSS did not compile; the CSS files were not changed.</strong></p>';
+    foreach ( $errors as $error ) {
+      echo '<p><strong>' . esc_html( $error['file'] ) . '</strong>: ' . esc_html( $error['message'] ) . '</p>';
+    }
+    echo '</div>';
   }
 
   /**

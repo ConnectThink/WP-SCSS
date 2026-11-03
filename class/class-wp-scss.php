@@ -100,6 +100,8 @@ class Wp_Scss {
    */
   public function compile() {
 
+    // A manual compile can follow the automatic one in the same request; report only this run
+    $this->compile_errors = array();
     $input_files = array();
 
     // Loop through directory and get .scss file that do not start with '_'
