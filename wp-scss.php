@@ -161,6 +161,17 @@ function get_base_dir_from_name($name_or_old_path){
 }
 
 $wpscss_options = get_option( 'wpscss_options' );
+
+// WP_SCSS_OPTIONS (an array defined in wp-config.php) overrides the saved settings, so a setup can live in version control
+if ( defined('WP_SCSS_OPTIONS') && is_array(WP_SCSS_OPTIONS) ) {
+  $wpscss_code_options = WP_SCSS_OPTIONS;
+  foreach ( array('scss_dir', 'css_dir', 'cache_dir') as $dir ) {
+    if ( !empty($wpscss_code_options[$dir]) ) {
+      $wpscss_code_options[$dir] = trailingslashit($wpscss_code_options[$dir]);
+    }
+  }
+  $wpscss_options = wpscss_plugin_db_cleanup(array_merge(is_array($wpscss_options) ? $wpscss_options : array(), $wpscss_code_options));
+}
 $base_compiling_folder = isset($wpscss_options['base_compiling_folder']) ? get_base_dir_from_name($wpscss_options['base_compiling_folder']) : get_stylesheet_directory();
 $scss_dir_setting = !empty($wpscss_options['scss_dir']) ? $wpscss_options['scss_dir'] : '';
 $css_dir_setting = !empty($wpscss_options['css_dir']) ? $wpscss_options['css_dir'] : '';

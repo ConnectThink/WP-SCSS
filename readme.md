@@ -82,6 +82,24 @@ You can set SCSS variables in your theme or plugin by using the wp_scss_variable
     }
     add_filter('wp_scss_variables','wp_scss_set_variables');
 
+#### Configuring in wp-config.php
+
+To keep the settings in version control instead of the database, define `WP_SCSS_OPTIONS` in wp-config.php. Any key you set overrides the value saved on the settings page; keys you leave out still come from the settings page.
+
+    define('WP_SCSS_OPTIONS', array(
+      'base_compiling_folder' => 'Current Theme', // or Parent Theme, Child Theme, Uploads Directory, WP-SCSS Plugin
+      'scss_dir'              => '/scss/',
+      'css_dir'               => '/css/',
+      'cache_dir'             => '',               // empty uses plugins/wp-scss/cache/
+      'compiling_options'     => 'compressed',     // or expanded
+      'sourcemap_options'     => 'SOURCE_MAP_NONE', // or SOURCE_MAP_INLINE, SOURCE_MAP_FILE
+      'errors'                => 'show-logged-in', // or show, hide
+      'enqueue'               => '1',              // '0' to enqueue the CSS yourself
+      'always_recompile'      => '0',
+    ));
+
+The settings page lists which settings are being overridden.
+
 #### Always Recompile
 
 During development it's sometimes useful to force stylesheet compilation on every page load. Especially on hosts where filemtime() is not updating consistently.
