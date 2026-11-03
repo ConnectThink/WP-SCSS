@@ -170,6 +170,12 @@ if ( defined('WP_SCSS_OPTIONS') && is_array(WP_SCSS_OPTIONS) ) {
       $wpscss_code_options[$dir] = trailingslashit($wpscss_code_options[$dir]);
     }
   }
+  // The settings form stores checkboxes as '1' and needs_compiling() compares strictly, so accept true/1 too
+  foreach ( array('enqueue', 'always_recompile') as $flag ) {
+    if ( array_key_exists($flag, $wpscss_code_options) ) {
+      $wpscss_code_options[$flag] = $wpscss_code_options[$flag] && $wpscss_code_options[$flag] !== '0' ? '1' : '0';
+    }
+  }
   $wpscss_options = wpscss_plugin_db_cleanup(array_merge(is_array($wpscss_options) ? $wpscss_options : array(), $wpscss_code_options));
 }
 $base_compiling_folder = isset($wpscss_options['base_compiling_folder']) ? get_base_dir_from_name($wpscss_options['base_compiling_folder']) : get_stylesheet_directory();

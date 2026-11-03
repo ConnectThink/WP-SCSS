@@ -94,8 +94,8 @@ To keep the settings in version control instead of the database, define `WP_SCSS
       'compiling_options'     => 'compressed',     // or expanded
       'sourcemap_options'     => 'SOURCE_MAP_NONE', // or SOURCE_MAP_INLINE, SOURCE_MAP_FILE
       'errors'                => 'show-logged-in', // or show, hide
-      'enqueue'               => '1',              // '0' to enqueue the CSS yourself
-      'always_recompile'      => '0',
+      'enqueue'               => true,             // false to enqueue the CSS yourself
+      'always_recompile'      => false,
     ));
 
 The settings page lists which settings are being overridden.
