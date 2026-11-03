@@ -266,6 +266,40 @@ function wp_scss_compile() {
 }
 
 /**
+ * 6b. COMPILE ON DEMAND
+ *
+ * The settings page "Compile Now" button (admins only, nonce-checked) and a deploy webhook:
+ * POST action=wpscss_compile and key=WP_SCSS_COMPILE_KEY to admin-post.php, only when that constant is defined.
+ * The key is read from the POST body only, so it stays out of URLs and access logs.
+ */
+function wpscss_compile_request() {
+  global $wpscss_compiler;
+
+  $key = defined('WP_SCSS_COMPILE_KEY') ? (string) WP_SCSS_COMPILE_KEY : '';
+  $by_key = $key !== '' && isset($_POST['key']) && is_string($_POST['key']) && hash_equals($key, (string) wp_unslash($_POST['key']));
+
+  if ( !$by_key ) {
+    if ( !current_user_can('manage_options') ) {
+      wp_die('Sorry, you are not allowed to compile SCSS.', '', array('response' => 403));
+    }
+    check_admin_referer('wpscss_compile');
+  }
+
+  wp_scss_compile();
+  $errors = $wpscss_compiler->get_compile_errors();
+
+  if ( $by_key ) {
+    wp_send_json(array('success' => empty($errors), 'errors' => $errors), empty($errors) ? 200 : 500);
+  }
+
+  set_transient('wpscss_compile_result_' . get_current_user_id(), $errors, MINUTE_IN_SECONDS);
+  wp_safe_redirect(admin_url('options-general.php?page=wpscss_options&wpscss_compiled=1'));
+  exit;
+}
+add_action('admin_post_wpscss_compile', 'wpscss_compile_request');
+add_action('admin_post_nopriv_wpscss_compile', 'wpscss_compile_request');
+
+/**
  * 7. HANDLE COMPILING ERRORS
  *
  * First block handles print errors to front end.
