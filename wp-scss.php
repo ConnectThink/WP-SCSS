@@ -29,6 +29,10 @@
  * 1. PLUGIN GLOBAL VARIABLES
  */
 
+// WP-CLI (and anything else that includes plugins from inside a function) gives this file a local scope,
+// so declare the variables that later functions read with `global`
+global $wpscss_options, $wpscss_settings, $base_compiling_folder;
+
 // Plugin Paths
 if (!defined('WPSCSS_PLUGIN_NAME'))
   define('WPSCSS_PLUGIN_NAME', trim(dirname(plugin_basename(__FILE__)), '/'));
