@@ -187,13 +187,17 @@ class Wp_Scss {
         $compilationResult = $this->scssc->compileString(file_get_contents($in), $in);
         $css = $compilationResult->getCss();
 
-        file_put_contents($this->cache . basename($out), $css);
+        if (file_put_contents($this->cache . basename($out), $css) === false) {
+          throw new Exception('Could not write to the cache directory.');
+        }
         $this->cache_files[] = basename($out);
 
         // scssphp 1.x returns the map instead of writing sourceMapWriteTo, so write it beside the CSS ourselves
         $sourcemap = $compilationResult->getSourceMap();
         if ($this->sourcemaps === 'SOURCE_MAP_FILE' && $sourcemap !== null) {
-          file_put_contents($this->cache . $map, $sourcemap);
+          if (file_put_contents($this->cache . $map, $sourcemap) === false) {
+            throw new Exception('Could not write the source map to the cache directory.');
+          }
           $this->cache_files[] = $map;
         }
       } catch (Exception $e) {
