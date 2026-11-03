@@ -252,13 +252,14 @@ function wp_scss_compile() {
  * 6b. COMPILE ON DEMAND
  *
  * The settings page "Compile Now" button (admins only, nonce-checked) and a deploy webhook:
- * POST admin-post.php?action=wpscss_compile with key=WP_SCSS_COMPILE_KEY, only when that constant is defined.
+ * POST action=wpscss_compile and key=WP_SCSS_COMPILE_KEY to admin-post.php, only when that constant is defined.
+ * The key is read from the POST body only, so it stays out of URLs and access logs.
  */
 function wpscss_compile_request() {
   global $wpscss_compiler;
 
   $key = defined('WP_SCSS_COMPILE_KEY') ? (string) WP_SCSS_COMPILE_KEY : '';
-  $by_key = $key !== '' && isset($_REQUEST['key']) && hash_equals($key, (string) wp_unslash($_REQUEST['key']));
+  $by_key = $key !== '' && isset($_POST['key']) && hash_equals($key, (string) wp_unslash($_POST['key']));
 
   if ( !$by_key ) {
     if ( !current_user_can('manage_options') ) {
