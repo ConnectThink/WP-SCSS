@@ -96,11 +96,11 @@ The settings page has a **Compile Now** button that recompiles every SCSS file, 
 
 To compile from a deploy script, define a secret key in wp-config.php:
 
-    define('WP_SCSS_COMPILE_KEY', 'a-long-random-string');
+    define('WP_SCSS_COMPILE_KEY', 'a-long-random-string'); // e.g. the output of: openssl rand -hex 32
 
-then POST it to admin-post.php after each deploy, reading the key from your deploy tool's secrets rather than typing it on the command line:
+then POST it to admin-post.php after each deploy. Send the key on stdin so it never appears in the curl command line (`printf` is a shell builtin, so it doesn't show up in `ps` either):
 
-    curl -X POST -d action=wpscss_compile --data-urlencode "key=$WP_SCSS_COMPILE_KEY" https://example.com/wp-admin/admin-post.php
+    printf '%s' "$WP_SCSS_COMPILE_KEY" | curl --data-urlencode action=wpscss_compile --data-urlencode key@- https://example.com/wp-admin/admin-post.php
 
 It answers with JSON (`{"success":true,"errors":[]}`), and HTTP 500 with the compile errors when compiling fails. The webhook is off unless the constant is defined.
 
