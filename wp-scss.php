@@ -193,20 +193,20 @@ if( $scss_dir_setting == false || $css_dir_setting == false ) {
   add_action('admin_notices', 'wpscss_settings_error');
   return 0; //exits
 
-  // Checks if SCSS directory exists
-} elseif ( !is_dir($base_compiling_folder . $scss_dir_setting) ) {
+  // Checks if SCSS directory exists and is readable (DirectoryIterator throws a fatal otherwise)
+} elseif ( !is_dir($base_compiling_folder . $scss_dir_setting) || !is_readable($base_compiling_folder . $scss_dir_setting) ) {
   add_action('admin_notices', function() use ($base_compiling_folder, $scss_dir_setting){
     echo '<div class="notice notice-error">
-      <p><strong>WP-SCSS:</strong> The SCSS directory does not exist (' . esc_html($base_compiling_folder . $scss_dir_setting) . '). Please create the directory or <a href="' . get_bloginfo('wpurl') . '/wp-admin/admin.php?page=wpscss_options">update your settings.</a></p>
+      <p><strong>WP-SCSS:</strong> The SCSS directory does not exist or is not readable (' . esc_html($base_compiling_folder . $scss_dir_setting) . '). Please create the directory, check its permissions, or <a href="' . get_bloginfo('wpurl') . '/wp-admin/admin.php?page=wpscss_options">update your settings.</a></p>
       </div>';
   });
   return 0; //exits
 
-  // Checks if CSS directory exists
-} elseif ( !is_dir($base_compiling_folder . $css_dir_setting) ) {
+  // Checks if CSS directory exists and is readable
+} elseif ( !is_dir($base_compiling_folder . $css_dir_setting) || !is_readable($base_compiling_folder . $css_dir_setting) ) {
   add_action('admin_notices', function() use ($base_compiling_folder, $css_dir_setting){
     echo '<div class="notice notice-error">
-      <p><strong>WP-SCSS:</strong> The CSS directory does not exist (' . esc_html($base_compiling_folder . $css_dir_setting) . '). Please create the directory or <a href="' . get_bloginfo('wpurl') . '/wp-admin/admin.php?page=wpscss_options">update your settings.</a></p>
+      <p><strong>WP-SCSS:</strong> The CSS directory does not exist or is not readable (' . esc_html($base_compiling_folder . $css_dir_setting) . '). Please create the directory, check its permissions, or <a href="' . get_bloginfo('wpurl') . '/wp-admin/admin.php?page=wpscss_options">update your settings.</a></p>
       </div>';
   });
   return 0; //exits
