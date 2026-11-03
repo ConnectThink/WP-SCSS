@@ -17,7 +17,7 @@ jobs:
     name: WordPress Plugin Deploy
     runs-on: ubuntu-latest
     permissions:
-      contents: write # create the GitHub release
+      contents: read
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -43,11 +43,22 @@ jobs:
           SLUG: wp-scss
           VERSION: ${{ steps.version.outputs.version }}
 
+  release:
+    name: GitHub Release
+    needs: deploy
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    # Write access lives only in this job, so the third-party deploy action above never holds it
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
       - name: Create GitHub release
-        if: github.event_name == 'push'
         env:
           GH_TOKEN: ${{ github.token }}
-          VERSION: ${{ steps.version.outputs.version }}
+          VERSION: ${{ github.ref_name }}
         run: |
           if gh release view "$VERSION" >/dev/null 2>&1; then
             echo "Release $VERSION already exists; leaving it alone."
