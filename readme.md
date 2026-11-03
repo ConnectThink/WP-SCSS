@@ -142,6 +142,11 @@ This plugin will only work with .scss format.
 
 ## Changelog
 
+- 5.1.0
+  - New: a Compile Now button on the settings page, and an optional deploy webhook (define WP_SCSS_COMPILE_KEY, then POST to admin-post.php) to compile after a deploy. [#281](https://github.com/ConnectThink/WP-SCSS/pull/281), closes [#48](https://github.com/ConnectThink/WP-SCSS/issues/48)
+  - New: define WP_SCSS_OPTIONS in wp-config.php to set the plugin's settings in code; any key you set overrides the saved value. [#282](https://github.com/ConnectThink/WP-SCSS/pull/282), closes [#222](https://github.com/ConnectThink/WP-SCSS/issues/222)
+  - Fix: the File source map mode writes the .map file again (it had silently stopped). [#280](https://github.com/ConnectThink/WP-SCSS/pull/280), closes [#207](https://github.com/ConnectThink/WP-SCSS/issues/207)
+  - Fix: an unreadable SCSS or CSS directory shows an admin notice instead of a fatal error on every page. [#279](https://github.com/ConnectThink/WP-SCSS/pull/279), closes [#187](https://github.com/ConnectThink/WP-SCSS/issues/187)
 - 5.0.0
   - Updates ScssPHP to version [1.13.0](https://github.com/scssphp/scssphp/releases/tag/v1.13.0), the final 1.x release, and removes stray ScssPHP 2.x development files that had been bundled by mistake. [#275](https://github.com/ConnectThink/WP-SCSS/pull/275)
   - Fix: PHP 8.4 "implicitly marking parameter as nullable" deprecation notices. Thanks to [FreddyFY](https://github.com/ConnectThink/WP-SCSS/pull/276) and [#273](https://github.com/ConnectThink/WP-SCSS/issues/273)
