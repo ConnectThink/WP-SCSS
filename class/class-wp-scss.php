@@ -121,7 +121,7 @@ class Wp_Scss {
     if (count($this->compile_errors) < 1) {
       if  ( is_writable($this->css_dir) ) {
         foreach (new DirectoryIterator($this->cache) as $cache_file) {
-          if (pathinfo($cache_file->getFilename(), PATHINFO_EXTENSION) == 'css') {
+          if (in_array(pathinfo($cache_file->getFilename(), PATHINFO_EXTENSION), array('css', 'map'), true)) {
             // rename() is atomic, so a concurrent visitor never sees a half-written stylesheet;
             // it fails across filesystems (e.g. uploads on its own mount), so fall back to copy
             if (!@rename($this->cache . $cache_file, $this->css_dir . $cache_file)) {
@@ -173,7 +173,6 @@ class Wp_Scss {
         $sourcemap_constant = 'ScssPhp\ScssPhp\Compiler::' . $this->sourcemaps;
         $this->scssc->setSourceMap(defined($sourcemap_constant) ? constant($sourcemap_constant) : Compiler::SOURCE_MAP_NONE);
         $this->scssc->setSourceMapOptions(array(
-          'sourceMapWriteTo' => $this->css_dir . $map, // absolute path to a file to write the map to
           'sourceMapURL' => $map, // url of the map
           'sourceMapBasepath' => rtrim(ABSPATH, '/'), // base path for filename normalization
           'sourceRoot' => home_url('/'), // This value is prepended to the individual entries in the 'source' field.
@@ -183,6 +182,12 @@ class Wp_Scss {
         $css = $compilationResult->getCss();
 
         file_put_contents($this->cache . basename($out), $css);
+
+        // scssphp 1.x returns the map instead of writing sourceMapWriteTo, so write it beside the CSS ourselves
+        $sourcemap = $compilationResult->getSourceMap();
+        if ($this->sourcemaps === 'SOURCE_MAP_FILE' && $sourcemap !== null) {
+          file_put_contents($this->cache . $map, $sourcemap);
+        }
       } catch (Exception $e) {
         $errors = array (
           'file' => basename($in),
