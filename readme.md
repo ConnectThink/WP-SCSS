@@ -138,6 +138,9 @@ This plugin will only work with .scss format.
 
 ## Changelog
 
+- 5.1.1
+  - Fix: WP-CLI commands no longer log "Trying to access array offset on null" warnings, and compile errors and Always Recompile now work under WP-CLI. [#285](https://github.com/ConnectThink/WP-SCSS/pull/285)
+  - Fix: a failed compile can no longer leave files in the cache that go live on the next successful compile, and a failed cache write now stops the compile instead of publishing an older cached file. [#286](https://github.com/ConnectThink/WP-SCSS/pull/286)
 - 5.1.0
   - New: a Compile Now button on the settings page, and an optional deploy webhook (define WP_SCSS_COMPILE_KEY, then POST to admin-post.php) to compile after a deploy. [#281](https://github.com/ConnectThink/WP-SCSS/pull/281), closes [#48](https://github.com/ConnectThink/WP-SCSS/issues/48)
   - New: define WP_SCSS_OPTIONS in wp-config.php to set the plugin's settings in code; any key you set overrides the saved value. [#282](https://github.com/ConnectThink/WP-SCSS/pull/282), closes [#222](https://github.com/ConnectThink/WP-SCSS/issues/222)
