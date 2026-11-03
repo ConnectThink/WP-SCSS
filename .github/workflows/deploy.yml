@@ -16,6 +16,8 @@ jobs:
   deploy:
     name: WordPress Plugin Deploy
     runs-on: ubuntu-latest
+    permissions:
+      contents: write # create the GitHub release
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -40,3 +42,23 @@ jobs:
           SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
           SLUG: wp-scss
           VERSION: ${{ steps.version.outputs.version }}
+
+      - name: Create GitHub release
+        if: github.event_name == 'push'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          if gh release view "$VERSION" >/dev/null 2>&1; then
+            echo "Release $VERSION already exists; leaving it alone."
+            exit 0
+          fi
+          # The notes are this version's section of the readme.txt changelog ("= X.Y.Z =" up to the next "= ... =")
+          awk -v v="$VERSION" '$0 == "= " v " =" {found=1; next} found && /^= .* =$/ {exit} found' readme.txt \
+            | sed 's/^  //' | sed '/^[[:space:]]*$/d' > changelog.md
+          if [ ! -s changelog.md ]; then
+            echo "::error::No '= $VERSION =' section in the readme.txt changelog"
+            exit 1
+          fi
+          { echo "Published on wordpress.org: https://wordpress.org/plugins/wp-scss/"; echo; cat changelog.md; } > notes.md
+          gh release create "$VERSION" --title "$VERSION" --verify-tag --notes-file notes.md
