@@ -6,10 +6,6 @@ Compiles .scss files on your wordpress install using [scssphp](https://github.co
 
 The plugin only compiles when changes have been made to the scss files. Compiles are made to the matching css file, so disabling this plugin will not take down your stylesheets. In the instance where a matching css file does not exist yet, the plugin will create the appropriate css file in the css directory.
 
-## Looking for new maintainer
-
-If you are interested in giving back to the open source plugin respond [here](https://github.com/ConnectThink/WP-SCSS/issues/242) with your interest
-
 ## Settings
 
 #### Directories

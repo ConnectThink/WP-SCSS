@@ -19,10 +19,6 @@ The plugin only compiles when changes have been made to the scss files. Compiles
 
 [Get detailed instructions on github](https://github.com/ConnectThink/WP-SCSS)
 
-== Looking for a new maintainer == 
-
-If you are interested in giving back to the open source plugin respond [here](https://github.com/ConnectThink/WP-SCSS/issues/242) with your interest
-
 == Installation ==
 
 1. Upload plugin to plugins directory
