@@ -98,9 +98,9 @@ To compile from a deploy script, define a secret key in wp-config.php:
 
     define('WP_SCSS_COMPILE_KEY', 'a-long-random-string');
 
-then POST it to admin-post.php after each deploy:
+then POST it to admin-post.php after each deploy, reading the key from your deploy tool's secrets rather than typing it on the command line:
 
-    curl -X POST -d 'action=wpscss_compile&key=a-long-random-string' https://example.com/wp-admin/admin-post.php
+    curl -X POST -d action=wpscss_compile --data-urlencode "key=$WP_SCSS_COMPILE_KEY" https://example.com/wp-admin/admin-post.php
 
 It answers with JSON (`{"success":true,"errors":[]}`), and HTTP 500 with the compile errors when compiling fails. The webhook is off unless the constant is defined.
 

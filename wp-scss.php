@@ -259,7 +259,7 @@ function wpscss_compile_request() {
   global $wpscss_compiler;
 
   $key = defined('WP_SCSS_COMPILE_KEY') ? (string) WP_SCSS_COMPILE_KEY : '';
-  $by_key = $key !== '' && isset($_POST['key']) && hash_equals($key, (string) wp_unslash($_POST['key']));
+  $by_key = $key !== '' && isset($_POST['key']) && is_string($_POST['key']) && hash_equals($key, (string) wp_unslash($_POST['key']));
 
   if ( !$by_key ) {
     if ( !current_user_can('manage_options') ) {
