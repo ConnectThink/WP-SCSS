@@ -46,6 +46,12 @@ class Wp_Scss_Settings {
           <br/>
           <span class="repo">Help & Issues: <a href="https://github.com/ConnectThink/WP-SCSS" target="_blank">Github</a></span>
         </p>
+        <?php if ( defined( 'WP_SCSS_OPTIONS' ) && is_array( WP_SCSS_OPTIONS ) && !empty( WP_SCSS_OPTIONS ) ) : ?>
+          <div class="notice notice-warning inline">
+            <p>These settings are set by <code>WP_SCSS_OPTIONS</code> in wp-config.php and override anything saved below:
+              <code><?php echo esc_html( implode( ', ', array_keys( WP_SCSS_OPTIONS ) ) ); ?></code></p>
+          </div>
+        <?php endif; ?>
         <form method="post" action="options.php">
         <?php
             // This prints out all hidden setting fields

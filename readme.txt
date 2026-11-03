@@ -50,6 +50,10 @@ When importing in your scss file, you can leave off the underscore.
 > `@import 'subfile';`
 
 
+= Can I configure the plugin in code? =
+
+Yes. Define WP_SCSS_OPTIONS in wp-config.php as an array using the same keys as the settings page (base_compiling_folder, scss_dir, css_dir, cache_dir, compiling_options, sourcemap_options, errors, enqueue, always_recompile). The keys you set override the saved settings. See the readme on GitHub for an example.
+
 = Does this plugin support Compass? =
 
 Currently there isn't a way to fully support [compass](https://github.com/chriseppstein/compass) with a php compiler. If you want limited support, you can manually import the compass framework. You'll need both the _compass.scss and compass directory.
