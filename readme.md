@@ -96,6 +96,8 @@ To keep the settings in version control instead of the database, define `WP_SCSS
 
 The settings page lists which settings are being overridden.
 
+The settings page does not accept `..` in a path, so a folder outside the Base Location has to be set here. For example, with a theme as the Base Location, `'cache_dir' => '/../../cache/wp-scss/'` keeps the cache in `wp-content/cache/wp-scss/` so the theme folder can stay read-only.
+
 #### Always Recompile
 
 During development it's sometimes useful to force stylesheet compilation on every page load. Especially on hosts where filemtime() is not updating consistently.
