@@ -48,7 +48,7 @@ When importing in your scss file, you can leave off the underscore.
 
 = Can I configure the plugin in code? =
 
-Yes. Define WP_SCSS_OPTIONS in wp-config.php as an array using the same keys as the settings page (base_compiling_folder, scss_dir, css_dir, cache_dir, compiling_options, sourcemap_options, errors, enqueue, always_recompile). The keys you set override the saved settings. See the readme on GitHub for an example.
+Yes. Define WP_SCSS_OPTIONS in wp-config.php as an array using the same keys as the settings page (base_compiling_folder, scss_dir, css_dir, cache_dir, compiling_options, sourcemap_options, errors, enqueue, always_recompile). The keys you set override the saved settings. See the readme on GitHub for an example. This is also the way to use a folder outside the Base Location, for example a cache_dir of /../../cache/wp-scss/ to keep the temporary cache files in wp-content/cache/ instead of the theme: the settings page does not accept .. in a path. The web server still needs write access to the cache folder and to the CSS folder.
 
 = Does this plugin support Compass? =
 
